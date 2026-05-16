@@ -1,21 +1,7 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
-import Navigation from '../components/ui/navigation';
-import { cn } from '@/lib/utils';
+import Navigation from './_components/navigation';
 import { ThemeProvider } from 'next-themes';
-
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
-
-
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -31,14 +17,16 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn(
-        'min-h-screen flex flex-col',
-        `${geistMono.variable}`,
-      )}
+      className="min-h-screen flex flex-col"
     >
       <body>
-        <ThemeProvider attribute="class" defaultTheme="system">
-          <Navigation></Navigation>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+        >
+          <Navigation />
+
           {children}
         </ThemeProvider>
       </body>
