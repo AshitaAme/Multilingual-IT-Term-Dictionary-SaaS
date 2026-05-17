@@ -1,40 +1,39 @@
-import { cn } from '@lib/utils';
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-} from '@components/ui/navigation-menu';
-import { HomeIcon } from 'lucide-react';
+'use client';
 
-import UserNav from './user-nav';
-import { ModeToggle } from './mode-toggle';
-import { Button } from '@/components/ui/button';
+import { cn } from '@lib/utils';
+
+import UserNav from './avatar-menu';
+import { Search } from './search';
+import IconsNav from './icons-nav';
+import { ThemeToggle } from './theme-toggle';
 
 export default function Navigation() {
   return (
+
+    // Navigation bar on the top of all pages with three sections: 
+    // [<-] left (icons with links), 
+    // [>|<] center (search), 
+    // [->] right (theme toggle and user nav)
     <div
       className={cn(
-        'flex flex-row justify-between items-center',
-        'h-16 w-full',
-        'sticky top-0 z-50',
+        'grid grid-cols-3 items-center',
+        'h-14 w-full',
+        'sticky top-0 z-50', // Make the navigation bar sticky at the top
       )}
     >
-      <div className="flex flex-row h-full pt-4 pb-4 pl-2 pr-2 md:pl-4">
-        <NavigationMenu>
-          <NavigationMenuList>
-            <NavigationMenuItem>
-              <NavigationMenuLink href="/" className="">
-              <Button variant="outline" size="icon">
-                <HomeIcon className="size-4 hover:scale-110 transition-all duration-500" />
-              </Button>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
-          </NavigationMenuList>
-        </NavigationMenu>
+      {/* Left section: Icons with links */}
+      <div className="flex pl-2 gap-2 justify-start">
+        <IconsNav />
       </div>
-      <div className="flex flex-row h-full pt-4 pb-4 pl-2 pr-3 md:pr-4 gap-2">
-        <ModeToggle />
+
+      {/* Center section: Search */}
+      <div className="flex justify-center w-full">
+        <Search />
+      </div>
+
+      {/* Right section: Theme toggle and user nav */}
+      <div className="flex pr-2 gap-2 justify-end">
+        <ThemeToggle />
         <UserNav />
       </div>
     </div>
