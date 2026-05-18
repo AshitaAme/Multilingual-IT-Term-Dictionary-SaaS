@@ -1,16 +1,23 @@
-'use client';
-import { useState } from 'react';
+import { Card } from '@/components/ui/card';
+import { TypingAnimation } from '@/components/ui/typing-animation';
+// import CardsDisplay from './_components/cards-display';
+
+export const metadata = {
+  title: 'Leaves Dictionary',
+};
 
 export default function Home() {
-  const [inputValue, setInputValue] = useState('');
-
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2">
-      <div className="flex flex-col items-center justify-center w-full flex-1 px-20 text-center">
-        {/* TODO: Add search and tags components here */}
-        {/* <Search></Search>
-          <Tags></Tags> */}
-      </div>
-    </div>
+    <main className="flex flex-col gap-4">
+      <h1 className="flex pt-[0%] pr-[0%] justify-center text-4xl font-bold">
+
+      <TypingAnimation>
+        Hello Word!
+      </TypingAnimation>
+      </h1>
+      <Card className="shadow-md w-60 h-80 ring-0 rounded-none p-0" />
+      
+      {/* <CardsDisplay /> */}
+    </main>
   );
 }

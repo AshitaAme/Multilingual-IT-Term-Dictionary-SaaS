@@ -34,7 +34,7 @@ export function TooltipWrapper({
         align={alignValue}
         avoidCollisions
       >
-        <p>{label}</p>
+        <p className="font-semibold pb-0.75">{label}</p>
       </TooltipContent>
     </Tooltip>
   );
