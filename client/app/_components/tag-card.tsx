@@ -5,10 +5,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-// import { ShineBorder } from '@/components/ui/shine-border';
 import { cn } from '@/lib/utils';
 import { tagIcons } from '@lib/tag-icons'
-import { Separator } from '@/components/ui/separator';
 
 export default function TagCard({
   tagName,

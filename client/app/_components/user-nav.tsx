@@ -1,3 +1,5 @@
+"use client"
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,26 +13,45 @@ import {
 import {
   ArrowLeftRight,
   CreditCardIcon,
+  LogIn,
   LogOut,
   SettingsIcon,
   UserIcon,
 } from 'lucide-react';
+import { signIn, signOut, useSession } from 'next-auth/react';
 
 // User navigation component
 export default function UserNav() {
-  const UserName = 'John';
+  const { data: session } = useSession();
+  if (!session) {
+    return (
+      <Button
+        onClick={() => signIn('google')}
+        size="icon"
+        className="cursor-pointer focus-visible:ring-0 focus-visible:ring-offset-0 outline-none"
+      >
+        <LogIn />
+      </Button>
+    );
+  }
+
+
+
   return (
     <DropdownMenu>
       {/* User-avatar as a trigger for dropdown-menu */}
       <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="rounded-full border-0 focus-visible:ring-0 focus-visible:ring-offset-0 outline-none"
-          >
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded-full border-0 focus-visible:ring-0 focus-visible:ring-offset-0 outline-none"
+        >
           <Avatar className="ring-1 ring-border after:hidden h-8 w-8 cursor-pointer">
-            <AvatarImage src="" alt="shadcn" />
-            <AvatarFallback>EN</AvatarFallback>
+            <AvatarImage
+              src={session.user.image ?? ''}
+              alt={session.user.name ?? ''}
+            />
+            <AvatarFallback>{session.user.name?.[0] ?? '?'}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
@@ -41,10 +62,13 @@ export default function UserNav() {
         <DropdownMenuGroup className="p-2  pb-2 flex flex-row items-center justify-between">
           <div className="flex flex-row items-center gap-2 text-sm font-semibold">
             <Avatar className="ring-1 ring-border after:hidden h-8 w-8">
-              <AvatarImage src="" alt="shadcn" />
-              <AvatarFallback>EN</AvatarFallback>
+              <AvatarImage
+                src={session.user.image ?? ''}
+                alt={session.user.name ?? ''}
+              />
+              <AvatarFallback>{session.user.name?.[0] ?? '?'}</AvatarFallback>
             </Avatar>
-            {UserName}
+            {session.user.name ?? 'User'}
           </div>
           <ArrowLeftRight className="text-muted-foreground h-4 w-4 cursor-pointer" />
         </DropdownMenuGroup>
@@ -69,7 +93,10 @@ export default function UserNav() {
         {/* Sign out */}
         <DropdownMenuSeparator className="mx-2" />
         <DropdownMenuGroup className="p-2 pt-1 items-center">
-          <DropdownMenuItem className="cursor-pointer hover:bg-muted">
+          <DropdownMenuItem
+            onClick={() => signOut()}
+            className="cursor-pointer hover:bg-muted"
+          >
             <LogOut />
             Sign out
           </DropdownMenuItem>

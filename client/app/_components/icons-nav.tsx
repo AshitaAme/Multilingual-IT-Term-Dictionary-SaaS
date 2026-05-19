@@ -1,3 +1,5 @@
+'use client';
+
 
 import {
   NavigationMenu,
@@ -8,9 +10,10 @@ import {
 import { Button } from '@/components/ui/button';
 import { HomeIcon } from '@/components/icons/heroicons-home';
 import { TooltipWrapper } from '@/components/ui/tooltipWrapper';
-import { Book, BookOpen } from 'lucide-react';
+import { Book } from 'lucide-react';
 
 export default function IconsNav() {
+
   return (
     // Navigation menu with icon-links for different pages
     <NavigationMenu>
@@ -23,6 +26,7 @@ export default function IconsNav() {
                 variant="outline"
                 size="icon"
                 className="cursor-pointer rounded-md group/home"
+                
               >
                 <HomeIcon className="group-hover/home:scale-115 transition-all duration-500" />
               </Button>

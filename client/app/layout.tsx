@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import Navigation from './_components/navigation';
-import { ThemeProvider } from '@/components/providers/theme-provider';
-import { TooltipProvider } from '@/components/ui/tooltip';
+import AppProviders from '@/components/providers';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -21,16 +20,10 @@ export default function RootLayout({
       className="min-h-screen flex flex-col"
     >
       <body className="bg-background">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem={true}
-        >
-          <TooltipProvider>
-            <Navigation />
-            {children}
-          </TooltipProvider>
-        </ThemeProvider>
+        <AppProviders>
+          <Navigation />
+          {children}
+        </AppProviders>
       </body>
     </html>
   );

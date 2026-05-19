@@ -2,7 +2,7 @@
 
 import { cn } from '@lib/utils';
 
-import UserNav from './avatar-menu';
+import UserNav from './user-nav';
 import { Search } from './search';
 import IconsNav from './icons-nav';
 import { ThemeToggle } from './theme-toggle';
