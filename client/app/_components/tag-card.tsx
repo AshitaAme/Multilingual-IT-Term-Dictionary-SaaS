@@ -1,41 +1,35 @@
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+'use client';
+
 import {
   Card,
-  CardAction,
-  CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+// import { ShineBorder } from '@/components/ui/shine-border';
+import { cn } from '@/lib/utils';
+import { tagIcons } from '@lib/tag-icons'
+import { Separator } from '@/components/ui/separator';
 
 export default function TagCard({
   tagName,
-  tagDescription,
-}: Readonly<{ tagName: string; tagDescription: string }>) {
+}: Readonly<{ tagName: string }>) {
   // TODO: const wordCount = getWordCountByName(tagName);
 
+
   return (
-    <Card className="w-50 h-80 relative">
-      <div className="absolute inset-0 z-30 aspect-video bg-black/35" />
-      <img
-        src="https://avatar.vercel.sh/shadcn1"
-        alt="Event cover"
-        className="relative z-20 aspect-video w-full object-cover brightness-60 grayscale dark:brightness-40"
-      />
-      <CardHeader>
-        <CardAction>
-          <Badge variant="secondary">{/* Number for words */}</Badge>
-        </CardAction>
+    <Card
+      className={cn(
+        'grid grid-rows-2',
+        'relative cursor-pointer w-60 h-70 ring-0 rounded-b-xl bg-background shadow-sm hover:shadow-md dark:border dark:border-white/15 transition-all duration-300 p-0',
+      )}
+    >
+      {/* <ShineBorder shineColor="currentColor" /> */}
+      <div className="row-start-1 flex relative pt-[30%] justify-center">
+        {tagIcons[tagName]}
+      </div>
+      <CardHeader className="row-start-2 flex items-center justify-center">
         <CardTitle>{tagName}</CardTitle>
-        <CardDescription>
-          A practical talk on component APIs, accessibility, and shipping
-          faster.
-        </CardDescription>
       </CardHeader>
-      <CardFooter>
-        <Button className="w-full">{tagDescription}</Button>
-      </CardFooter>
     </Card>
   );
 }

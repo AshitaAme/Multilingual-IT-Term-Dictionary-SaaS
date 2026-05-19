@@ -9,16 +9,16 @@ import { ThemeToggle } from './theme-toggle';
 
 export default function Navigation() {
   return (
-
-    // Navigation bar on the top of all pages with three sections: 
-    // [<-] left (icons with links), 
-    // [>|<] center (search), 
+    // Navigation bar on the top of all pages with three sections:
+    // [<-] left (icons with links),
+    // [>|<] center (search),
     // [->] right (theme toggle and user nav)
     <div
       className={cn(
         'grid grid-cols-3 items-center',
         'h-14 w-full',
         'sticky top-0 z-50', // Make the navigation bar sticky at the top
+        'bg-background/80 backdrop-blur', // Make bar slightly transparent and items behind blurred
       )}
     >
       {/* Left section: Icons with links */}
