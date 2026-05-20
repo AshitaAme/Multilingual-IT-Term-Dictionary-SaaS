@@ -28,7 +28,7 @@ export default function IconsNav() {
                 className="cursor-pointer rounded-md group/home"
                 
               >
-                <HomeIcon className="group-hover/home:scale-115 transition-all duration-500" />
+                <HomeIcon className="group-hover/home:scale-115 transition-all duration-300" />
               </Button>
             </TooltipWrapper>
           </NavigationMenuLink>
@@ -41,9 +41,9 @@ export default function IconsNav() {
               <Button
                 variant="outline"
                 size="icon"
-                className="cursor-pointer rounded-md group/book"
+                className="cursor-pointer rounded-md group/book absolute "
               >
-                <Book className="group-hover/book:scale-110 transition-all duration-500" />
+                <Book className="group-hover/book:scale-110 transition-all duration-300" />
               </Button>
             </TooltipWrapper>
           </NavigationMenuLink>

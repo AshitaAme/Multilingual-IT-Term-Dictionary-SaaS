@@ -1,4 +1,4 @@
-"use client"
+'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -18,25 +18,43 @@ import {
   SettingsIcon,
   UserIcon,
 } from 'lucide-react';
-import { signIn, signOut, useSession } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
+import { useState } from 'react';
+import { LoginForm } from './login-form';
+import { createPortal } from 'react-dom';
 
 // User navigation component
 export default function UserNav() {
   const { data: session } = useSession();
+  const [show, setShow] = useState(false);
+
   if (!session) {
-    return (
-      <Button
-        onClick={() => signIn('google')}
-        size="icon"
-        className="cursor-pointer focus-visible:ring-0 focus-visible:ring-offset-0 outline-none"
-      >
-        <LogIn />
-      </Button>
+    // If show is false, the place will be a button to trigger the login-form
+    if (!show) {
+      return (
+        <Button
+          onClick={() => {
+            setShow(true);
+          }}
+          size="icon"
+          className="cursor-pointer group/login"
+        >
+          <LogIn className="group-hover/login:translate-x-0.5 transition-all duration-300" />
+        </Button>
+      );
+    }
+
+    // Show login form with full-page overlay via portal
+    // Portal to body to make sure overlay over not only navigation but full-page
+    return createPortal(
+      <div className="fixed inset-0 flex items-center justify-center backdrop-blur z-50">
+        <LoginForm onClose={() => setShow(false)} />
+      </div>,
+      document.body,
     );
   }
 
-
-
+  // When there is session, show avatar which on click triggers a dropdown menu
   return (
     <DropdownMenu>
       {/* User-avatar as a trigger for dropdown-menu */}
@@ -56,7 +74,7 @@ export default function UserNav() {
         </Button>
       </DropdownMenuTrigger>
 
-      {/* Dropdown menu */}
+      {/* dropdown menu */}
       <DropdownMenuContent className="w-48" align="end">
         {/* Switch account */}
         <DropdownMenuGroup className="p-2  pb-2 flex flex-row items-center justify-between">

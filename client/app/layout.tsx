@@ -21,6 +21,7 @@ export default function RootLayout({
     >
       <body className="bg-background">
         <AppProviders>
+          {/* for all pages, the navigation is above the content */}
           <Navigation />
           {children}
         </AppProviders>
