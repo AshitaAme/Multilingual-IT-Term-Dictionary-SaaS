@@ -5,13 +5,11 @@ const tagNameList = ['All', 'Computer Architecture', 'Frontend', 'Backend', 'AI'
 export default function CardsDisplay() {
     
     return (
-      <div className="grid pt-[6.5%] lg:pt-[5.5%] pb-[15%] md:grid-cols-2 md:pl-[20%] md:pr-[20%] lg:grid-cols-4 gap-10">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10 pt-[6.5%] lg:pt-[5.5%] pb-[15%] md:pl-[20%] md:pr-[20%]">
         {tagNameList.map((tagName) => {
           return (
             <div key={tagName} className="flex items-center justify-center">
-              <TagCard
-                tagName={tagName}
-              />
+              <TagCard tagName={tagName} />
             </div>
           );
         })}
