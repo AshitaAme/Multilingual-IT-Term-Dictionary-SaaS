@@ -4,7 +4,7 @@ import { DrizzleAdapter } from '@auth/drizzle-adapter';
 import { db } from '@/db';
 import { eq } from 'drizzle-orm';
 import Credentials from 'next-auth/providers/credentials';
-import GitHubProvider from 'next-auth/providers/github';
+import GitHub from 'next-auth/providers/github';
 import bcrypt from 'bcryptjs';
 import { users } from './db/schema';
 
@@ -12,7 +12,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: DrizzleAdapter(db),
   debug: true,
   providers: [
-    GitHubProvider,
+    GitHub,
     Google,
     Credentials({
       credentials: {
@@ -32,7 +32,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           if (!user?.password) {
             throw new AuthError('Invalid credentials');
           }
-         
+
           // 3. check the validation of the password with bcrypt
           const isValid = await bcrypt.compare(
             credentials.password as string,
@@ -45,7 +45,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           // 4. return user information
           return user;
         } catch (error) {
-          // if of AuthError, the error occurred in try bracket and got handled there, 
+          // if of AuthError, the error occurred in try bracket and got handled there,
           // so just throw it
           if (error instanceof AuthError) {
             throw error;

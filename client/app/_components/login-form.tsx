@@ -1,21 +1,26 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardHeader,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
+import { ShineBorder } from '@/components/ui/shine-border';
 import { cn } from '@/lib/utils';
-import { X } from 'lucide-react';
-import Link from 'next/link';
+import { RegisterInput, registerSchema } from '@/lib/validations';
+import { Eye, EyeOff, X } from 'lucide-react';
+import { signIn } from 'next-auth/react';
 import { useState } from 'react';
 import { FaGithub } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 import { FcGoogle } from 'react-icons/fc';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from '@/components/ui/field';
 
 interface LoginFormProps {
   onClose: () => void;
@@ -23,12 +28,58 @@ interface LoginFormProps {
 
 export function LoginForm({ onClose }: Readonly<LoginFormProps>) {
   const [mode, setMode] = useState<'Log in' | 'Sign up'>('Log in');
+  const [showPassword, setShowPassword] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    setError,
+    clearErrors,
+    formState: { errors },
+    reset,
+  } = useForm<RegisterInput>({
+    resolver: zodResolver(registerSchema),
+    mode: 'onBlur',
+  });
+
+  // For form submit
+  const onSubmit = async (data: RegisterInput) => {
+    // If sign up mode, try to update database with form data
+    if (mode === 'Sign up') {
+      const res = await fetch('api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      // If failed, set error onto form by using its "setError:
+      // so that the error can be dynamically dealt with
+      if (!res.ok) {
+        const { error } = await res.json();
+        setError('root.serverError', {
+          type: 'server',
+          message: error,
+        });
+        return;
+      }
+    }
+
+    reset();
+    setMode('Log in');
+    await signIn('credentials', {
+      email: data.email,
+      password: data.password,
+      redirectTo: '/',
+    });
+  };
 
   return (
-    <Card className="w-full max-w-sm rounded-md bg-background py-0">
-      {/* Title and close icon  */}
+    <Card className="relative w-full max-w-sm rounded-md bg-background py-0">
+      {/* Title: Sign in / Sign up */}
+      <ShineBorder shineColor="currentColor" />
       <CardHeader className="grid grid-cols-2 items-center h-18 w-full px-0">
         <span className="h-18 text-[20px] font-semibold text-muted-foreground flex items-center pl-4 gap-1.5">
+          {/* Sign in */}
           <Button
             variant="ghost"
             onClick={() => setMode('Log in')}
@@ -37,9 +88,10 @@ export function LoginForm({ onClose }: Readonly<LoginFormProps>) {
               'cursor-pointer',
             )}
           >
-            Log in
+            Log in ๐•ᴗ•๐
           </Button>
           <div>/</div>
+          {/* Sign up */}
           <Button
             variant="ghost"
             onClick={() => setMode('Sign up')}
@@ -48,53 +100,101 @@ export function LoginForm({ onClose }: Readonly<LoginFormProps>) {
               'cursor-pointer',
             )}
           >
-            Sign up
+            Sign up つ♡⊂
           </Button>
         </span>
+
+        {/* Close icon to close form */}
         <div className="flex justify-end h-18 w-full pt-2.5 pr-2.5">
           <X size={16} onClick={onClose} className="cursor-pointer" />
         </div>
       </CardHeader>
 
-      {/* Information input */}
+      {/* Information Form */}
       <CardContent className="px-6 gap-4">
-        <form className="flex flex-col gap-4">
-          {mode === 'Sign up' && (
-            <Input
-              className="rounded-none flex items-center h-10 text-sm"
-              id="name"
-              type="name"
-              placeholder="Name"
-              required
-            />
-          )}
-          <Input
-            className="rounded-none flex items-center h-10 text-sm"
-            id="email"
-            type="email"
-            placeholder="Email"
-            required
-          />
-          <Input
-            className="rounded-none flex items-center h-10 text-sm"
-            id="password"
-            type="password"
-            placeholder="Password"
-            required
-          />
-          {mode === 'Sign up' && (
-            <Input
-              className="rounded-none flex items-center h-10 text-sm"
-              id="retype password"
-              type="retype password"
-              placeholder="Retype Password"
-              required
-            />
-          )}
-          <Button className="cursor-pointer h-10 rounded-none">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          onChange={() => {
+            if (errors.root?.serverError) clearErrors('root.serverError');
+          }}
+          noValidate
+          className="flex flex-col gap-4"
+        >
+          <FieldGroup>
+            {/* Name Field */}
+            {mode === 'Sign up' && (
+              <Field data-invalid={!!errors.name}>
+                <FieldLabel htmlFor="name" className="sr-only">
+                  Name
+                </FieldLabel>
+                <Input
+                  {...register('name')}
+                  id="name"
+                  placeholder="Name"
+                  className="rounded-sm h-10 text-sm focus:ring-1"
+                />
+                {errors.name && <FieldError>{errors.name.message}</FieldError>}
+              </Field>
+            )}
+
+            {/* Email Field */}
+            <Field data-invalid={!!errors.email}>
+              <FieldLabel htmlFor="email" className="sr-only">
+                Email
+              </FieldLabel>
+              <Input
+                {...register('email')}
+                id="email"
+                type="email"
+                placeholder="Email"
+                className="rounded-sm h-10 text-sm focus:ring-1"
+              />
+              {errors.email && <FieldError>{errors.email.message}</FieldError>}
+            </Field>
+
+            {/* Password Field */}
+            <Field data-invalid={!!errors.password}>
+              <FieldLabel htmlFor="password" className="sr-only">
+                Password
+              </FieldLabel>
+              <div className="relative">
+                <Input
+                  {...register('password')}
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Password"
+                  className="rounded-sm h-10 text-sm pr-10 focus:ring-1"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
+                >
+                  {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                </button>
+              </div>
+              {errors.password && (
+                <FieldError>{errors.password.message}</FieldError>
+              )}
+            </Field>
+          </FieldGroup>
+
+          {/* Submit Button */}
+          <Button
+            type="submit"
+            className="h-10 rounded-sm bg-muted-foreground hover:bg-foreground transition-all cursor-pointer"
+          >
             {mode === 'Log in' ? 'Log in' : 'Sign up'}
           </Button>
+
+          {/* Global API Error */}
+          {errors.root?.serverError && (
+            <div className="text-destructive text-sm text-center font-medium">
+              {errors.root.serverError.message}
+            </div>
+          )}
         </form>
+
         {/* TODO: Implement "Forgot your password?" for login-form
                   <a
                     href="#"D
@@ -114,10 +214,15 @@ export function LoginForm({ onClose }: Readonly<LoginFormProps>) {
       {/* Login, Signup, and other login ways such as google */}
 
       <div className="flex justify-center items-center gap-8 pb-8">
-        <FaGithub className="h-6 w-6 cursor-pointer" />
-
+        <FaGithub
+          onClick={() => signIn('github')}
+          className="h-6 w-6 cursor-pointer"
+        />
         <Separator orientation="vertical" className="h-6" />
-        <FcGoogle className="h-6 w-6 cursor-pointer" />
+        <FcGoogle
+          onClick={() => signIn('google')}
+          className="h-6 w-6 cursor-pointer"
+        />
         <Separator orientation="vertical" className="h-6" />
         <FaXTwitter className="h-6 w-6 cursor-pointer" />
       </div>
