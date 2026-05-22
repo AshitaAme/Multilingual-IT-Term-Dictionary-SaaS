@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getSqlErrorCode } from '@/types/database';
-import { registerSchema } from '@/lib/validations';
-import { registerUser } from '@/services/auth/registerUser';
+import { registerSchema } from '@/validations/register-schema';
+import { registerUser } from '@/services/auth/register-user';
 import { registerVerificationEmail } from '@/services/mail/register-verification-email';
 
 export async function POST(req: Request) {

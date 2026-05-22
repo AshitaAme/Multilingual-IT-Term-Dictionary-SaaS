@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
-import { findUserByEmail } from '../user/findUserByEmail';
-import { updateUser } from '../user/updateUser';
-import { insertUser } from '../user/insertUser';
+import { findUserByEmail } from '../user/find-user-by-email';
+import { updateUser } from '../user/update-user';
+import { insertUser } from '../user/insert-user';
 
 export async function registerUser(
   name: string,

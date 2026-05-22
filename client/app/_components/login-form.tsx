@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { ShineBorder } from '@/components/ui/shine-border';
 import { cn } from '@/lib/utils';
-import { RegisterInput, registerSchema } from '@/lib/validations';
+import { RegisterInput, registerSchema } from '@/validations/register-schema';
 import { Eye, EyeOff, X } from 'lucide-react';
 import { signIn } from 'next-auth/react';
 import { useState } from 'react';
