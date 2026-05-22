@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getSqlErrorCode } from '@/types/database';
 import { registerSchema } from '@/lib/validations';
 import { registerUser } from '@/services/auth/registerUser';
+import { registerVerificationEmail } from '@/services/mail/register-verification-email';
 
 export async function POST(req: Request) {
   // 1. Parse request body
@@ -25,8 +26,9 @@ export async function POST(req: Request) {
   }
 
   const { name, email, password } = parsed.data;
-  let tokenStr;
+
   // 3. Database operations
+  let tokenStr;
   try {
     const { verificationToken } = await registerUser(name, email, password);
     tokenStr = verificationToken;
@@ -44,10 +46,8 @@ export async function POST(req: Request) {
       error instanceof Error ? error.message : 'Unknown error',
     );
 
-    // Another check for existent email, where the error is informed by database.
-    // So that in case of high concurrency, eg. multiple request coming in with same email,
-    // even if the requests pass through the service layer here,
-    // from the data access layer, the system knows that only one of them succeeds eventually
+    // Handle high-concurrency race conditions where multiple identical emails
+    // pass the service layer but trigger a DB unique constraint violation (23505).
     if (code === '23505') {
       return NextResponse.json(
         { error: 'Email already exists' },
@@ -64,6 +64,17 @@ export async function POST(req: Request) {
 
   // 4. Send verification code to email
 
-  // await send(verificationToken)
+  try {
+    await registerVerificationEmail(email, tokenStr);
+  } catch (error: unknown) {
+    console.error(
+      '[AUTH_REGISTER_MAIL_ERROR]',
+      error instanceof Error ? error.message : 'Email sending failed',
+    );
+    return NextResponse.json(
+      { error: 'Email sending failed' },
+      { status: 400 },
+    );
+  }
   return NextResponse.json({ success: true }, { status: 200 });
 }
