@@ -21,18 +21,18 @@ import {
   FieldGroup,
   FieldLabel,
 } from '@/components/ui/field';
+import { VerificationForm } from './verification-form';
 
-interface LoginFormProps {
+interface AuthFormProps {
   onClose: () => void;
 }
 
-export function LoginForm({ onClose }: Readonly<LoginFormProps>) {
-  // Used to switch two mode for LoginForm, 'Log in' and 'Sign up'.
+export function AuthForm({ onClose }: Readonly<AuthFormProps>) {
+  const [goVerify, setGoVerify] = useState(false);
   const [mode, setMode] = useState<'Log in' | 'Sign up'>('Log in');
-  // Used to hide and how password in Input
   const [showPassword, setShowPassword] = useState(false);
 
-  // Used to manipulate the form dynamically
+  // Use useForm to control form dynamically
   const {
     register,
     handleSubmit,
@@ -45,19 +45,19 @@ export function LoginForm({ onClose }: Readonly<LoginFormProps>) {
     mode: 'onBlur',
   });
 
-  // For login form submit
+  // On form submit
   const onSubmit = async (data: RegisterInput) => {
-    // If sign up mode, try to update database with form data
     if (mode === 'Sign up') {
+      // Transfer form-data to database
       const res = await fetch('api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
 
-      // If failed, mount the error onto form by using its "setError",
-      // so that the error display can be dynamically dealt with
       if (!res.ok) {
+        // Mount the error onto form, so that
+        // the display of error can be dynamically dealt with
         const { error } = await res.json();
         setError('root.serverError', {
           type: 'server',
@@ -67,22 +67,28 @@ export function LoginForm({ onClose }: Readonly<LoginFormProps>) {
       }
     }
 
-    // After signing up successfully, make sure to reset everything back and Log in
     reset();
-    setMode('Log in');
-    await signIn('credentials', {
-      email: data.email,
-      password: data.password,
-      redirectTo: '/',
-    });
+
+    if (mode === 'Log in') {
+      await signIn('credentials', {
+        email: data.email,
+        password: data.password,
+        redirectTo: '/',
+      });
+    } else {
+      // After form input, go to verification page to verify email
+      setGoVerify(true);
+    }
   };
 
-  return (
-    <Card className="relative w-full max-w-sm rounded-md bg-background py-0">
-      {/* ShineBorder uses currentColor to switch color mode on theme change */}
-      <ShineBorder shineColor="currentColor" />
-      {/* Title */}
-      <CardHeader className="grid grid-cols-2 items-center h-18 w-full px-0">
+  const credentialsForm = () => (
+    <>
+      <CardHeader className="relative items-center h-18 w-full px-0">
+        {/* Close icon to close form */}
+        <div className="absolute right-2.5 top-2.5">
+          <X size={16} onClick={onClose} className="cursor-pointer" />
+        </div>
+        {/* Title */}
         <span className="h-18 text-[20px] font-semibold text-muted-foreground flex items-center pl-4 gap-1.5">
           {/* Sign in */}
           <Button
@@ -108,11 +114,6 @@ export function LoginForm({ onClose }: Readonly<LoginFormProps>) {
             Sign up つ♡⊂
           </Button>
         </span>
-
-        {/* Close icon to close form */}
-        <div className="flex justify-end h-18 w-full pt-2.5 pr-2.5">
-          <X size={16} onClick={onClose} className="cursor-pointer" />
-        </div>
       </CardHeader>
 
       {/* Information Form */}
@@ -235,6 +236,18 @@ export function LoginForm({ onClose }: Readonly<LoginFormProps>) {
         <Separator orientation="vertical" className="h-6" />
         <FaXTwitter className="h-6 w-6 cursor-pointer" />
       </div>
+    </>
+  );
+
+  return (
+    <Card className="relative w-full max-w-sm rounded-md bg-background py-0">
+      {/* ShineBorder uses currentColor to switch color mode on theme change */}
+      <ShineBorder shineColor="currentColor" />
+      {goVerify ? (
+        <VerificationForm setGoVerify={setGoVerify} />
+      ) : (
+        credentialsForm()
+      )}
     </Card>
   );
 }

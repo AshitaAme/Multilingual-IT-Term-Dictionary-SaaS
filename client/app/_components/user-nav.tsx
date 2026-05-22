@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 import { useState } from 'react';
-import { LoginForm } from './login-form';
+import { AuthForm } from './auth-form';
 import { createPortal } from 'react-dom';
 
 // User navigation component
@@ -48,7 +48,7 @@ export default function UserNav() {
     // Portal to body to make sure overlay over not only navigation but full-page
     return createPortal(
       <div className="fixed inset-0 flex items-center justify-center backdrop-blur z-50">
-        <LoginForm onClose={() => setShow(false)} />
+        <AuthForm onClose={() => setShow(false)} />
       </div>,
       document.body,
     );
