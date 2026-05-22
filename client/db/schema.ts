@@ -16,7 +16,9 @@ export const users = pgTable('user', {
   email: text('email').unique(),
   emailVerified: timestamp('emailVerified', { mode: 'date' }),
   image: text('image'),
-  password: text('password')
+  password: text('password'),
+  verificationToken: text('verification_token'),
+  tokenExpiry: timestamp('token_expiry', { mode: 'date' }),
 });
 
 export const accounts = pgTable(
@@ -25,7 +27,7 @@ export const accounts = pgTable(
     userId: text('userId')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
-    type: text('type').$type<AdapterAccount["type"]>().notNull(),
+    type: text('type').$type<AdapterAccount['type']>().notNull(),
     provider: text('provider').notNull(),
     providerAccountId: text('providerAccountId').notNull(),
     refresh_token: text('refresh_token'),

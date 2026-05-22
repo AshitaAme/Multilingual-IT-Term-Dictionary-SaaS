@@ -27,9 +27,12 @@ interface LoginFormProps {
 }
 
 export function LoginForm({ onClose }: Readonly<LoginFormProps>) {
+  // Used to switch two mode for LoginForm, 'Log in' and 'Sign up'.
   const [mode, setMode] = useState<'Log in' | 'Sign up'>('Log in');
+  // Used to hide and how password in Input
   const [showPassword, setShowPassword] = useState(false);
 
+  // Used to manipulate the form dynamically
   const {
     register,
     handleSubmit,
@@ -42,7 +45,7 @@ export function LoginForm({ onClose }: Readonly<LoginFormProps>) {
     mode: 'onBlur',
   });
 
-  // For form submit
+  // For login form submit
   const onSubmit = async (data: RegisterInput) => {
     // If sign up mode, try to update database with form data
     if (mode === 'Sign up') {
@@ -52,8 +55,8 @@ export function LoginForm({ onClose }: Readonly<LoginFormProps>) {
         body: JSON.stringify(data),
       });
 
-      // If failed, set error onto form by using its "setError:
-      // so that the error can be dynamically dealt with
+      // If failed, mount the error onto form by using its "setError",
+      // so that the error display can be dynamically dealt with
       if (!res.ok) {
         const { error } = await res.json();
         setError('root.serverError', {
@@ -64,6 +67,7 @@ export function LoginForm({ onClose }: Readonly<LoginFormProps>) {
       }
     }
 
+    // After signing up successfully, make sure to reset everything back and Log in
     reset();
     setMode('Log in');
     await signIn('credentials', {
@@ -75,8 +79,9 @@ export function LoginForm({ onClose }: Readonly<LoginFormProps>) {
 
   return (
     <Card className="relative w-full max-w-sm rounded-md bg-background py-0">
-      {/* Title: Sign in / Sign up */}
+      {/* ShineBorder uses currentColor to switch color mode on theme change */}
       <ShineBorder shineColor="currentColor" />
+      {/* Title */}
       <CardHeader className="grid grid-cols-2 items-center h-18 w-full px-0">
         <span className="h-18 text-[20px] font-semibold text-muted-foreground flex items-center pl-4 gap-1.5">
           {/* Sign in */}
@@ -157,7 +162,10 @@ export function LoginForm({ onClose }: Readonly<LoginFormProps>) {
               <FieldLabel htmlFor="password" className="sr-only">
                 Password
               </FieldLabel>
+              {/* Uses relative and absolute to control the position of 
+                  little eye without affecting Input style */}
               <div className="relative">
+                {/* Password Input */}
                 <Input
                   {...register('password')}
                   id="password"
@@ -165,6 +173,8 @@ export function LoginForm({ onClose }: Readonly<LoginFormProps>) {
                   placeholder="Password"
                   className="rounded-sm h-10 text-sm pr-10 focus:ring-1"
                 />
+
+                {/* Little eye used to show and hide password   */}
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
@@ -204,6 +214,7 @@ export function LoginForm({ onClose }: Readonly<LoginFormProps>) {
                   </a> */}
       </CardContent>
 
+      {/* Other login ways such as google, github, X */}
       <div className="grid grid-cols-3 items-center justify-items-center px-8 py-2">
         <Separator className="max-w-26" />
         <span className="text-sm text-muted-foreground whitespace-nowrap">
@@ -211,8 +222,6 @@ export function LoginForm({ onClose }: Readonly<LoginFormProps>) {
         </span>
         <Separator className="max-w-26" />
       </div>
-      {/* Login, Signup, and other login ways such as google */}
-
       <div className="flex justify-center items-center gap-8 pb-8">
         <FaGithub
           onClick={() => signIn('github')}

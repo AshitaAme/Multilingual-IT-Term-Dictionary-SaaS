@@ -1,12 +1,7 @@
-'use server';
-
-import { db } from '@/db';
-import { users } from '@/db/schema';
-import { eq } from 'drizzle-orm';
-import bcrypt from 'bcryptjs';
 import { NextResponse } from 'next/server';
-import { getSqlErrorCode } from '@/app/types/database';
+import { getSqlErrorCode } from '@/types/database';
 import { registerSchema } from '@/lib/validations';
+import { registerUser } from '@/services/auth/registerUser';
 
 export async function POST(req: Request) {
   // 1. Parse request body
@@ -30,37 +25,29 @@ export async function POST(req: Request) {
   }
 
   const { name, email, password } = parsed.data;
-
-  // 3. Check for whether the email(a user) existed
+  let tokenStr;
+  // 3. Database operations
   try {
-    const isExistent = await db
-      .select()
-      .from(users)
-      .where(eq(users.email, email))
-      .then((res) => res[0]);
-
-    if (isExistent) {
+    const { verificationToken } = await registerUser(name, email, password);
+    tokenStr = verificationToken;
+  } catch (error: unknown) {
+    if (error instanceof Error && error.message === 'EMAIL_ALREADY_EXISTS') {
       return NextResponse.json(
         { error: 'Email already exists' },
         { status: 400 },
       );
     }
 
-    // 4. Insert new user with hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-    await db.insert(users).values({ name, email, password: hashedPassword });
-
-    return NextResponse.json({ success: true }, { status: 201 });
-  } catch (error: unknown) {
     const code = getSqlErrorCode(error);
     console.error(
       `[AUTH_REGISTER_POST] DB_CODE: ${code}`,
       error instanceof Error ? error.message : 'Unknown error',
     );
 
-    // Another check for existent email, which is informed by database,
-    // so that in case of high concurrency, eg. multiple request coming in with same email,
-    // the system will know that only one of them succeeds in the end.
+    // Another check for existent email, where the error is informed by database.
+    // So that in case of high concurrency, eg. multiple request coming in with same email,
+    // even if the requests pass through the service layer here,
+    // from the data access layer, the system knows that only one of them succeeds eventually
     if (code === '23505') {
       return NextResponse.json(
         { error: 'Email already exists' },
@@ -68,9 +55,15 @@ export async function POST(req: Request) {
       );
     }
 
+    // Unknown server error
     return NextResponse.json(
       { error: 'Internal Server Error' },
       { status: 500 },
     );
   }
+
+  // 4. Send verification code to email
+
+  // await send(verificationToken)
+  return NextResponse.json({ success: true }, { status: 200 });
 }
