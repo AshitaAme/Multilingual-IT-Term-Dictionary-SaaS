@@ -28,6 +28,7 @@ export async function verifySignup({
     email: pendingUser.data.email,
     name: pendingUser.data.name,
     password: pendingUser.data.hashedPassword,
+    emailVerified: new Date(),
   };
   await insertUser(userData);
 

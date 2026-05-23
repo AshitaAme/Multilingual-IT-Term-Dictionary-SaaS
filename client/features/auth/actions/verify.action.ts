@@ -1,3 +1,5 @@
+'use server';
+
 import { VerificationInput, VerificationSchema } from '../schemas/verification';
 import { verifySignup } from '../services/verify-signup';
 import { AppError } from '@/shared/lib/errors';
@@ -10,6 +12,7 @@ export async function verifyAction(data: VerificationInput) {
   }
 
   // 2. Verify
+  console.log('verify start');
   try {
     await verifySignup(parsed.data);
   } catch (error) {
@@ -20,6 +23,6 @@ export async function verifyAction(data: VerificationInput) {
     console.error(error);
     return { success: false, error: 'Server error, please try again later' };
   }
-
+  console.log('success!');
   return { success: true };
 }

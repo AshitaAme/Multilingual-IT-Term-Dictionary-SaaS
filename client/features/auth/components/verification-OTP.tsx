@@ -15,12 +15,14 @@ import { verifyAction } from '../actions/verify.action';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import { VerificationOTPProps } from '../types/verification-OTP-props';
+import { useAuthModalStore } from '../store/auth-modal.store';
 
 export function VerificationOTP({
   setStep,
   credentials,
 }: Readonly<VerificationOTPProps>) {
   const router = useRouter();
+  const { onClose } = useAuthModalStore();
   const { control, handleSubmit, setError } = useForm<VerificationInput>({
     resolver: zodResolver(VerificationSchema),
     defaultValues: { email: credentials.email, verificationToken: '' },
@@ -38,11 +40,14 @@ export function VerificationOTP({
       });
       return;
     }
+    console.log('signIn');
     const res = await signIn('credentials', {
       email: credentials.email,
       password: credentials.password,
       redirect: false,
     });
+
+    console.log('res?.error', res?.error);
     if (res?.error) {
       setError('root.serverError', {
         type: 'server',
@@ -50,6 +55,8 @@ export function VerificationOTP({
       });
       return;
     }
+    console.log('Ame');
+    onClose();
     router.push('/');
   };
 

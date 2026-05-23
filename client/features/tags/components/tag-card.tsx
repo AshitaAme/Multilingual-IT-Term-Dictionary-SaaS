@@ -1,8 +1,8 @@
 'use client';
 
-import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/shared/utils/utils';
 import { tagIcons } from '@/shared/lib/tag-icons';
+import { Card, CardHeader, CardTitle } from '@/shared/components/ui/card';
 
 export default function TagCard({ tagName }: Readonly<{ tagName: string }>) {
   // TODO: const wordCount = getWordCountByName(tagName);
