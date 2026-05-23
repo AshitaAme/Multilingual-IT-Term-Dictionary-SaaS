@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@/shared/utils/utils';
-import { Eye, EyeOff, X } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import { signIn } from 'next-auth/react';
 import { useState } from 'react';
 import { FaGithub } from 'react-icons/fa';
@@ -11,7 +11,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { SignupInput, SignupSchema } from '../schemas/signup';
-import { Card, CardContent, CardHeader } from '@/shared/components/ui/card';
+import { CardContent, CardHeader } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
 import {
   Field,
@@ -21,26 +21,25 @@ import {
 } from '@/shared/components/ui/field';
 import { Input } from '@/shared/components/ui/input';
 import { Separator } from '@/shared/components/ui/separator';
-import { ShineBorder } from '@/shared/components/ui/shine-border';
-import { VerificationOTP } from './verification-OTP';
+import { signupAction } from '../actions/signup.action';
+import { useRouter } from 'next/navigation';
+import { CredentialsFormProps } from '../types/credentials-form-props';
 
-interface AuthFormProps {
-  onClose: () => void;
-}
-
-export function AuthForm({ onClose }: Readonly<AuthFormProps>) {
-  const [goVerify, setGoVerify] = useState(false);
-  const [mode, setMode] = useState<'Log in' | 'Sign up'>('Log in');
+export function CredentialsForm({
+  setStep,
+  setCredentials,
+}: Readonly<CredentialsFormProps>) {
+  const [mode, setMode] = useState<'Sign in' | 'Sign up'>('Sign in');
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
 
-  // Use useForm to control form dynamically
+  // Use useForm to control form
   const {
     register,
     handleSubmit,
     setError,
     clearErrors,
     formState: { errors },
-    reset,
   } = useForm<SignupInput>({
     resolver: zodResolver(SignupSchema),
     mode: 'onBlur',
@@ -48,59 +47,55 @@ export function AuthForm({ onClose }: Readonly<AuthFormProps>) {
 
   // On form submit
   const onSubmit = async (data: SignupInput) => {
-    if (mode === 'Sign up') {
-      // Transfer form-data to database
-      const res = await fetch('api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+    if (mode === 'Sign in') {
+      const res = await signIn('credentials', {
+        email: data.email,
+        password: data.password,
+        redirect: false,
       });
 
-      if (!res.ok) {
-        // Mount the error onto form, so that
-        // the display of error can be dynamically dealt with
-        const { error } = await res.json();
+      if (res.error) {
+        // Mount server error to form
         setError('root.serverError', {
           type: 'server',
-          message: error,
+          message: 'Invalid email or password',
         });
         return;
       }
-    }
 
-    reset();
-
-    if (mode === 'Log in') {
-      await signIn('credentials', {
-        email: data.email,
-        password: data.password,
-        redirectTo: '/',
-      });
+      router.push('/');
     } else {
-      // After form input, go to verification page to verify email
-      setGoVerify(true);
+      const res = await signupAction(data);
+
+      if (!res.success) {
+        // Mount server error to form
+
+        setError('root.serverError', {
+          type: 'server',
+          message: res.error ?? 'Something went wrong',
+        });
+        return;
+      }
+      setCredentials({ email: data.email, password: data.password });
+      setStep('verification');
     }
   };
 
-  const credentialsForm = () => (
+  return (
     <>
-      <CardHeader className="relative items-center h-18 w-full px-0">
-        {/* Close icon to close form */}
-        <div className="absolute right-2.5 top-2.5">
-          <X size={16} onClick={onClose} className="cursor-pointer" />
-        </div>
-        {/* Title */}
+      {/* Title */}
+      <CardHeader className="items-center h-18 w-full px-0">
         <span className="h-18 text-[20px] font-semibold text-muted-foreground flex items-center pl-4 gap-1.5">
           {/* Sign in */}
           <Button
             variant="ghost"
-            onClick={() => setMode('Log in')}
+            onClick={() => setMode('Sign in')}
             className={cn(
-              mode === 'Log in' && 'text-foreground',
+              mode === 'Sign in' && 'text-foreground',
               'cursor-pointer',
             )}
           >
-            Log in ๐•ᴗ•๐
+            Sign in ๐•ᴗ•๐
           </Button>
           <div>/</div>
           {/* Sign up */}
@@ -196,7 +191,7 @@ export function AuthForm({ onClose }: Readonly<AuthFormProps>) {
             type="submit"
             className="h-10 rounded-sm bg-muted-foreground hover:bg-foreground transition-all cursor-pointer"
           >
-            {mode === 'Log in' ? 'Log in' : 'Sign up'}
+            {mode === 'Sign in' ? 'Sign in' : 'Sign up'}
           </Button>
 
           {/* Global API Error */}
@@ -238,17 +233,5 @@ export function AuthForm({ onClose }: Readonly<AuthFormProps>) {
         <FaXTwitter className="h-6 w-6 cursor-pointer" />
       </div>
     </>
-  );
-
-  return (
-    <Card className="relative w-full max-w-sm rounded-md bg-background py-0">
-      {/* ShineBorder uses currentColor to switch color mode on theme change */}
-      <ShineBorder shineColor="currentColor" />
-      {goVerify ? (
-        <VerificationOTP setGoVerify={setGoVerify} />
-      ) : (
-        credentialsForm()
-      )}
-    </Card>
   );
 }

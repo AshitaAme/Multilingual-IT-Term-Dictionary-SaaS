@@ -1,3 +1,5 @@
+'use client';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeftToLine } from 'lucide-react';
 import { Controller, useForm } from 'react-hook-form';
@@ -9,33 +11,60 @@ import {
   InputOTPSlot,
 } from '@/shared/components/ui/input-otp';
 import { Button } from '@/shared/components/ui/button';
-
-interface VerificationOTPProps {
-  setGoVerify: (value: boolean) => void;
-}
+import { verifyAction } from '../actions/verify.action';
+import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
+import { VerificationOTPProps } from '../types/verification-OTP-props';
 
 export function VerificationOTP({
-  setGoVerify,
+  setStep,
+  credentials,
 }: Readonly<VerificationOTPProps>) {
-  const { control, handleSubmit } = useForm<VerificationInput>({
+  const router = useRouter();
+  const { control, handleSubmit, setError } = useForm<VerificationInput>({
     resolver: zodResolver(VerificationSchema),
-    defaultValues: { email: '', verificationCode: '' },
+    defaultValues: { email: credentials.email, verificationToken: '' },
   });
 
-  const onSubmit = (data: VerificationInput) => {};
+  const onSubmit = async (data: VerificationInput) => {
+    const signinUser = await verifyAction({
+      verificationToken: data.verificationToken,
+      email: credentials.email,
+    });
+    if (!signinUser.success) {
+      setError('root.serverError', {
+        type: 'server',
+        message: signinUser.error ?? 'Something went wrong',
+      });
+      return;
+    }
+    const res = await signIn('credentials', {
+      email: credentials.email,
+      password: credentials.password,
+      redirect: false,
+    });
+    if (res?.error) {
+      setError('root.serverError', {
+        type: 'server',
+        message: signinUser.error ?? 'Something went wrong',
+      });
+      return;
+    }
+    router.push('/');
+  };
 
   return (
     <div className="h-70 flex flex-col gap-8 items-center justify-center relative">
       <ArrowLeftToLine
-        onClick={() => setGoVerify(false)}
         size={16}
-        className="absolute top-2.5 left-2.5 cursor-pointer"
+        onClick={() => setStep('credentials')}
+        className="absolute left-2.5 top-2.5 cursor-pointer"
       />
       <span className="font-semibold text-[16px]">Verification Code</span>
       <form>
         <Controller
           control={control}
-          name="verificationCode"
+          name="verificationToken"
           render={({ field, fieldState }) => (
             <Field data-invalid={!!fieldState.error}>
               <InputOTP

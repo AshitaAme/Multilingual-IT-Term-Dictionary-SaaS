@@ -20,6 +20,6 @@ export async function verifyAction(data: VerificationInput) {
     console.error(error);
     return { success: false, error: 'Server error, please try again later' };
   }
-  // 3. Success
+
   return { success: true };
 }

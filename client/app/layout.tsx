@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import Navigation from '../features/navigation/components/navigation';
 import AppProviders from '@/shared/components/providers';
+import { AuthContainer } from '@/features/auth/components/auth-container';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -21,8 +22,10 @@ export default function RootLayout({
     >
       <body className="bg-background">
         <AppProviders>
-          {/* for all pages, the navigation is above the content */}
+          {/* For all pages, navigation is above the content */}
           <Navigation />
+          {/* Auth will not show until trigger is clicked in nav */}
+          <AuthContainer />
           {children}
         </AppProviders>
       </body>

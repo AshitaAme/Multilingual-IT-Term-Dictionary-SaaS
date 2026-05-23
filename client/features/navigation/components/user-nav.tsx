@@ -9,9 +9,6 @@ import {
   UserIcon,
 } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
-import { useState } from 'react';
-import { AuthForm } from '../../auth/components/credentials-form';
-import { createPortal } from 'react-dom';
 import { Button } from '@/shared/components/ui/button';
 import {
   DropdownMenu,
@@ -26,35 +23,23 @@ import {
   AvatarFallback,
   AvatarImage,
 } from '@/shared/components/ui/avatar';
+import { useAuthModalStore } from '@/features/auth/store/auth-modal.store';
 
 // User navigation component
 export default function UserNav() {
   const { data: session } = useSession();
-  const [show, setShow] = useState(false);
+  const { onOpen } = useAuthModalStore();
 
   if (!session) {
-    // If show is false, the place will be a button to trigger the login-form
-    if (!show) {
-      return (
-        <Button
-          onClick={() => {
-            setShow(true);
-          }}
-          size="icon"
-          className="cursor-pointer group/login"
-        >
-          <LogIn className="group-hover/login:translate-x-0.5 transition-all duration-300" />
-        </Button>
-      );
-    }
-
-    // Show login form with full-page overlay via portal
-    // Portal to body to make sure overlay over not only navigation but full-page
-    return createPortal(
-      <div className="fixed inset-0 flex items-center justify-center backdrop-blur z-50">
-        <AuthForm onClose={() => setShow(false)} />
-      </div>,
-      document.body,
+    // As signed in, display a button to trigger the credentials form
+    return (
+      <Button
+        onClick={onOpen}
+        size="icon"
+        className="cursor-pointer group/login"
+      >
+        <LogIn className="group-hover/login:translate-x-0.5 transition-all duration-300" />
+      </Button>
     );
   }
 
