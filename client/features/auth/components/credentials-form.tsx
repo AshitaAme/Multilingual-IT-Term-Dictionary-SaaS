@@ -3,7 +3,7 @@
 import { cn } from '@/shared/utils/utils';
 import { Eye, EyeOff } from 'lucide-react';
 import { signIn } from 'next-auth/react';
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { FaGithub } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 import { FcGoogle } from 'react-icons/fc';
@@ -81,6 +81,12 @@ export function CredentialsForm({
       setStep('verification');
     }
   };
+
+  const SOCIAL_PROVIDERS = [
+    { id: 'github', Icon: FaGithub, label: 'Sign in with GitHub' },
+    { id: 'google', Icon: FcGoogle, label: 'Sign in with Google' },
+    { id: 'twitter', Icon: FaXTwitter, label: 'Sign in with X (Twitter)' },
+  ] as const;
 
   return (
     <>
@@ -222,22 +228,23 @@ export function CredentialsForm({
       <div className="grid grid-cols-3 items-center justify-items-center px-8 py-2">
         <Separator className="max-w-26" />
         <span className="text-sm text-muted-foreground whitespace-nowrap">
-          or log in with
+          or
         </span>
         <Separator className="max-w-26" />
       </div>
       <div className="flex justify-center items-center gap-8 pb-8">
-        <FaGithub
-          onClick={() => signIn('github')}
-          className="h-6 w-6 cursor-pointer"
-        />
-        <Separator orientation="vertical" className="h-6" />
-        <FcGoogle
-          onClick={() => signIn('google')}
-          className="h-6 w-6 cursor-pointer"
-        />
-        <Separator orientation="vertical" className="h-6" />
-        <FaXTwitter className="h-6 w-6 cursor-pointer" />
+        {SOCIAL_PROVIDERS.map(({ id, Icon, label }, index) => (
+          <Fragment key={id}>
+            {index > 0 && <Separator orientation="vertical" className="h-6" />}
+            <button
+              onClick={() => signIn(id)}
+              aria-label={label}
+              className="cursor-pointer"
+            >
+              <Icon className="h-6 w-6" />
+            </button>
+          </Fragment>
+        ))}
       </div>
     </>
   );

@@ -20,31 +20,34 @@ export function AuthContainer() {
     'credentials',
   );
 
-  if (!open) {
-    return (
-      <Suspense fallback={null}>
+  return (
+    <>
+      <Suspense>
         <AuthRedirectHandler />
       </Suspense>
-    );
-  }
+      {/* This creates an overlay that blurred background */}
 
-  return (
-    // This creates an overlay that blurred background
-    <div className="fixed inset-0 flex items-center justify-center backdrop-blur z-50">
-      {/* Card to show the form */}
-      <Card className="relative w-full max-w-sm rounded-md bg-background py-0">
-        <ShineBorder shineColor="currentColor" />
-        <X
-          size={16}
-          onClick={onClose}
-          className="absolute right-2.5 top-2.5 cursor-pointer"
-        />
-        {step === 'credentials' ? (
-          <CredentialsForm setStep={setStep} setCredentials={setCredentials} />
-        ) : (
-          <VerificationOTP setStep={setStep} credentials={credentials} />
-        )}
-      </Card>
-    </div>
+      {open && (
+        <div className="fixed inset-0 flex items-center justify-center backdrop-blur z-50">
+          {/* Card to show the form */}
+          <Card className="relative w-full max-w-sm rounded-md bg-background py-0">
+            <ShineBorder shineColor="currentColor" />
+            <X
+              size={16}
+              onClick={onClose}
+              className="absolute right-2.5 top-2.5 cursor-pointer"
+            />
+            {step === 'credentials' ? (
+              <CredentialsForm
+                setStep={setStep}
+                setCredentials={setCredentials}
+              />
+            ) : (
+              <VerificationOTP setStep={setStep} credentials={credentials} />
+            )}
+          </Card>
+        </div>
+      )}
+    </>
   );
 }

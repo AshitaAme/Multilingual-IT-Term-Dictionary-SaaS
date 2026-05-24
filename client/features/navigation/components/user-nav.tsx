@@ -44,26 +44,24 @@ export default function UserNav() {
   return (
     <DropdownMenu>
       {/* User-avatar as a trigger for dropdown-menu */}
-      <TooltipWrapper label="Home" side="bottom" rightBorder={true}>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className={cn(
-              'cursor-pointer rounded-full border-0! bg-transparent! focus-visible:ring-0 focus-visible:ring-border',
-              !session.user.image && 'ring-1! ring-border',
-            )}
-          >
-            <Avatar className={cn('after:hidden h-7 w-7 cursor-pointer')}>
-              <AvatarImage
-                src={session.user.image ?? ''}
-                alt={session.user.name ?? ''}
-              />
-              <AvatarFallback>{session.user.name?.[0] ?? '?'}</AvatarFallback>
-            </Avatar>
-          </Button>
-        </DropdownMenuTrigger>
-      </TooltipWrapper>
+      <DropdownMenuTrigger>
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn(
+            'cursor-pointer rounded-full border-0! bg-transparent! focus-visible:ring-0 focus-visible:ring-border',
+            !session.user.image && 'ring-1! ring-border',
+          )}
+        >
+          <Avatar className={cn('after:hidden h-7 w-7 cursor-pointer')}>
+            <AvatarImage
+              src={session.user.image ?? ''}
+              alt={session.user.name ?? ''}
+            />
+            <AvatarFallback>{session.user.name?.[0] ?? '?'}</AvatarFallback>
+          </Avatar>
+        </Button>
+      </DropdownMenuTrigger>
 
       {/* dropdown menu */}
       <DropdownMenuContent

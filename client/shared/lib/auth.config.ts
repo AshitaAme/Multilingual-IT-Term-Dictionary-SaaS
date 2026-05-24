@@ -7,6 +7,7 @@ import GitHub from 'next-auth/providers/github';
 import bcrypt from 'bcryptjs';
 import { users } from './db/schema';
 import type { NextAuthConfig } from 'next-auth';
+import Twitter from 'next-auth/providers/twitter';
 
 export const authConfig: NextAuthConfig = {
   session: { strategy: 'jwt' },
@@ -14,6 +15,7 @@ export const authConfig: NextAuthConfig = {
   providers: [
     GitHub,
     Google,
+    Twitter,
     Credentials({
       credentials: {
         email: {},

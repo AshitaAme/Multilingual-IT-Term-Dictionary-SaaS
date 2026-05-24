@@ -24,9 +24,7 @@ export function TooltipWrapper({
 
   return (
     <Tooltip>
-      <TooltipTrigger asChild onFocus={(e) => e.preventDefault()}>
-        {children}
-      </TooltipTrigger>
+      <TooltipTrigger asChild>{children}</TooltipTrigger>
       <TooltipContent side={side} align={alignValue} avoidCollisions>
         <p className="font-semibold pb-0.75">{label}</p>
       </TooltipContent>
