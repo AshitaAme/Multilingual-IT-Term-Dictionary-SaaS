@@ -16,6 +16,7 @@ export function TooltipWrapper({
   children: React.ReactNode;
   leftBorder?: boolean;
   rightBorder?: boolean;
+  open?: boolean;
 }>) {
   let alignValue: 'start' | 'end' | 'center' = 'center';
   if (leftBorder) alignValue = 'start';
@@ -23,7 +24,9 @@ export function TooltipWrapper({
 
   return (
     <Tooltip>
-      <TooltipTrigger asChild>{children}</TooltipTrigger>
+      <TooltipTrigger asChild onFocus={(e) => e.preventDefault()}>
+        {children}
+      </TooltipTrigger>
       <TooltipContent side={side} align={alignValue} avoidCollisions>
         <p className="font-semibold pb-0.75">{label}</p>
       </TooltipContent>

@@ -10,8 +10,10 @@ export default function TagCard({ tagName }: Readonly<{ tagName: string }>) {
   return (
     <Card
       className={cn(
-        'grid grid-rows-2',
-        'relative cursor-pointer w-60 h-70 ring-0 rounded-b-xl bg-background shadow-sm hover:shadow-md dark:border dark:border-white/15 transition-all duration-300 p-0',
+        'w-60 h-70 ring-0 rounded-b-xl cursor-pointer',
+        'bg-background shadow-md hover:shadow-xl ',
+        'dark:border dark:border-white/15 dark:hover:border-foreground transition-all duration-300',
+        'relative grid grid-rows-2 p-0',
       )}
     >
       {/* <ShineBorder shineColor="currentColor" /> */}

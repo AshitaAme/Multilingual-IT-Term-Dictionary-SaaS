@@ -61,11 +61,17 @@ export const authConfig: NextAuthConfig = {
   ],
   callbacks: {
     jwt({ token, user }) {
-      if (user) token.id = user.id;
+      if (user) {
+        token.id = user.id;
+        token.image = user.image;
+        token.email = user.email;
+      }
       return token;
     },
     session({ session, token }) {
       session.user.id = token.id as string;
+      session.user.image = token.image as string;
+      session.user.email = token.email as string;
       return session;
     },
   },

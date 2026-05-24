@@ -39,10 +39,11 @@ export function CredentialsForm({
     handleSubmit,
     setError,
     clearErrors,
+    reset,
     formState: { errors },
   } = useForm<SignupInput>({
     resolver: zodResolver(SignupSchema),
-    mode: 'onBlur',
+    mode: 'onTouched',
   });
 
   // On form submit
@@ -89,7 +90,10 @@ export function CredentialsForm({
           {/* Sign in */}
           <Button
             variant="ghost"
-            onClick={() => setMode('Sign in')}
+            onClick={() => {
+              setMode('Sign in');
+              reset();
+            }}
             className={cn(
               mode === 'Sign in' && 'text-foreground',
               'cursor-pointer',
@@ -101,7 +105,10 @@ export function CredentialsForm({
           {/* Sign up */}
           <Button
             variant="ghost"
-            onClick={() => setMode('Sign up')}
+            onClick={() => {
+              setMode('Sign up');
+              reset();
+            }}
             className={cn(
               mode === 'Sign up' && 'text-foreground',
               'cursor-pointer',

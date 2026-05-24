@@ -7,8 +7,8 @@ import { ShineBorder } from '@/shared/components/ui/shine-border';
 import { Card } from '@/shared/components/ui/card';
 import { X } from 'lucide-react';
 import { useAuthModalStore } from '../store/auth-modal.store';
-import { createPortal } from 'react-dom';
 import { Credentials } from '../types/credentials';
+import { AuthRedirectHandler } from './auth-redirect-handler';
 
 export function AuthContainer() {
   const { open, onClose } = useAuthModalStore();
@@ -20,9 +20,9 @@ export function AuthContainer() {
     'credentials',
   );
 
-  if (!open) return;
+  if (!open) return <AuthRedirectHandler />;
 
-  return createPortal(
+  return (
     // This creates an overlay that blurred background
     <div className="fixed inset-0 flex items-center justify-center backdrop-blur z-50">
       {/* Card to show the form */}
@@ -39,7 +39,6 @@ export function AuthContainer() {
           <VerificationOTP setStep={setStep} credentials={credentials} />
         )}
       </Card>
-    </div>,
-    document.body,
+    </div>
   );
 }
