@@ -12,7 +12,7 @@ export function AuthRedirectHandler() {
   useEffect(() => {
     if (searchParams.get('auth') === 'required') {
       onOpen();
-      router.replace('/');
+      globalThis.history.replaceState(null, '', '/');
     }
   }, [searchParams, onOpen, router]);
 
