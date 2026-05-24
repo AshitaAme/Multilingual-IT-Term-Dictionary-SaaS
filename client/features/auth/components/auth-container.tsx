@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { CredentialsForm } from './credentials-form';
 import { VerificationOTP } from './verification-OTP';
 import { ShineBorder } from '@/shared/components/ui/shine-border';
@@ -20,7 +20,13 @@ export function AuthContainer() {
     'credentials',
   );
 
-  if (!open) return <AuthRedirectHandler />;
+  if (!open) {
+    return (
+      <Suspense fallback={null}>
+        <AuthRedirectHandler />
+      </Suspense>
+    );
+  }
 
   return (
     // This creates an overlay that blurred background
