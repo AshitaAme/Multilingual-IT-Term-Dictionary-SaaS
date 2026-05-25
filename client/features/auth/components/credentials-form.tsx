@@ -25,7 +25,6 @@ import { signupAction } from '../actions/signup.action';
 import { useRouter } from 'next/navigation';
 import { CredentialsFormProps } from '../types/credentials-form-props';
 import { useAuthModalStore } from '../store/auth-modal.store';
-import { SigninSchema } from '../schemas/signin';
 
 export function CredentialsForm({
   setStep,
