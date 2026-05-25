@@ -11,7 +11,7 @@ import {
   InputOTPSlot,
 } from '@/shared/components/ui/input-otp';
 import { Button } from '@/shared/components/ui/button';
-import { verifyAction } from '../actions/verify.action';
+import { verifySignupAction } from '../actions/verify-signup.action';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import { VerificationOTPProps } from '../types/verification-OTP-props';
@@ -29,7 +29,7 @@ export function VerificationOTP({
   });
 
   const onSubmit = async (data: VerificationInput) => {
-    const signinUser = await verifyAction({
+    const signinUser = await verifySignupAction({
       verificationToken: data.verificationToken,
       email: credentials.email,
     });

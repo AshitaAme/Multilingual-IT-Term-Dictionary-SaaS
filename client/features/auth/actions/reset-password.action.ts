@@ -1,24 +1,19 @@
 'use server';
 
-import { CredentialsInput, CredentialsSchema } from '../schemas/credentials';
-import { initiateSignup } from '../services/initiate-signup';
 import { AppError } from '@/shared/lib/errors';
+import { CredentialsInput, CredentialsSchema } from '../schemas/credentials';
+import { initiateResetPassword } from '../services/initiate-reset-password';
 
-export async function signupAction(data: CredentialsInput) {
+export async function resetPasswordAction(data: CredentialsInput) {
   // 1. Zod validation
   const parsed = CredentialsSchema.safeParse(data);
   if (!parsed.success) {
     return { success: false, error: 'Invalid Input' };
   }
 
-  // 1.1 Name in schema is optional, so deal with it here
-  if (!parsed.data.name) {
-    return { success: false, error: 'Name is required' };
-  }
-
-  // 2. Initiate Signup
+  // 2. Initiate ResetPassword
   try {
-    await initiateSignup(parsed.data);
+    await initiateResetPassword(parsed.data);
   } catch (error: unknown) {
     if (error instanceof AppError) {
       return { success: false, error: error.message };

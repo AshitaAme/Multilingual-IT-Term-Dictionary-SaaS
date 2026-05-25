@@ -4,7 +4,7 @@ import { VerificationInput, VerificationSchema } from '../schemas/verification';
 import { verifySignup } from '../services/verify-signup';
 import { AppError } from '@/shared/lib/errors';
 
-export async function verifyAction(data: VerificationInput) {
+export async function verifySignupAction(data: VerificationInput) {
   // 1. Zod validation
   const parsed = VerificationSchema.safeParse(data);
   if (!parsed.success) {
@@ -23,6 +23,8 @@ export async function verifyAction(data: VerificationInput) {
     console.error(error);
     return { success: false, error: 'Server error, please try again later' };
   }
+
+  // 3. Success
   console.log('success!');
   return { success: true };
 }

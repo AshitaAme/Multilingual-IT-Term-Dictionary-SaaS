@@ -25,12 +25,15 @@ import { signupAction } from '../actions/signup.action';
 import { useRouter } from 'next/navigation';
 import { CredentialsFormProps } from '../types/credentials-form-props';
 import { useAuthModalStore } from '../store/auth-modal.store';
+import { resetPasswordAction } from '../actions/reset-password.action';
 
 export function CredentialsForm({
   setStep,
   setCredentials,
 }: Readonly<CredentialsFormProps>) {
-  const [mode, setMode] = useState<'Sign in' | 'Sign up'>('Sign in');
+  const [mode, setMode] = useState<'Sign in' | 'Sign up' | 'Forgot password'>(
+    'Sign in',
+  );
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const { onClose } = useAuthModalStore();
@@ -72,34 +75,63 @@ export function CredentialsForm({
       router.push('/');
     } else {
       console.log('SIGNUP');
-      const res = await signupAction(data);
+      const res =
+        mode === 'Sign up'
+          ? await signupAction(data)
+          : await resetPasswordAction(data);
 
       if (!res.success) {
         // Mount server error to form
-
         setError('root.serverError', {
           type: 'server',
           message: res.error ?? 'Something went wrong',
         });
         return;
       }
-      setCredentials({ email: data.email, password: data.password });
+      setCredentials({
+        email: data.email,
+        password: data.password,
+        resetPassword: mode === 'Forgot password',
+      });
       setStep('verification');
     }
   };
-
   const SOCIAL_PROVIDERS = [
     { id: 'github', Icon: FaGithub, label: 'Sign in with GitHub' },
     { id: 'google', Icon: FcGoogle, label: 'Sign in with Google' },
     { id: 'twitter', Icon: FaXTwitter, label: 'Sign in with X (Twitter)' },
   ] as const;
 
-  return (
-    <>
-      {/* Title */}
-      <CardHeader className="relative items-center h-18 w-full px-0">
-        <span className="h-18 text-[20px] font-semibold text-muted-foreground flex items-center pl-4 gap-1.5">
-          {/* Sign in */}
+  const renderTitleOnMode = () => {
+    if (mode == 'Forgot password') {
+      return (
+        <>
+          <Button
+            variant="ghost"
+            onClick={() => {
+              setMode('Sign in');
+              reset();
+            }}
+            className={cn('cursor-pointer')}
+          >
+            ...Back
+          </Button>
+          <div>/</div>
+          {/* Sign up */}
+          <Button
+            variant="ghost"
+            className={cn(
+              'text-foreground cursor-pointer',
+              mode === 'Forgot password' && 'text-foreground',
+            )}
+          >
+            Forgot Password
+          </Button>
+        </>
+      );
+    } else {
+      return (
+        <>
           <Button
             variant="ghost"
             onClick={() => {
@@ -128,6 +160,17 @@ export function CredentialsForm({
           >
             Sign up つ♡⊂
           </Button>
+        </>
+      );
+    }
+  };
+
+  return (
+    <>
+      {/* Title */}
+      <CardHeader className="relative items-center h-18 w-full px-0">
+        <span className="h-18 text-[20px] font-semibold text-muted-foreground flex items-center pl-4 gap-1.5">
+          {renderTitleOnMode()}
         </span>
       </CardHeader>
 
@@ -187,7 +230,9 @@ export function CredentialsForm({
                   {...register('password')}
                   id="password"
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Password"
+                  placeholder={
+                    mode === 'Forgot password' ? 'New password' : 'Password'
+                  }
                   autoComplete={
                     mode === 'Sign in' ? 'current-password' : 'new-password'
                   }
@@ -214,7 +259,7 @@ export function CredentialsForm({
             type="submit"
             className="h-10 mt-4 rounded-sm bg-muted-foreground hover:bg-foreground transition-all cursor-pointer"
           >
-            {mode === 'Sign in' ? 'Sign in' : 'Sign up'}
+            {mode === 'Forgot password' ? 'Reset Password' : mode}
           </Button>
 
           {/* Global API Error */}
@@ -226,9 +271,15 @@ export function CredentialsForm({
         </form>
         {mode === 'Sign in' && (
           <span className="text-foreground pt-4 flex justify-center items-center text-xs ">
-            <div className="text-blue-200! underline underline-offset-4 cursor-pointer pr-1">
+            <button
+              onClick={() => {
+                setMode('Forgot password');
+                reset();
+              }}
+              className="text-blue-200! underline underline-offset-4 cursor-pointer pr-1"
+            >
               Click here
-            </div>
+            </button>
             if you forgot your password
           </span>
         )}
@@ -236,11 +287,11 @@ export function CredentialsForm({
 
       {/* Other login ways such as google, github, X */}
       <div className="grid grid-cols-3 items-center justify-items-center px-8 py-2">
-        <Separator className="max-w-26" />
+        <Separator className="max-w-24" />
         <span className="text-sm text-muted-foreground whitespace-nowrap">
-          or
+          or sign in with
         </span>
-        <Separator className="max-w-26" />
+        <Separator className="max-w-24" />
       </div>
       <div className="flex justify-center items-center gap-8 pb-8">
         {SOCIAL_PROVIDERS.map(({ id, Icon, label }, index) => (
