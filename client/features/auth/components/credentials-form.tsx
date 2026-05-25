@@ -10,7 +10,7 @@ import { FcGoogle } from 'react-icons/fc';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { SignupInput, SignupSchema } from '../schemas/signup';
+import { CredentialsInput, CredentialsSchema } from '../schemas/credentials';
 import { CardContent, CardHeader } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
 import {
@@ -24,6 +24,8 @@ import { Separator } from '@/shared/components/ui/separator';
 import { signupAction } from '../actions/signup.action';
 import { useRouter } from 'next/navigation';
 import { CredentialsFormProps } from '../types/credentials-form-props';
+import { useAuthModalStore } from '../store/auth-modal.store';
+import { SigninSchema } from '../schemas/signin';
 
 export function CredentialsForm({
   setStep,
@@ -32,6 +34,7 @@ export function CredentialsForm({
   const [mode, setMode] = useState<'Sign in' | 'Sign up'>('Sign in');
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const { onClose } = useAuthModalStore();
 
   // Use useForm to control form
   const {
@@ -41,21 +44,23 @@ export function CredentialsForm({
     clearErrors,
     reset,
     formState: { errors },
-  } = useForm<SignupInput>({
-    resolver: zodResolver(SignupSchema),
-    mode: 'onTouched',
+  } = useForm<CredentialsInput>({
+    resolver: zodResolver(CredentialsSchema),
+    mode: 'onSubmit',
   });
 
   // On form submit
-  const onSubmit = async (data: SignupInput) => {
+  const onSubmit = async (data: CredentialsInput) => {
     if (mode === 'Sign in') {
+      console.log('SIGNIN');
       const res = await signIn('credentials', {
         email: data.email,
         password: data.password,
         redirect: false,
       });
 
-      if (res.error) {
+      console.log('resError', res);
+      if (res?.error) {
         // Mount server error to form
         setError('root.serverError', {
           type: 'server',
@@ -64,8 +69,10 @@ export function CredentialsForm({
         return;
       }
 
+      onClose();
       router.push('/');
     } else {
+      console.log('SIGNUP');
       const res = await signupAction(data);
 
       if (!res.success) {
@@ -91,7 +98,7 @@ export function CredentialsForm({
   return (
     <>
       {/* Title */}
-      <CardHeader className="items-center h-18 w-full px-0">
+      <CardHeader className="relative items-center h-18 w-full px-0">
         <span className="h-18 text-[20px] font-semibold text-muted-foreground flex items-center pl-4 gap-1.5">
           {/* Sign in */}
           <Button
@@ -133,9 +140,9 @@ export function CredentialsForm({
             if (errors.root?.serverError) clearErrors('root.serverError');
           }}
           noValidate
-          className="flex flex-col gap-4"
+          className="flex flex-col"
         >
-          <FieldGroup>
+          <FieldGroup key={mode}>
             {/* Name Field */}
             {mode === 'Sign up' && (
               <Field data-invalid={!!errors.name}>
@@ -162,6 +169,7 @@ export function CredentialsForm({
                 id="email"
                 type="email"
                 placeholder="Email"
+                autoComplete={mode === 'Sign in' ? 'email' : 'off'}
                 className="rounded-sm h-10 text-sm focus:ring-1"
               />
               {errors.email && <FieldError>{errors.email.message}</FieldError>}
@@ -181,6 +189,9 @@ export function CredentialsForm({
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   placeholder="Password"
+                  autoComplete={
+                    mode === 'Sign in' ? 'current-password' : 'new-password'
+                  }
                   className="rounded-sm h-10 text-sm pr-10 focus:ring-1"
                 />
 
@@ -202,26 +213,26 @@ export function CredentialsForm({
           {/* Submit Button */}
           <Button
             type="submit"
-            className="h-10 rounded-sm bg-muted-foreground hover:bg-foreground transition-all cursor-pointer"
+            className="h-10 mt-4 rounded-sm bg-muted-foreground hover:bg-foreground transition-all cursor-pointer"
           >
             {mode === 'Sign in' ? 'Sign in' : 'Sign up'}
           </Button>
 
           {/* Global API Error */}
           {errors.root?.serverError && (
-            <div className="text-destructive text-sm text-center font-medium">
+            <div className="py-1 mt-4 text-center ring-1 rounded-4xl text-destructive text-sm font-medium">
               {errors.root.serverError.message}
             </div>
           )}
         </form>
-
-        {/* TODO: Implement "Forgot your password?" for login-form
-                  <a
-                    href="#"D
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                  >
-                    Forgot your password?
-                  </a> */}
+        {mode === 'Sign in' && (
+          <span className="text-foreground pt-4 flex justify-center items-center text-xs ">
+            <div className="text-blue-200! underline underline-offset-4 cursor-pointer pr-1">
+              Click here
+            </div>
+            if you forgot your password
+          </span>
+        )}
       </CardContent>
 
       {/* Other login ways such as google, github, X */}

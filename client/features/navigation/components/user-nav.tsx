@@ -18,8 +18,8 @@ import {
 } from '@/shared/components/ui/avatar';
 import { useAuthModalStore } from '@/features/auth/store/auth-modal.store';
 import { cn } from '@/shared/utils/utils';
-import { TooltipWrapper } from '@/shared/components/ui/tooltipWrapper';
 import { useRouter } from 'next/navigation';
+import { TooltipWrapper } from '@/shared/components/ui/tooltipWrapper';
 
 // User navigation component
 export default function UserNav() {
@@ -30,21 +30,22 @@ export default function UserNav() {
   if (!session) {
     // As signed in, display a button to trigger the credentials form
     return (
-      <Button
-        onClick={onOpen}
-        size="icon"
-        className="cursor-pointer group/login"
-      >
-        <LogIn className="group-hover/login:translate-x-0.5 transition-all duration-300" />
-      </Button>
+      <TooltipWrapper label="Sign in/up" side="bottom" rightBorder={true}>
+        <Button
+          onClick={onOpen}
+          size="icon"
+          className="cursor-pointer group/login"
+        >
+          <LogIn className="group-hover/login:translate-x-0.5 transition-all duration-300" />
+        </Button>
+      </TooltipWrapper>
     );
   }
 
   // When there is session, show avatar which on click triggers a dropdown menu
   return (
     <DropdownMenu>
-      {/* User-avatar as a trigger for dropdown-menu */}
-      <DropdownMenuTrigger>
+      <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
           size="icon"
@@ -53,7 +54,7 @@ export default function UserNav() {
             !session.user.image && 'ring-1! ring-border',
           )}
         >
-          <Avatar className={cn('after:hidden h-7 w-7 cursor-pointer')}>
+          <Avatar className="after:hidden h-7 w-7 cursor-pointer">
             <AvatarImage
               src={session.user.image ?? ''}
               alt={session.user.name ?? ''}
@@ -63,13 +64,13 @@ export default function UserNav() {
         </Button>
       </DropdownMenuTrigger>
 
-      {/* dropdown menu */}
+      {/* Dropdown menu */}
       <DropdownMenuContent
         className="w-54 p-0 rounded-lg"
         align="end"
         sideOffset={6}
       >
-        {/* Switch account */}
+        {/* User Avatar and Info */}
         <DropdownMenuGroup className="p-4 pb-0">
           <div className="h-25 w-full bg-muted rounded-lg flex flex-col items-center pt-2">
             <Avatar className="ring-1 ring-border after:hidden h-10 w-10">

@@ -3,11 +3,15 @@ import bcrypt from 'bcryptjs';
 import crypto from 'node:crypto';
 import { PendingUserSchema } from '../schemas/pending-user';
 import { findUserByEmail } from './find-user-by-email';
-import { SignupInput } from '../schemas/signup';
+import { CredentialsInput } from '../schemas/credentials';
 import { sendVerificationEmail } from '../../../shared/lib/send-verification-email';
 import { ConflictError, RateLimitError } from '@/shared/lib/errors';
 
-export async function initiateSignup({ name, email, password }: SignupInput) {
+export async function initiateSignup({
+  name,
+  email,
+  password,
+}: CredentialsInput) {
   // 1. Asynchronously get user data from database and redis
   const key = `auth:signup:${email}`;
   const [activeUser, pendingUserJSON] = await Promise.all([

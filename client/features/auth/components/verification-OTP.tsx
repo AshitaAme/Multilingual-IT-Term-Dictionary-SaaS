@@ -40,14 +40,12 @@ export function VerificationOTP({
       });
       return;
     }
-    console.log('signIn');
     const res = await signIn('credentials', {
       email: credentials.email,
       password: credentials.password,
       redirect: false,
     });
 
-    console.log('res?.error', res?.error);
     if (res?.error) {
       setError('root.serverError', {
         type: 'server',
@@ -55,7 +53,6 @@ export function VerificationOTP({
       });
       return;
     }
-    console.log('Ame');
     onClose();
     router.push('/');
   };

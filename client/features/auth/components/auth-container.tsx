@@ -5,10 +5,10 @@ import { CredentialsForm } from './credentials-form';
 import { VerificationOTP } from './verification-OTP';
 import { ShineBorder } from '@/shared/components/ui/shine-border';
 import { Card } from '@/shared/components/ui/card';
-import { X } from 'lucide-react';
 import { useAuthModalStore } from '../store/auth-modal.store';
 import { Credentials } from '../types/credentials';
 import { AuthRedirectHandler } from './auth-redirect-handler';
+import { X } from 'lucide-react';
 
 export function AuthContainer() {
   const { open, onClose } = useAuthModalStore();
@@ -25,8 +25,8 @@ export function AuthContainer() {
       <Suspense>
         <AuthRedirectHandler />
       </Suspense>
-      {/* This creates an overlay that blurred background */}
 
+      {/* This creates an overlay that blurred background */}
       {open && (
         <div className="fixed inset-0 flex items-center justify-center backdrop-blur z-50">
           {/* Card to show the form */}
@@ -35,8 +35,9 @@ export function AuthContainer() {
             <X
               size={16}
               onClick={onClose}
-              className="absolute right-2.5 top-2.5 cursor-pointer"
+              className="absolute z-10 right-2.5 top-2.5 cursor-pointer"
             />
+
             {step === 'credentials' ? (
               <CredentialsForm
                 setStep={setStep}
