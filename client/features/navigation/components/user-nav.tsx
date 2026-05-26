@@ -54,7 +54,7 @@ export default function UserNav() {
             !session.user.image && 'ring-1! ring-border',
           )}
         >
-          <Avatar className="after:hidden h-7 w-7 cursor-pointer">
+          <Avatar className="after:hidden h-8 w-8 cursor-pointer ring-1 ring-border">
             <AvatarImage
               src={session.user.image ?? ''}
               alt={session.user.name ?? ''}
@@ -66,14 +66,14 @@ export default function UserNav() {
 
       {/* Dropdown menu */}
       <DropdownMenuContent
-        className="w-54 p-0 rounded-lg"
+        className="w-60 p-0 rounded-lg"
         align="end"
         sideOffset={6}
       >
         {/* User Avatar and Info */}
         <DropdownMenuGroup className="p-4 pb-0">
-          <div className="h-25 w-full bg-muted rounded-lg flex flex-col items-center pt-2">
-            <Avatar className="ring-1 ring-border after:hidden h-10 w-10">
+          <div className="h-34 w-full bg-muted rounded-lg flex flex-col items-center pt-3">
+            <Avatar className="ring-2 ring-border after:hidden h-14 w-14">
               <AvatarImage
                 src={session.user.image ?? ''}
                 alt={session.user.name ?? ''}
@@ -82,10 +82,10 @@ export default function UserNav() {
                 {session.user.name?.[0] ?? '?'}
               </AvatarFallback>
             </Avatar>
-            <span className="truncate max-w-24 text-[14px] mt-1">
+            <span className="truncate max-w-30 text-[14px] mt-2 font-semibold">
               {session.user.name ?? 'User'}
             </span>
-            <span className="truncate max-w-34 text-[10px]">
+            <span className="truncate max-w-40 text-[12px]">
               {session.user.email ?? 'User'}
             </span>
           </div>

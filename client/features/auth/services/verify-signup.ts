@@ -15,7 +15,7 @@ export async function verifySignup({
 
   // 2. Check its existence
   if (!pendingUser.success) {
-    throw new NotFoundError('Verification session expired or does not exist');
+    throw new NotFoundError(`Code expired or doesn't exist`);
   }
 
   // 3. Check if verification token matches

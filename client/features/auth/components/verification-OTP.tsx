@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeftToLine } from 'lucide-react';
 import { Controller, useForm } from 'react-hook-form';
 import { VerificationInput, VerificationSchema } from '../schemas/verification';
-import { Field } from '@/shared/components/ui/field';
+import { Field, FieldError } from '@/shared/components/ui/field';
 import {
   InputOTP,
   InputOTPGroup,
@@ -16,6 +16,10 @@ import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import { VerificationOTPProps } from '../types/verification-OTP-props';
 import { useAuthModalStore } from '../store/auth-modal.store';
+import { verifyResetPasswordAction } from '../actions/verify-reset-password-action';
+import { resendVerificationAction } from '../actions/resend-verification.action';
+import { useEffect, useRef, useState } from 'react';
+import { cn } from '@/shared/utils/utils';
 
 export function VerificationOTP({
   setStep,
@@ -23,54 +27,110 @@ export function VerificationOTP({
 }: Readonly<VerificationOTPProps>) {
   const router = useRouter();
   const { onClose } = useAuthModalStore();
-  const { control, handleSubmit, setError } = useForm<VerificationInput>({
+
+  const {
+    control,
+    handleSubmit,
+    setError,
+    formState: { errors },
+    clearErrors,
+  } = useForm<VerificationInput>({
     resolver: zodResolver(VerificationSchema),
     defaultValues: { email: credentials.email, verificationToken: '' },
+    mode: 'onSubmit',
   });
 
+  // Submit Logic
   const onSubmit = async (data: VerificationInput) => {
-    const signinUser = await verifySignupAction({
-      verificationToken: data.verificationToken,
-      email: credentials.email,
-    });
-    if (!signinUser.success) {
+    console.log('Verification-OTP:BOOLEAN', credentials.resetPassword);
+
+    // 1. Check type of verification and do actions
+    const verified = credentials.resetPassword
+      ? await verifyResetPasswordAction({
+          verificationToken: data.verificationToken,
+          email: credentials.email,
+        })
+      : await verifySignupAction({
+          verificationToken: data.verificationToken,
+          email: credentials.email,
+        });
+
+    // 2. If failed, mount the error to form
+    if (!verified.success) {
       setError('root.serverError', {
         type: 'server',
-        message: signinUser.error ?? 'Something went wrong',
+        message: verified.error ?? 'Something went wrong',
       });
       return;
     }
-    const res = await signIn('credentials', {
+
+    // 3. Sign in User
+    console.log('VERIFICATION-OTP: SIGNIN!');
+    const signed = await signIn('credentials', {
       email: credentials.email,
       password: credentials.password,
       redirect: false,
     });
 
-    if (res?.error) {
+    // 4. If sign in failed, mount the error
+    if (signed?.error) {
       setError('root.serverError', {
         type: 'server',
-        message: signinUser.error ?? 'Something went wrong',
+        message: verified.error ?? 'Something went wrong',
       });
       return;
     }
+
+    // 5. Close form and move to home page
     onClose();
     router.push('/');
   };
 
+  // Resend Logic
+  const [countdown, setCountdown] = useState(60);
+
+  // 0. Set a countdown trigger for resend interval
+  useEffect(() => {
+    if (countdown <= 0) return;
+    const timer = setInterval(() => {
+      setCountdown((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [countdown]);
+
+  const onResend = async () => {
+    clearErrors();
+    // 1. Do resend action
+    const resent = await resendVerificationAction({ email: credentials.email });
+
+    // 2. If failed, mount the error
+    if (!resent.success) {
+      setError('root.serverError', {
+        type: 'server',
+        message: resent.error ?? 'Something went wrong',
+      });
+      return;
+    }
+
+    // 3. Initiate count down
+    setCountdown(60);
+  };
+
   return (
-    <div className="h-70 flex flex-col gap-8 items-center justify-center relative">
+    <div className="h-70 flex flex-col items-center justify-center relative">
       <ArrowLeftToLine
         size={16}
         onClick={() => setStep('credentials')}
         className="absolute left-2.5 top-2.5 cursor-pointer"
       />
-      <span className="font-semibold text-[16px]">Verification Code</span>
+      <span className="mb-8 font-semibold text-[16px]">Verification Code</span>
       <form>
         <Controller
           control={control}
           name="verificationToken"
-          render={({ field, fieldState }) => (
-            <Field data-invalid={!!fieldState.error}>
+          render={({ field }) => (
+            <Field>
               <InputOTP
                 className="flex flex-col items-center gap-2"
                 maxLength={6}
@@ -87,13 +147,32 @@ export function VerificationOTP({
             </Field>
           )}
         />
+        {errors.verificationToken && (
+          <div className="py-1 mt-4 text-center ring-1 rounded-4xl text-destructive text-sm font-medium">
+            {errors.verificationToken.message}
+          </div>
+        )}
+        {errors.root?.serverError && (
+          <div className="py-1 mt-4 text-center ring-1 rounded-4xl text-destructive text-sm font-medium">
+            {errors.root.serverError.message}
+          </div>
+        )}
       </form>
       <Button
         variant="ghost"
         size="xs"
-        className="rounded-sm bg-background cursor-pointer"
+        className={cn(
+          'rounded-sm bg-background mt-4',
+          countdown > 0
+            ? 'cursor-not-allowed pointer-events-none'
+            : 'cursor-pointer',
+        )}
       >
-        <span className="hover:underline underline-offset-2">Resend</span>
+        {countdown > 0 ? (
+          <span>Waiting...{countdown}s</span>
+        ) : (
+          <span className="underline underline-offset-2">Resend</span>
+        )}
       </Button>
     </div>
   );

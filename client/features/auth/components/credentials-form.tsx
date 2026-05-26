@@ -21,11 +21,11 @@ import {
 } from '@/shared/components/ui/field';
 import { Input } from '@/shared/components/ui/input';
 import { Separator } from '@/shared/components/ui/separator';
-import { signupAction } from '../actions/signup.action';
+import { initiateSignupAction } from '../actions/initiate-signup.action';
 import { useRouter } from 'next/navigation';
 import { CredentialsFormProps } from '../types/credentials-form-props';
 import { useAuthModalStore } from '../store/auth-modal.store';
-import { resetPasswordAction } from '../actions/reset-password.action';
+import { initiateResetPasswordAction } from '../actions/initiate-reset-password.action';
 
 export function CredentialsForm({
   setStep,
@@ -54,14 +54,12 @@ export function CredentialsForm({
   // On form submit
   const onSubmit = async (data: CredentialsInput) => {
     if (mode === 'Sign in') {
-      console.log('SIGNIN');
       const res = await signIn('credentials', {
         email: data.email,
         password: data.password,
         redirect: false,
       });
 
-      console.log('resError', res);
       if (res?.error) {
         // Mount server error to form
         setError('root.serverError', {
@@ -74,11 +72,10 @@ export function CredentialsForm({
       onClose();
       router.push('/');
     } else {
-      console.log('SIGNUP');
       const res =
         mode === 'Sign up'
-          ? await signupAction(data)
-          : await resetPasswordAction(data);
+          ? await initiateSignupAction(data)
+          : await initiateResetPasswordAction(data);
 
       if (!res.success) {
         // Mount server error to form

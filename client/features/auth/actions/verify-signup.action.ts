@@ -12,7 +12,7 @@ export async function verifySignupAction(data: VerificationInput) {
   }
 
   // 2. Verify
-  console.log('verify start');
+  console.log('verifySignupAction:', parsed.data);
   try {
     await verifySignup(parsed.data);
   } catch (error) {
@@ -25,6 +25,5 @@ export async function verifySignupAction(data: VerificationInput) {
   }
 
   // 3. Success
-  console.log('success!');
   return { success: true };
 }

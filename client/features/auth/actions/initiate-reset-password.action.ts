@@ -4,7 +4,7 @@ import { AppError } from '@/shared/lib/errors';
 import { CredentialsInput, CredentialsSchema } from '../schemas/credentials';
 import { initiateResetPassword } from '../services/initiate-reset-password';
 
-export async function resetPasswordAction(data: CredentialsInput) {
+export async function initiateResetPasswordAction(data: CredentialsInput) {
   // 1. Zod validation
   const parsed = CredentialsSchema.safeParse(data);
   if (!parsed.success) {
@@ -13,6 +13,7 @@ export async function resetPasswordAction(data: CredentialsInput) {
 
   // 2. Initiate ResetPassword
   try {
+    console.log('reset_password_action:', parsed.data);
     await initiateResetPassword(parsed.data);
   } catch (error: unknown) {
     if (error instanceof AppError) {

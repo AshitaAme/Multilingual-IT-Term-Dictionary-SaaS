@@ -8,12 +8,12 @@ export async function verifyResetPasswordAction(data: VerificationInput) {
   // 1. Zod validation
   const parsed = VerificationSchema.safeParse(data);
   if (!parsed.success) {
-    return { success: false, message: 'Invalid Input' };
+    return { success: false, error: 'Invalid Input' };
   }
 
   // 2. Verify
-  console.log('verify start');
   try {
+    console.log('verifyResetPassword', parsed.data);
     await verifyResetPassword(parsed.data);
   } catch (error) {
     if (error instanceof AppError) {

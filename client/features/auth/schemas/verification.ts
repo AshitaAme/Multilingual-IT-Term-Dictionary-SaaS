@@ -5,7 +5,13 @@ export const VerificationSchema = z.object({
   verificationToken: z
     .string()
     .length(6, { message: 'Code must be 6 digits' })
-    .regex(/^\d+$/, { message: 'Verification code must contain only numbers' }),
+    .regex(/^\d+$/, { message: 'Contain only numbers' }),
 });
 
 export type VerificationInput = z.infer<typeof VerificationSchema>;
+
+export const ResendVerificationSchema = VerificationSchema.omit({
+  verificationToken: true,
+});
+
+export type ResendVerificationInput = z.infer<typeof ResendVerificationSchema>;

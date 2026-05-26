@@ -4,7 +4,7 @@ import { CredentialsInput, CredentialsSchema } from '../schemas/credentials';
 import { initiateSignup } from '../services/initiate-signup';
 import { AppError } from '@/shared/lib/errors';
 
-export async function signupAction(data: CredentialsInput) {
+export async function initiateSignupAction(data: CredentialsInput) {
   // 1. Zod validation
   const parsed = CredentialsSchema.safeParse(data);
   if (!parsed.success) {

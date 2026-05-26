@@ -6,13 +6,14 @@ import { findUserByEmail } from './find-user-by-email';
 import { CredentialsInput } from '../schemas/credentials';
 import { sendVerificationEmail } from '../../../shared/lib/send-verification-email';
 import { NotFoundError, RateLimitError } from '@/shared/lib/errors';
+import { REDIS_KEYS } from '@/shared/lib/redis-keys';
 
 export async function initiateResetPassword({
   email,
   password: newPassword,
 }: CredentialsInput) {
   // 1. Asynchronously get user data from database and redis
-  const key = `auth:reset_password:${email}`;
+  const key = REDIS_KEYS.auth.resetPassword(email);
   const [activeUser, pendingUserJSON] = await Promise.all([
     findUserByEmail(email),
     kv.get<unknown>(key),
@@ -37,11 +38,14 @@ export async function initiateResetPassword({
   const hashedPassword = await bcrypt.hash(newPassword, 10);
   const verificationToken = crypto.randomInt(100000, 1000000).toString();
   const payload = {
+    name: activeUser.name,
     email,
     hashedPassword,
     verificationToken,
     createdAt: Date.now(),
   };
+
+  console.log('initiate_reset_password:', payload);
 
   await kv.set(key, payload, { ex: 600 });
 

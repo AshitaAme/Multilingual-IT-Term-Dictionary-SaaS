@@ -2,7 +2,7 @@ import { TypingAnimation } from '@/shared/components/ui/typing-animation';
 import CardsDisplay from '../features/tags/components/cards-display';
 
 export const metadata = {
-  title: 'Leaves Dictionary',
+  title: 'Leaf Dictionary',
 };
 
 export default function Home() {
