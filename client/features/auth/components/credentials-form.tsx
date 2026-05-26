@@ -5,8 +5,8 @@ import { Eye, EyeOff } from 'lucide-react';
 import { signIn } from 'next-auth/react';
 import { Fragment, useState } from 'react';
 import { FaGithub } from 'react-icons/fa';
-import { FaXTwitter } from 'react-icons/fa6';
 import { FcGoogle } from 'react-icons/fc';
+import { FaLine } from 'react-icons/fa6';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -96,7 +96,7 @@ export function CredentialsForm({
   const SOCIAL_PROVIDERS = [
     { id: 'github', Icon: FaGithub, label: 'Sign in with GitHub' },
     { id: 'google', Icon: FcGoogle, label: 'Sign in with Google' },
-    { id: 'twitter', Icon: FaXTwitter, label: 'Sign in with X (Twitter)' },
+    { id: 'line', Icon: FaLine, label: 'Sign in with Line' },
   ] as const;
 
   const renderTitleOnMode = () => {
@@ -297,9 +297,19 @@ export function CredentialsForm({
             <button
               onClick={() => signIn(id)}
               aria-label={label}
-              className="cursor-pointer"
+              className="cursor-pointer text-center"
             >
-              <Icon className="h-6 w-6" />
+              <Icon
+                className={cn('h-6 w-6', id === 'line' ? 'h-6.5 w-6.5' : '')}
+                style={
+                  id === 'line'
+                    ? {
+                        transform: 'translate(2px, -0.5px)',
+                        borderRadius: '50%',
+                      }
+                    : undefined
+                }
+              />
             </button>
           </Fragment>
         ))}

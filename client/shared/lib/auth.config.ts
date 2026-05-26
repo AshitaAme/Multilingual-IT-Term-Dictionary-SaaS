@@ -4,10 +4,11 @@ import { db } from '@/shared/lib/db/db';
 import { eq } from 'drizzle-orm';
 import Credentials from 'next-auth/providers/credentials';
 import GitHub from 'next-auth/providers/github';
+import Line from 'next-auth/providers/line';
+
 import bcrypt from 'bcryptjs';
 import { users } from './db/schema';
 import type { NextAuthConfig } from 'next-auth';
-import Twitter from 'next-auth/providers/twitter';
 
 export const authConfig: NextAuthConfig = {
   session: { strategy: 'jwt' },
@@ -18,7 +19,7 @@ export const authConfig: NextAuthConfig = {
   providers: [
     GitHub,
     Google,
-    Twitter,
+    Line,
     Credentials({
       credentials: {
         email: {},
