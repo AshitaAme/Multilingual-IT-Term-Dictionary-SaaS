@@ -5,7 +5,7 @@ import { eq } from 'drizzle-orm';
 import Credentials from 'next-auth/providers/credentials';
 import GitHub from 'next-auth/providers/github';
 import bcrypt from 'bcryptjs';
-import { users } from './db/schema';
+import { accounts, users } from './db/schema';
 import type { NextAuthConfig } from 'next-auth';
 import Twitter from 'next-auth/providers/twitter';
 
@@ -62,6 +62,29 @@ export const authConfig: NextAuthConfig = {
     }),
   ],
   callbacks: {
+    async signIn({ user, account }) {
+      if (account?.provider === 'credentials') return true;
+
+      const existingUser = await db
+        .select()
+        .from(users)
+        .where(eq(users.email, user.email as string))
+        .then((res) => res[0]);
+
+      if (!existingUser) return true;
+
+      const existingAccount = await db
+        .select()
+        .from(accounts)
+        .where(eq(accounts.userId, existingUser.id))
+        .then((res) => res[0]);
+
+      if (existingAccount && existingAccount.provider !== account?.provider) {
+        return `/?auth=existent_OAUTH&provider=${existingAccount.provider}`;
+      }
+
+      return true;
+    },
     jwt({ token, user }) {
       if (user) {
         token.id = user.id;
