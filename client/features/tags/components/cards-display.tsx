@@ -1,3 +1,5 @@
+'use client';
+
 import TagCard from './tag-card';
 
 const tagNameList = [

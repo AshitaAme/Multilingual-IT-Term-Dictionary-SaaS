@@ -17,9 +17,8 @@ export function AuthRedirectHandler() {
   }, [searchParams, onOpen]);
 
   useEffect(() => {
-    if (searchParams.get('auth') === 'existent_OAUTH') {
-      const provider = searchParams.get('provider');
-      toast.error(`This email is already registered with ${provider}.`);
+    if (searchParams.get('error') === 'OAuthAccountNotLinked') {
+      toast.error(`This email is already registered`);
       onOpen();
       globalThis.history.replaceState(null, '', '/');
     }

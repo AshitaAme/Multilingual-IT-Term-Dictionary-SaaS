@@ -21,7 +21,7 @@ export default function RootLayout({
       suppressHydrationWarning
       className="min-h-screen flex flex-col"
     >
-      <body className="bg-background">
+      <body className="bg-background relative">
         <AppProviders>
           {/* For all pages, navigation is above the content */}
           <Navigation />
