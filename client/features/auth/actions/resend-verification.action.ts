@@ -1,6 +1,6 @@
 'use server';
 
-import { AppError } from '@/shared/lib/errors';
+import { AppError } from '@/shared/errors/errors';
 import {
   ResendVerificationInput,
   ResendVerificationSchema,

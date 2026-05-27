@@ -304,7 +304,7 @@ export function CredentialsForm({
                 style={
                   id === 'line'
                     ? {
-                        transform: 'translate(2px, -0.5px)',
+                        transform: 'translate(2px, -0.25px)',
                         borderRadius: '50%',
                       }
                     : undefined

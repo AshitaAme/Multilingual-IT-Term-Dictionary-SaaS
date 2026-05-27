@@ -1,12 +1,12 @@
-import { kv } from '@/shared/lib/redis';
+import { kv } from '@/shared/lib/redis/redis';
 import bcrypt from 'bcryptjs';
 import crypto from 'node:crypto';
 import { PendingUserSchema } from '../schemas/pending-user';
 import { findUserByEmail } from './find-user-by-email';
 import { CredentialsInput } from '../schemas/credentials';
-import { sendVerificationEmail } from '../../../shared/lib/send-verification-email';
-import { NotFoundError, RateLimitError } from '@/shared/lib/errors';
-import { REDIS_KEYS } from '@/shared/lib/redis-keys';
+import { sendVerificationEmail } from '../../../shared/lib/email/send-verification-email';
+import { NotFoundError, RateLimitError } from '@/shared/errors/errors';
+import { REDIS_KEYS } from '@/shared/lib/redis/redis-keys';
 
 export async function initiateResetPassword({
   email,

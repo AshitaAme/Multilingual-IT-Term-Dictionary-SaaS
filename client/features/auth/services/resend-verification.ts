@@ -1,9 +1,9 @@
-import { REDIS_KEYS } from '@/shared/lib/redis-keys';
+import { REDIS_KEYS } from '@/shared/lib/redis/redis-keys';
 import { PendingUserSchema } from '../schemas/pending-user';
-import { kv } from '@/shared/lib/redis';
-import { NotFoundError, RateLimitError } from '@/shared/lib/errors';
+import { kv } from '@/shared/lib/redis/redis';
+import { NotFoundError, RateLimitError } from '@/shared/errors/errors';
 import crypto from 'node:crypto';
-import { sendVerificationEmail } from '@/shared/lib/send-verification-email';
+import { sendVerificationEmail } from '@/shared/lib/email/send-verification-email';
 import { ResendVerificationInput } from '../schemas/verification';
 
 export async function resendVerification({ email }: ResendVerificationInput) {

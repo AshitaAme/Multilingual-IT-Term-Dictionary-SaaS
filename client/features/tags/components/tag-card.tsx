@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@/shared/utils/utils';
-import { tagIcons } from '@/shared/lib/tag-icons';
+import { tagIcons } from '@/shared/lib/icons/tag-icons';
 import { Card, CardHeader, CardTitle } from '@/shared/components/ui/card';
 
 export default function TagCard({ tagName }: Readonly<{ tagName: string }>) {

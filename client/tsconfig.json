@@ -22,7 +22,8 @@
       "@/*": ["./*"],
       "@components/*": ["./shared/components/*"],
       "@lib/*": ["./shared/lib/*"],
-      "@styles/*": ["./styles/*"]
+      "@styles/*": ["./styles/*"],
+      "@features/*": ["./features/*"]
     }
   },
   "include": [

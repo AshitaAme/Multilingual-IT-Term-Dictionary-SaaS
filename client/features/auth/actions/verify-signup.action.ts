@@ -2,7 +2,7 @@
 
 import { VerificationInput, VerificationSchema } from '../schemas/verification';
 import { verifySignup } from '../services/verify-signup';
-import { AppError } from '@/shared/lib/errors';
+import { AppError } from '@/shared/errors/errors';
 
 export async function verifySignupAction(data: VerificationInput) {
   // 1. Zod validation

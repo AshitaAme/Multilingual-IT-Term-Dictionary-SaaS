@@ -1,11 +1,11 @@
-import { kv } from '@/shared/lib/redis';
+import { kv } from '@/shared/lib/redis/redis';
 import bcrypt from 'bcryptjs';
 import crypto from 'node:crypto';
 import { PendingUserSchema } from '../schemas/pending-user';
 import { findUserByEmail } from './find-user-by-email';
 import { CredentialsInput } from '../schemas/credentials';
-import { sendVerificationEmail } from '../../../shared/lib/send-verification-email';
-import { ConflictError, RateLimitError } from '@/shared/lib/errors';
+import { sendVerificationEmail } from '../../../shared/lib/email/send-verification-email';
+import { ConflictError, RateLimitError } from '@/shared/errors/errors';
 
 export async function initiateSignup({
   name,

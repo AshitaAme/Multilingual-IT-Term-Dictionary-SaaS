@@ -2,7 +2,7 @@
 
 import { CredentialsInput, CredentialsSchema } from '../schemas/credentials';
 import { initiateSignup } from '../services/initiate-signup';
-import { AppError } from '@/shared/lib/errors';
+import { AppError } from '@/shared/errors/errors';
 
 export async function initiateSignupAction(data: CredentialsInput) {
   // 1. Zod validation

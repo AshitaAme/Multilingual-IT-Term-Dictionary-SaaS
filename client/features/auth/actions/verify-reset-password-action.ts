@@ -1,7 +1,7 @@
 'use server';
 
 import { VerificationInput, VerificationSchema } from '../schemas/verification';
-import { AppError } from '@/shared/lib/errors';
+import { AppError } from '@/shared/errors/errors';
 import { verifyResetPassword } from '../services/verify-reset-password';
 
 export async function verifyResetPasswordAction(data: VerificationInput) {

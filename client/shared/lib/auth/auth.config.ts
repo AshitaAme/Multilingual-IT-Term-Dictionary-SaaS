@@ -7,8 +7,8 @@ import GitHub from 'next-auth/providers/github';
 import Line from 'next-auth/providers/line';
 
 import bcrypt from 'bcryptjs';
-import { users } from './db/schema';
 import type { NextAuthConfig } from 'next-auth';
+import { users } from '../db/schema';
 
 export const authConfig: NextAuthConfig = {
   session: { strategy: 'jwt' },
