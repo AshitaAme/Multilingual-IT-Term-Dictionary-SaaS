@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import Navigation from './_components/navigation';
-import { ThemeProvider } from '@/components/providers/theme-provider';
-import { TooltipProvider } from '@/components/ui/tooltip';
+import Navigation from '../features/navigation/components/navigation';
+import AppProviders from '@/shared/components/providers';
+import { AuthContainer } from '@/features/auth/components/auth-container';
+import { Toaster } from '@/shared/components/ui/sonner';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -20,17 +21,15 @@ export default function RootLayout({
       suppressHydrationWarning
       className="min-h-screen flex flex-col"
     >
-      <body className="bg-background">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem={true}
-        >
-          <TooltipProvider>
-            <Navigation />
-            {children}
-          </TooltipProvider>
-        </ThemeProvider>
+      <body className="bg-background relative">
+        <AppProviders>
+          {/* For all pages, navigation is above the content */}
+          <Navigation />
+          {/* Auth will not show until trigger is clicked in nav */}
+          <AuthContainer />
+          {children}
+          <Toaster />
+        </AppProviders>
       </body>
     </html>
   );

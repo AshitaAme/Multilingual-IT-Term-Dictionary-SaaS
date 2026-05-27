@@ -1,0 +1,29 @@
+'use server';
+
+import { VerificationInput, VerificationSchema } from '../schemas/verification';
+import { verifySignup } from '../services/verify-signup';
+import { AppError } from '@/shared/errors/errors';
+
+export async function verifySignupAction(data: VerificationInput) {
+  // 1. Zod validation
+  const parsed = VerificationSchema.safeParse(data);
+  if (!parsed.success) {
+    return { success: false, message: 'Invalid Input' };
+  }
+
+  // 2. Verify
+  console.log('verifySignupAction:', parsed.data);
+  try {
+    await verifySignup(parsed.data);
+  } catch (error) {
+    if (error instanceof AppError) {
+      return { success: false, error: error.message };
+    }
+
+    console.error(error);
+    return { success: false, error: 'Server error, please try again later' };
+  }
+
+  // 3. Success
+  return { success: true };
+}

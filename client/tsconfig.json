@@ -20,9 +20,10 @@
     ],
     "paths": {
       "@/*": ["./*"],
-      "@components/*": ["./components/*"],
-      "@lib/*": ["./lib/*"],
-      "@styles/*": ["./styles/*"]
+      "@components/*": ["./shared/components/*"],
+      "@lib/*": ["./shared/lib/*"],
+      "@styles/*": ["./styles/*"],
+      "@features/*": ["./features/*"]
     }
   },
   "include": [
