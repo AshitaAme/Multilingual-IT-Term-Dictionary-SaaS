@@ -20,17 +20,19 @@ import { useAuthModalStore } from '@/features/auth/store/auth-modal.store';
 import { cn } from '@/shared/utils/utils';
 import { useRouter } from 'next/navigation';
 import { TooltipWrapper } from '@/shared/components/ui/tooltipWrapper';
+import { useTranslations } from 'next-intl';
 
 // User navigation component
-export default function UserNav() {
+export default function UserMenu() {
   const { data: session } = useSession();
   const { onOpen } = useAuthModalStore();
   const router = useRouter();
+  const t = useTranslations('nav');
 
   if (!session) {
     // As signed in, display a button to trigger the credentials form
     return (
-      <TooltipWrapper label="Sign in/up" side="bottom" rightBorder={true}>
+      <TooltipWrapper label={t('signInUp')} side="bottom" rightBorder={true}>
         <Button
           onClick={onOpen}
           size="icon"
@@ -42,7 +44,7 @@ export default function UserNav() {
     );
   }
 
-  // When there is session, show avatar which on click triggers a dropdown menu
+  // When there is session, show avatar used to trigger dropdown menu
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -68,7 +70,7 @@ export default function UserNav() {
       <DropdownMenuContent
         className="w-60 p-0 rounded-lg"
         align="end"
-        sideOffset={6}
+        sideOffset={8}
       >
         {/* User Avatar and Info */}
         <DropdownMenuGroup className="p-4 pb-0">
@@ -79,7 +81,7 @@ export default function UserNav() {
                 alt={session.user.name ?? ''}
               />
               <AvatarFallback className="text-sm font-semibold">
-                {session.user.name?.[0] ?? '?'}
+                N
               </AvatarFallback>
             </Avatar>
             <span className="truncate max-w-30 text-[14px] mt-2 font-semibold">
@@ -99,12 +101,12 @@ export default function UserNav() {
             className="cursor-pointer hover:bg-muted! px-2 py-1.5"
           >
             <CreditCardIcon />
-            Profile
+            {t('profile')}
           </DropdownMenuItem>
           {/* Settings */}
           <DropdownMenuItem className="cursor-pointer hover:bg-muted! px-2 py-1.5">
             <SettingsIcon />
-            Settings
+            {t('settings')}
           </DropdownMenuItem>
 
           <DropdownMenuSeparator className="mx-2 my-2" />
@@ -115,7 +117,7 @@ export default function UserNav() {
             className="cursor-pointer hover:bg-muted! px-2 py-1.5"
           >
             <LogOut />
-            Sign out
+            {t('signOut')}
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>

@@ -9,6 +9,7 @@ import { FcGoogle } from 'react-icons/fc';
 import { FaLine } from 'react-icons/fa6';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
 
 import { CredentialsInput, CredentialsSchema } from '../schemas/credentials';
 import { CardContent, CardHeader } from '@/shared/components/ui/card';
@@ -31,6 +32,8 @@ export function CredentialsForm({
   setStep,
   setCredentials,
 }: Readonly<CredentialsFormProps>) {
+  const t = useTranslations('auth');
+
   const [mode, setMode] = useState<'Sign in' | 'Sign up' | 'Forgot password'>(
     'Sign in',
   );
@@ -64,7 +67,7 @@ export function CredentialsForm({
         // Mount server error to form
         setError('root.serverError', {
           type: 'server',
-          message: 'Invalid email or password',
+          message: t('invalidCredentials'),
         });
         return;
       }
@@ -81,7 +84,7 @@ export function CredentialsForm({
         // Mount server error to form
         setError('root.serverError', {
           type: 'server',
-          message: res.error ?? 'Something went wrong',
+          message: res.error ?? t('somethingWentWrong'),
         });
         return;
       }
@@ -93,10 +96,11 @@ export function CredentialsForm({
       setStep('verification');
     }
   };
+
   const SOCIAL_PROVIDERS = [
-    { id: 'github', Icon: FaGithub, label: 'Sign in with GitHub' },
-    { id: 'google', Icon: FcGoogle, label: 'Sign in with Google' },
-    { id: 'line', Icon: FaLine, label: 'Sign in with Line' },
+    { id: 'github', Icon: FaGithub, label: t('signInWithGitHub') },
+    { id: 'google', Icon: FcGoogle, label: t('signInWithGoogle') },
+    { id: 'line', Icon: FaLine, label: t('signInWithLine') },
   ] as const;
 
   const renderTitleOnMode = () => {
@@ -111,7 +115,7 @@ export function CredentialsForm({
             }}
             className={cn('cursor-pointer')}
           >
-            ...Back
+            {t('back')}
           </Button>
           <div>/</div>
           {/* Sign up */}
@@ -122,7 +126,7 @@ export function CredentialsForm({
               mode === 'Forgot password' && 'text-foreground',
             )}
           >
-            Forgot Password
+            {t('forgotPassword')}
           </Button>
         </>
       );
@@ -140,7 +144,7 @@ export function CredentialsForm({
               'cursor-pointer',
             )}
           >
-            Sign in ๐•ᴗ•๐
+            {t('signIn')}
           </Button>
           <div>/</div>
           {/* Sign up */}
@@ -155,11 +159,17 @@ export function CredentialsForm({
               'cursor-pointer',
             )}
           >
-            Sign up つ♡⊂
+            {t('signUp')}
           </Button>
         </>
       );
     }
+  };
+
+  const getButtonText = () => {
+    if (mode === 'Forgot password') return t('resetPassword');
+    if (mode === 'Sign in') return t('signIn');
+    return t('signUp');
   };
 
   return (
@@ -171,7 +181,7 @@ export function CredentialsForm({
         </span>
       </CardHeader>
 
-      {/* Information Form */}
+      {/* Form */}
       <CardContent className="px-6 gap-4">
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -186,12 +196,12 @@ export function CredentialsForm({
             {mode === 'Sign up' && (
               <Field data-invalid={!!errors.name}>
                 <FieldLabel htmlFor="name" className="sr-only">
-                  Name
+                  {t('name')}
                 </FieldLabel>
                 <Input
                   {...register('name')}
                   id="name"
-                  placeholder="Name"
+                  placeholder={t('name')}
                   className="rounded-sm h-10 text-sm focus:ring-1"
                 />
                 {errors.name && <FieldError>{errors.name.message}</FieldError>}
@@ -201,13 +211,13 @@ export function CredentialsForm({
             {/* Email Field */}
             <Field data-invalid={!!errors.email}>
               <FieldLabel htmlFor="email" className="sr-only">
-                Email
+                {t('email')}
               </FieldLabel>
               <Input
                 {...register('email')}
                 id="email"
                 type="email"
-                placeholder="Email"
+                placeholder={t('email')}
                 autoComplete={mode === 'Sign in' ? 'email' : 'off'}
                 className="rounded-sm h-10 text-sm focus:ring-1"
               />
@@ -217,7 +227,7 @@ export function CredentialsForm({
             {/* Password Field */}
             <Field data-invalid={!!errors.password}>
               <FieldLabel htmlFor="password" className="sr-only">
-                Password
+                {t('password')}
               </FieldLabel>
               {/* Uses relative and absolute to control the position of 
                   little eye without affecting Input style */}
@@ -228,7 +238,9 @@ export function CredentialsForm({
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   placeholder={
-                    mode === 'Forgot password' ? 'New password' : 'Password'
+                    mode === 'Forgot password'
+                      ? t('newPassword')
+                      : t('password')
                   }
                   autoComplete={
                     mode === 'Sign in' ? 'current-password' : 'new-password'
@@ -256,7 +268,7 @@ export function CredentialsForm({
             type="submit"
             className="h-10 mt-4 rounded-sm bg-muted-foreground hover:bg-foreground transition-all cursor-pointer"
           >
-            {mode === 'Forgot password' ? 'Reset Password' : mode}
+            {getButtonText()}
           </Button>
 
           {/* Global API Error */}
@@ -268,16 +280,16 @@ export function CredentialsForm({
         </form>
         {mode === 'Sign in' && (
           <span className="text-foreground pt-4 flex justify-center items-center text-xs ">
+            {t('forgotPasswordHint')}
             <button
               onClick={() => {
                 setMode('Forgot password');
                 reset();
               }}
-              className="text-blue-200! underline underline-offset-4 cursor-pointer pr-1"
+              className="text-blue-200! underline underline-offset-4 cursor-pointer pl-1"
             >
-              Click here
+              {t('clickHere')}
             </button>
-            if you forgot your password
           </span>
         )}
       </CardContent>
@@ -286,7 +298,7 @@ export function CredentialsForm({
       <div className="grid grid-cols-3 items-center justify-items-center px-8 py-2">
         <Separator className="max-w-24" />
         <span className="text-sm text-muted-foreground whitespace-nowrap">
-          or sign in with
+          {t('orSignInWith')}
         </span>
         <Separator className="max-w-24" />
       </div>

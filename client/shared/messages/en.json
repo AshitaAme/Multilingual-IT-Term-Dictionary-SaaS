@@ -1,0 +1,51 @@
+{
+  "common": {
+    "title": "Leaf Dictionary",
+    "description": "Search IT Terms",
+    "welcome": "Welcome to Leaf Dictionary"
+  },
+  "auth": {
+    "signIn": "Sign in ๐•ᴗ•๐",
+    "signUp": "Sign up つ♡⊂",
+    "forgotPassword": "Forgot Password (✘﹏✘ა)",
+    "back": "...Back",
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "newPassword": "New password",
+    "resetPassword": "Reset Password",
+    "clickHere": "click here",
+    "forgotPasswordHint": "If you forgot your password,",
+    "orSignInWith": "or sign in with",
+    "invalidCredentials": "Invalid email or password",
+    "somethingWentWrong": "Something went wrong",
+    "signInWithGitHub": "Sign in with GitHub",
+    "signInWithGoogle": "Sign in with Google",
+    "signInWithLine": "Sign in with Line",
+    "verificationCode": "Verification Code",
+    "waiting": "Waiting...{countdown}s",
+    "resend": "Resend"
+  },
+  "nav": {
+    "home": "Home",
+    "savedWords": "Saved words",
+    "signInUp": "Sign in/up",
+    "profile": "Profile",
+    "settings": "Settings",
+    "signOut": "Sign out",
+    "search": "Search...",
+    "theme": "theme",
+    "languages": "languages"
+  },
+  "tag": {
+  "all": "All",
+  "computerArchitecture": "Computer Architecture",
+  "frontend": "Frontend",
+  "backend": "Backend",
+  "ai": "AI",
+  "data": "Data",
+  "cloudService": "Cloud Service",
+  "git": "Git",
+  "nextjs": "Next.js"
+}
+}

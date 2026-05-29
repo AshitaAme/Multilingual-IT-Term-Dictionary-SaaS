@@ -1,5 +1,5 @@
 import { db } from '@/shared/lib/db/db';
-import { users } from '@/shared/lib/db/schema';
+import { users } from '@/shared/lib/db/schemas/user-schema';
 import { eq } from 'drizzle-orm';
 
 type UserUpdate = typeof users.$inferInsert;

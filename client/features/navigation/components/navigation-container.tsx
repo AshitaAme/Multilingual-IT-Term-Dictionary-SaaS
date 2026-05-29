@@ -2,17 +2,20 @@
 
 import { cn } from '@/shared/utils/utils';
 
-import UserNav from './user-nav';
-import { Search } from './search';
+import UserMenu from './user-menu';
 import IconsNav from './icons-nav';
 import { ThemeToggle } from './theme-toggle';
+import { LocaleMenu } from './locale-menu';
+import { NavigationContainerProps } from '../types/navigation-container-props';
 
-export default function Navigation() {
+export function NavigationContainer({
+  searchMenu,
+}: Readonly<NavigationContainerProps>) {
   return (
     // Navigation bar on the top of all pages with three sections:
-    // [<-] left (icons with links),
-    // [>|<] center (search),
-    // [->] right (theme toggle and user nav)
+    // left (icons with links),
+    // center (search),
+    // right (locale menu, theme toggle and user nav)
     <div
       className={cn(
         'grid grid-cols-3 items-center',
@@ -27,14 +30,13 @@ export default function Navigation() {
       </div>
 
       {/* Center section: Search */}
-      <div className="flex justify-center w-full">
-        <Search />
-      </div>
+      <div className="flex justify-center w-full">{searchMenu}</div>
 
       {/* Right section: Theme toggle and user nav */}
       <div className="flex pr-2 gap-2 justify-end">
+        <LocaleMenu />
         <ThemeToggle />
-        <UserNav />
+        <UserMenu />
       </div>
     </div>
   );

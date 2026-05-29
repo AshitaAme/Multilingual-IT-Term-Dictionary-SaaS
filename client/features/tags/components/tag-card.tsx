@@ -4,9 +4,10 @@ import { cn } from '@/shared/utils/utils';
 import { tagIcons } from '@/shared/lib/icons/tag-icons';
 import { Card, CardHeader, CardTitle } from '@/shared/components/ui/card';
 
-export default function TagCard({ tagName }: Readonly<{ tagName: string }>) {
-  // TODO: const wordCount = getWordCountByName(tagName);
-
+export default function TagCard({
+  tagKey,
+  tagName,
+}: Readonly<{ tagKey: string; tagName: string }>) {
   return (
     <Card
       className={cn(
@@ -18,7 +19,7 @@ export default function TagCard({ tagName }: Readonly<{ tagName: string }>) {
     >
       {/* <ShineBorder shineColor="currentColor" /> */}
       <div className="row-start-1 flex relative pt-[30%] justify-center">
-        {tagIcons[tagName]}
+        {tagIcons[tagKey]}
       </div>
       <CardHeader className="row-start-2 flex items-center justify-center">
         <CardTitle>{tagName}</CardTitle>

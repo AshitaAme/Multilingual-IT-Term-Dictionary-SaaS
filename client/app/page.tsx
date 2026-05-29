@@ -1,9 +1,5 @@
+import { TagCardsDisplay } from '@/features/tags';
 import { TypingAnimation } from '@/shared/components/ui/typing-animation';
-import CardsDisplay from '../features/tags/components/cards-display';
-
-export const metadata = {
-  title: 'Leaf Dictionary',
-};
 
 export default function Home() {
   return (
@@ -12,7 +8,7 @@ export default function Home() {
         <TypingAnimation>Hello Word!</TypingAnimation>
       </h1>
 
-      <CardsDisplay />
+      <TagCardsDisplay />
     </main>
   );
 }

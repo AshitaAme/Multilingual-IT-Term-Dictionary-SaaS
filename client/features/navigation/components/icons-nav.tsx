@@ -9,16 +9,18 @@ import {
 } from '@/shared/components/ui/navigation-menu';
 import { TooltipWrapper } from '@/shared/components/ui/tooltipWrapper';
 import { Book, HomeIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export default function IconsNav() {
+  const t = useTranslations('nav');
   return (
     // Navigation menu with icon-links for different pages
     <NavigationMenu>
       <NavigationMenuList className="gap-2">
-        {/* Home link */}
+        {/* Home */}
         <NavigationMenuItem>
           <NavigationMenuLink href="/">
-            <TooltipWrapper label="Home" side="bottom" leftBorder={true}>
+            <TooltipWrapper label={t('home')} side="bottom" leftBorder={true}>
               <Button
                 variant="outline"
                 size="icon"
@@ -30,10 +32,10 @@ export default function IconsNav() {
           </NavigationMenuLink>
         </NavigationMenuItem>
 
-        {/* My-words link */}
+        {/* Saved Words*/}
         <NavigationMenuItem>
           <NavigationMenuLink href="/">
-            <TooltipWrapper label="My words" side="bottom">
+            <TooltipWrapper label={t('savedWords')} side="bottom">
               <Button
                 variant="outline"
                 size="icon"
