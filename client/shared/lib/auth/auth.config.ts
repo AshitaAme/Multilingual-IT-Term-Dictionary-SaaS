@@ -8,7 +8,7 @@ import Line from 'next-auth/providers/line';
 
 import bcrypt from 'bcryptjs';
 import type { NextAuthConfig } from 'next-auth';
-import { users } from '../db/schemas/user-schema';
+import { users } from '../db/schemas/user.schema';
 
 export const authConfig: NextAuthConfig = {
   session: { strategy: 'jwt' },

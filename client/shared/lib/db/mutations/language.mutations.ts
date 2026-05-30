@@ -1,5 +1,5 @@
 import { db } from '../db';
-import { languages } from '../schemas/dictionary-schema';
+import { languages } from '../schemas/dictionary.schema';
 
 export async function upsertLanguage(values: {
   code: string;

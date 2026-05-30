@@ -10,7 +10,7 @@ import {
   index,
   pgEnum,
 } from 'drizzle-orm/pg-core';
-import { users } from './user-schema';
+import { users } from './user.schema';
 
 // ========== Language ==========
 export const languages = pgTable('language', {
@@ -28,11 +28,11 @@ export const terms = pgTable('term', {
     .$defaultFn(() => crypto.randomUUID()),
   slug: text('slug').notNull().unique(),
   status: termStatusEnum('status').default('published').notNull(),
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
   createdBy: text('created_by').references(() => users.id, {
     onDelete: 'set null',
   }),
-  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
-  updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
 });
 
 export const termTranslations = pgTable(

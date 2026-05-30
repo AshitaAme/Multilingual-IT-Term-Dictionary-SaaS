@@ -1,14 +1,12 @@
 import { db } from '../db';
-import { termTranslations } from '../schemas/dictionary-schema';
+import { termTranslations } from '../schemas/dictionary.schema';
 
-export async function upsertTermTranslation(values: {
-  termId: string;
-  languageCode: string;
-  name: string;
-  definition?: string;
-  createdBy?: string;
-}) {
-  const [result] = await db
+type upsertTermTranslationInput = typeof termTranslations.$inferInsert;
+
+export async function upsertTermTranslation(
+  values: upsertTermTranslationInput,
+) {
+  await db
     .insert(termTranslations)
     .values(values)
     .onConflictDoUpdate({
@@ -16,10 +14,7 @@ export async function upsertTermTranslation(values: {
       set: {
         name: values.name,
         definition: values.definition,
-        updatedAt: new Date(),
+        updatedAt: values.updatedAt,
       },
-    })
-    .returning();
-
-  return result;
+    });
 }

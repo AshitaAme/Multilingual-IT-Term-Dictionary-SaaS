@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import TagCard from './tag-card';
 import { cn } from '@/shared/utils/utils';
 
-const tagKeys = [
+export const tagKeys = [
   'all',
   'computerArchitecture',
   'frontend',

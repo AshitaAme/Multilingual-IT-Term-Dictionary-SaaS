@@ -1,5 +1,5 @@
 import { db } from '../db';
-import { tagTranslations } from '../schemas/dictionary-schema';
+import { tagTranslations } from '../schemas/dictionary.schema';
 
 export async function upsertTagTranslation(values: {
   tagId: string;

@@ -3,7 +3,8 @@ import { XMLParser } from 'fast-xml-parser';
 import path from 'node:path';
 
 export interface ParsedTerm {
-  source: string; // en-US term
+  source: string; // source language term
+  sourceLang: string; // source language code
   target: string; // target language term
   targetLang: string; // target language code
   definition?: string; // optional definition from descripGrp
@@ -33,11 +34,17 @@ export function parseMSTerm(termEntries: TermEntry[]) {
   const log: string[] = [];
 
   for (const termEntry of termEntries) {
-    const parsedTerm: ParsedTerm = { source: '', target: '', targetLang: '' };
+    const parsedTerm: ParsedTerm = {
+      source: '',
+      sourceLang: '',
+      target: '',
+      targetLang: '',
+    };
 
     if (!termEntry.langSet) continue;
-
+    let index = -1;
     for (const langSet of termEntry.langSet) {
+      index++;
       const lang = langSet['@_xml:lang'];
       // Skip the entire entry if any langSet has no term
       if (!langSet.ntig) break;
@@ -49,8 +56,9 @@ export function parseMSTerm(termEntries: TermEntry[]) {
         const termValue = termGrp.term['#text'];
         if (!termValue) break;
 
-        if (lang === 'en-US') {
+        if (index === 0) {
           parsedTerm.source = termValue;
+          parsedTerm.sourceLang = lang;
         } else {
           parsedTerm.target = termValue;
           parsedTerm.targetLang = lang;
@@ -81,7 +89,6 @@ export function parseMSTerm(termEntries: TermEntry[]) {
   }
 
   const logPath = path.join(__dirname, 'logs/MS-Tbx.log');
-  fs.mkdirSync(path.join(__dirname, 'logs'), { recursive: true });
   fs.writeFileSync(logPath, log.join('\n'));
   return res;
 }

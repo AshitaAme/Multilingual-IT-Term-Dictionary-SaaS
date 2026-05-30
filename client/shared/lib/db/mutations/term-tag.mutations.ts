@@ -1,6 +1,6 @@
 import { and, eq } from 'drizzle-orm';
 import { db } from '../db';
-import { termTags } from '../schemas/dictionary-schema';
+import { termTags } from '../schemas/dictionary.schema';
 
 export async function upsertTermTag(values: { termId: string; tagId: string }) {
   const [result] = await db

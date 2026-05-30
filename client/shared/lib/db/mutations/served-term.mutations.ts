@@ -1,6 +1,6 @@
 import { and, eq } from 'drizzle-orm';
 import { db } from '../db';
-import { savedTerms } from '../schemas/dictionary-schema';
+import { savedTerms } from '../schemas/dictionary.schema';
 
 export async function upsertSavedTerm(values: {
   userId: string;

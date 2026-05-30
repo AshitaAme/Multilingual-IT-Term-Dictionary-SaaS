@@ -1,5 +1,5 @@
 import { db } from '@/shared/lib/db/db';
-import { users } from '@/shared/lib/db/schemas/user-schema';
+import { users } from '@/shared/lib/db/schemas/user.schema';
 import { eq } from 'drizzle-orm';
 
 export async function getUserByEmail(email: string) {

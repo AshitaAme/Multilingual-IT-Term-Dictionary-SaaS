@@ -1,12 +1,12 @@
 import { db } from '../db';
-import { terms } from '../schemas/dictionary-schema';
+import { terms } from '../schemas/dictionary.schema';
 
 export async function upsertTerm(values: {
   slug: string;
   status?: 'draft' | 'published';
   createdBy?: string;
 }) {
-  const [result] = await db
+  const [term] = await db
     .insert(terms)
     .values(values)
     .onConflictDoUpdate({
@@ -18,5 +18,5 @@ export async function upsertTerm(values: {
     })
     .returning();
 
-  return result;
+  return term;
 }

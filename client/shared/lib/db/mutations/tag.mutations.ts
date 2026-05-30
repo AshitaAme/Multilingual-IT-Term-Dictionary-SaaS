@@ -1,5 +1,5 @@
 import { db } from '../db';
-import { tags } from '../schemas/dictionary-schema';
+import { tags } from '../schemas/dictionary.schema';
 
 export async function upsertTag(values: { slug: string; color?: string }) {
   const [result] = await db
