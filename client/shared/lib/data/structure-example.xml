@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="utf-8"?>
+<martif type="TBX" xml:lang="en-US">
+    <martifHeader>
+        <fileDesc>
+            <titleStmt>
+                <title>Microsoft Terminology Collection Export</title>
+            </titleStmt>
+            <sourceDesc>
+                <p>Microsoft Terminology Collection</p>
+            </sourceDesc>
+        </fileDesc>
+    </martifHeader>
+    <text>
+        <body>
+            <termEntry id="1_11444_11464">
+                <langSet xml:lang="en-US">
+                    <descripGrp>
+                        <descrip type="definition">A method of sorting data, such as a set of records, that typically uses the following order: punctuation marks, numerals, alphabetic characters (with capitals preceding lowercase letters), and any remaining symbols.</descrip>
+                    </descripGrp>
+                    <ntig>
+                        <termGrp>
+                            <term id="11444">alphanumeric sort</term>
+                            <termNote type="partOfSpeech">Noun</termNote>
+                            <termNote type="grammaticalNumber">NotSelected</termNote>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+                <langSet xml:lang="zh-Hans">
+                    <ntig>
+                        <termGrp>
+                            <term id="11464">按字母数字顺序排列</term>
+                            <termNote type="geographicalUsage">SGP, CHN</termNote>
+                            <termNote type="partOfSpeech">Noun</termNote>
+                            <termNote type="grammaticalGender">NotSelected</termNote>
+                            <termNote type="grammaticalNumber">NotSelected</termNote>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+            </termEntry>
+            <termEntry id="10_1218391_1771419">
+                <langSet xml:lang="en-US">
+                    <descripGrp>
+                        <descrip type="definition">An interface that is used to navigate the menus of a Unified Messaging (UM) system using DTMF or touchtone inputs.</descrip>
+                    </descripGrp>
+                    <ntig>
+                        <termGrp>
+                            <term id="1218391">touchtone interface</term>
+                            <termNote type="partOfSpeech">Noun</termNote>
+                            <termNote type="grammaticalNumber">Singular</termNote>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+                <langSet xml:lang="zh-Hans">
+                    <ntig>
+                        <termGrp>
+                            <term id="1771419">按键界面</term>
+                            <termNote type="geographicalUsage">SGP, CHN</termNote>
+                            <termNote type="partOfSpeech">Noun</termNote>
+                            <termNote type="grammaticalGender">NotSelected</termNote>
+                            <termNote type="grammaticalNumber">NotSelected</termNote>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+            </termEntry>
+            <termEntry id="10_1218391_316366">
+                <langSet xml:lang="en-US">
+                    <descripGrp>
+                        <descrip type="definition">An interface that is used to navigate the menus of a Unified Messaging (UM) system using DTMF or touchtone inputs.</descrip>
+                    </descripGrp>
+                    <ntig>
+                        <termGrp>
+                            <term id="1218391">touchtone interface</term>
+                            <termNote type="partOfSpeech">Noun</termNote>
+                            <termNote type="grammaticalNumber">Singular</termNote>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+                <langSet xml:lang="zh-Hans">
+                    <ntig>
+                        <termGrp>
+                            <term id="316366">电话用户界面</term>
+                            <termNote type="geographicalUsage">SGP, CHN</termNote>
+                            <termNote type="partOfSpeech">Noun</termNote>
+                            <termNote type="grammaticalGender">NotSelected</termNote>
+                            <termNote type="grammaticalNumber">NotSelected</termNote>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+            </termEntry>
+            <termEntry id="10_1218391_316368">
+                <langSet xml:lang="en-US">
+                    <descripGrp>
+                        <descrip type="definition">An interface that is used to navigate the menus of a Unified Messaging (UM) system using DTMF or touchtone inputs.</descrip>
+                    </descripGrp>
+                    <ntig>
+                        <termGrp>
+                            <term id="1218391">touchtone interface</term>
+                            <termNote type="partOfSpeech">Noun</termNote>
+                            <termNote type="grammaticalNumber">Singular</termNote>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+                <langSet xml:lang="zh-Hans">
+                    <ntig>
+                        <termGrp>
+                            <term id="316368">TUI</term>
+                            <termNote type="geographicalUsage">SGP, CHN</termNote>
+                            <termNote type="partOfSpeech">Noun</termNote>
+                            <termNote type="grammaticalGender">NotSelected</termNote>
+                            <termNote type="grammaticalNumber">NotSelected</termNote>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+            </termEntry>
+            <termEntry id="10_307453_1771419">
+                <langSet xml:lang="en-US">
+                    <descripGrp>
+                        <descrip type="definition">An interface that is used to navigate the menus of a Unified Messaging (UM) system using DTMF or touchtone inputs.</descrip>
+                    </descripGrp>
+                    <ntig>
+                        <termGrp>
+                            <term id="307453">Telephone User Interface</term>
+                            <termNote type="partOfSpeech">ProperNoun</termNote>
+                            <termNote type="grammaticalNumber">Singular</termNote>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+                <langSet xml:lang="zh-Hans">
+                    <ntig>
+                        <termGrp>
+                            <term id="1771419">按键界面</term>
+                            <termNote type="geographicalUsage">SGP, CHN</termNote>
+                            <termNote type="partOfSpeech">Noun</termNote>
+                            <termNote type="grammaticalGender">NotSelected</termNote>
+                            <termNote type="grammaticalNumber">NotSelected</termNote>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+            </termEntry>
+            <termEntry id="10_307453_316366">
+                <langSet xml:lang="en-US">
+                    <descripGrp>
+                        <descrip type="definition">An interface that is used to navigate the menus of a Unified Messaging (UM) system using DTMF or touchtone inputs.</descrip>
+                    </descripGrp>
+                    <ntig>
+                        <termGrp>
+                            <term id="307453">Telephone User Interface</term>
+                            <termNote type="partOfSpeech">ProperNoun</termNote>
+                            <termNote type="grammaticalNumber">Singular</termNote>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+                <langSet xml:lang="zh-Hans">
+                    <ntig>
+                        <termGrp>
+                            <term id="316366">电话用户界面</term>
+                            <termNote type="geographicalUsage">SGP, CHN</termNote>
+                            <termNote type="partOfSpeech">Noun</termNote>
+                            <termNote type="grammaticalGender">NotSelected</termNote>
+                            <termNote type="grammaticalNumber">NotSelected</termNote>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+            </termEntry>
+            <termEntry id="10_307453_316368">
+                <langSet xml:lang="en-US">
+                    <descripGrp>
+                        <descrip type="definition">An interface that is used to navigate the menus of a Unified Messaging (UM) system using DTMF or touchtone inputs.</descrip>
+                    </descripGrp>
+                    <ntig>
+                        <termGrp>
+                            <term id="307453">Telephone User Interface</term>
+                            <termNote type="partOfSpeech">ProperNoun</termNote>
+                            <termNote type="grammaticalNumber">Singular</termNote>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+                <langSet xml:lang="zh-Hans">
+                    <ntig>
+                        <termGrp>
+                            <term id="316368">TUI</term>
+                            <termNote type="geographicalUsage">SGP, CHN</termNote>
+                            <termNote type="partOfSpeech">Noun</termNote>
+                            <termNote type="grammaticalGender">NotSelected</termNote>
+                            <termNote type="grammaticalNumber">NotSelected</termNote>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+            </termEntry>
+            <termEntry id="10_307467_1771419">
+                <langSet xml:lang="en-US">
+                    <descripGrp>
+                        <descrip type="definition">An interface that is used to navigate the menus of a Unified Messaging (UM) system using DTMF or touchtone inputs.</descrip>
+                    </descripGrp>
+                    <ntig>
+                        <termGrp>
+                            <term id="307467">TUI</term>
+                            <termNote type="partOfSpeech">Noun</termNote>
+                            <termNote type="grammaticalNumber">Singular</termNote>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+                <langSet xml:lang="zh-Hans">
+                    <ntig>
+                        <termGrp>
+                            <term id="1771419">按键界面</term>
+                            <termNote type="geographicalUsage">SGP, CHN</termNote>
+                            <termNote type="partOfSpeech">Noun</termNote>
+                            <termNote type="grammaticalGender">NotSelected</termNote>
+                            <termNote type="grammaticalNumber">NotSelected</termNote>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+            </termEntry>
+            <termEntry id="10_307467_316366">
+                <langSet xml:lang="en-US">
+                    <descripGrp>
+                        <descrip type="definition">An interface that is used to navigate the menus of a Unified Messaging (UM) system using DTMF or touchtone inputs.</descrip>
+                    </descripGrp>
+                    <ntig>
+                        <termGrp>
+                            <term id="307467">TUI</term>
+                            <termNote type="partOfSpeech">Noun</termNote>
+                            <termNote type="grammaticalNumber">Singular</termNote>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+                <langSet xml:lang="zh-Hans">
+                    <ntig>
+                        <termGrp>
+                            <term id="316366">电话用户界面</term>
+                            <termNote type="geographicalUsage">SGP, CHN</termNote>
+                            <termNote type="partOfSpeech">Noun</termNote>
+                            <termNote type="grammaticalGender">NotSelected</termNote>
+                            <termNote type="grammaticalNumber">NotSelected</termNote>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+            </termEntry>
+            <termEntry id="10_307467_316368">
+                <langSet xml:lang="en-US">
+                    <descripGrp>
+                        <descrip type="definition">An interface that is used to navigate the menus of a Unified Messaging (UM) system using DTMF or touchtone inputs.</descrip>
+                    </descripGrp>
+                    <ntig>
+                        <termGrp>
+                            <term id="307467">TUI</term>
+                            <termNote type="partOfSpeech">Noun</termNote>
+                            <termNote type="grammaticalNumber">Singular</termNote>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+                <langSet xml:lang="zh-Hans">
+                    <ntig>
+                        <termGrp>
+                            <term id="316368">TUI</term>
+                            <termNote type="geographicalUsage">SGP, CHN</termNote>
+                            <termNote type="partOfSpeech">Noun</termNote>
+                            <termNote type="grammaticalGender">NotSelected</termNote>
+                            <termNote type="grammaticalNumber">NotSelected</termNote>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+            </termEntry>
+            <termEntry id="100_258324_377871">
+                <langSet xml:lang="en-US">
+                    <descripGrp>
+                        <descrip type="definition">A system of depreciation that assigns depreciation methods to different classes of assets. Created by the Economic Recovery Tax Act of 1981 for U.S. tax purposes and modified by the Tax Reform Act of 1986.</descrip>
+                    </descripGrp>
+                    <ntig>
+                        <termGrp>
+                            <term id="258324">Accelerated Cost Recovery System</term>
+                            <termNote type="partOfSpeech">Noun</termNote>
+                            <termNote type="grammaticalNumber">Singular</termNote>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+                <langSet xml:lang="zh-Hans">
+                    <ntig>
+                        <termGrp>
+                            <term id="377871">加速折旧法</term>
+                            <termNote type="geographicalUsage">SGP, CHN</termNote>
+                            <termNote type="partOfSpeech">Noun</termNote>
+                            <termNote type="grammaticalGender">NotSelected</termNote>
+                            <termNote type="grammaticalNumber">NotSelected</termNote>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+            </termEntry>
+            <termEntry id="100_258334_377871">
+                <langSet xml:lang="en-US">
+                    <descripGrp>
+                        <descrip type="definition">A system of depreciation that assigns depreciation methods to different classes of assets. Created by the Economic Recovery Tax Act of 1981 for U.S. tax purposes and modified by the Tax Reform Act of 1986.</descrip>
+                    </descripGrp>
+                    <ntig>
+                        <termGrp>
+                            <term id="258334">ACRS</term>
+                            <termNote type="partOfSpeech">Noun</termNote>
+                            <termNote type="grammaticalNumber">Singular</termNote>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+                <langSet xml:lang="zh-Hans">
+                    <ntig>
+                        <termGrp>
+                            <term id="377871">加速折旧法</term>
+                            <termNote type="geographicalUsage">SGP, CHN</termNote>
+                            <termNote type="partOfSpeech">Noun</termNote>
+                            <termNote type="grammaticalGender">NotSelected</termNote>
+                            <termNote type="grammaticalNumber">NotSelected</termNote>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+            </termEntry>
+            <termEntry id="1000_93390_93416">
+                <langSet xml:lang="en-US">
+                    <descripGrp>
+                        <descrip type="definition">A specification for connecting users on an Ethernet network to the Internet through a broadband connection, such as a single DSL line, wireless device, or cable modem. Using PPPoE and a broadband modem, LAN users can gain individual authenticated access to high-speed data networks. By combining Ethernet and Point-to-Point Protocol (PPP), PPPoE provides an efficient way to create a separate connection for each user to a remote server.</descrip>
+                    </descripGrp>
+                    <ntig>
+                        <termGrp>
+                            <term id="93390">Point-to-Point Protocol over Ethernet</term>
+                            <termNote type="partOfSpeech">Noun</termNote>
+                            <termNote type="grammaticalNumber">Singular</termNote>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+                <langSet xml:lang="zh-Hans">
+                    <ntig>
+                        <termGrp>
+                            <term id="93416">以太网点对点协议</term>
+                            <termNote type="geographicalUsage">SGP, CHN</termNote>
+                            <termNote type="partOfSpeech">Noun</termNote>
+                            <termNote type="grammaticalGender">NotSelected</termNote>
+                            <termNote type="grammaticalNumber">NotSelected</termNote>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+            </termEntry>
+            <termEntry id="1000_93390_93417">
+                <langSet xml:lang="en-US">
+                    <descripGrp>
+                        <descrip type="definition">A specification for connecting users on an Ethernet network to the Internet through a broadband connection, such as a single DSL line, wireless device, or cable modem. Using PPPoE and a broadband modem, LAN users can gain individual authenticated access to high-speed data networks. By combining Ethernet and Point-to-Point Protocol (PPP), PPPoE provides an efficient way to create a separate connection for each user to a remote server.</descrip>
+                    </descripGrp>
+                    <ntig>
+                        <termGrp>
+                            <term id="93390">Point-to-Point Protocol over Ethernet</term>
+                            <termNote type="partOfSpeech">Noun</termNote>
+                            <termNote type="grammaticalNumber">Singular</termNote>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+                <langSet xml:lang="zh-Hans">
+                    <ntig>
+                        <termGrp>
+                            <term id="93417">PPPoE</term>
+                            <termNote type="geographicalUsage">SGP, CHN</termNote>
+                            <termNote type="partOfSpeech">Noun</termNote>
+                            <termNote type="grammaticalGender">NotSelected</termNote>
+                            <termNote type="grammaticalNumber">NotSelected</termNote>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+            </termEntry>
+            <termEntry id="1000_93391_93416">
+                <langSet xml:lang="en-US">
+                    <descripGrp>
+                        <descrip type="definition">A specification for connecting users on an Ethernet network to the Internet through a broadband connection, such as a single DSL line, wireless device, or cable modem. Using PPPoE and a broadband modem, LAN users can gain individual authenticated access to high-speed data networks. By combining Ethernet and Point-to-Point Protocol (PPP), PPPoE provides an efficient way to create a separate connection for each user to a remote server.</descrip>
+                    </descripGrp>
+                    <ntig>
+                        <termGrp>
+                            <term id="93391">PPPoE</term>
+                            <termNote type="partOfSpeech">Noun</termNote>
+                            <termNote type="grammaticalNumber">Singular</termNote>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+                <langSet xml:lang="zh-Hans">
+                    <ntig>
+                        <termGrp>
+                            <term id="93416">以太网点对点协议</term>
+                            <termNote type="geographicalUsage">SGP, CHN</termNote>
+                            <termNote type="partOfSpeech">Noun</termNote>
+                            <termNote type="grammaticalGender">NotSelected</termNote>
+                            <termNote type="grammaticalNumber">NotSelected</termNote>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+            </termEntry>
+            <termEntry id="1000_93391_93417">
+                <langSet xml:lang="en-US">
+                    <descripGrp>
+                        <descrip type="definition">A specification for connecting users on an Ethernet network to the Internet through a broadband connection, such as a single DSL line, wireless device, or cable modem. Using PPPoE and a broadband modem, LAN users can gain individual authenticated access to high-speed data networks. By combining Ethernet and Point-to-Point Protocol (PPP), PPPoE provides an efficient way to create a separate connection for each user to a remote server.</descrip>
+                    </descripGrp>
+                    <ntig>
+                        <termGrp>
+                            <term id="93391">PPPoE</term>
+                            <termNote type="partOfSpeech">Noun</termNote>
+                            <termNote type="grammaticalNumber">Singular</termNote>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+                <langSet xml:lang="zh-Hans">
+                    <ntig>
+                        <termGrp>
+                            <term id="93417">PPPoE</term>
+                            <termNote type="geographicalUsage">SGP, CHN</termNote>
+                            <termNote type="partOfSpeech">Noun</termNote>
+                            <termNote type="grammaticalGender">NotSelected</termNote>
+                            <termNote type="grammaticalNumber">NotSelected</termNote>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+            </termEntry>
+            <termEntry id="10000_74213_74225">
+                <langSet xml:lang="en-US">
+                    <descripGrp>
+                        <descrip type="definition">A computer, software program, network, or other computer equipment that remains in use after a business or organization installs new systems. Compatibility with legacy systems is an important consideration when a new version is installed. For example, will a new spreadsheet software release be able to read the existing business records without expensive and time-consuming conversion to a new format? Legacy systems in many organizations are based on mainframe computers, which may be either augmented or slowly replaced by client/server architectures.</descrip>
+                    </descripGrp>
+                    <ntig>
+                        <termGrp>
+                            <term id="74213">legacy system</term>
+                            <termNote type="partOfSpeech">Noun</termNote>
+                            <termNote type="grammaticalNumber">Singular</termNote>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+                <langSet xml:lang="zh-Hans">
+                    <ntig>
+                        <termGrp>
+                            <term id="74225">旧系统</term>
+                            <termNote type="geographicalUsage">SGP, CHN</termNote>
+                            <termNote type="partOfSpeech">Noun</termNote>
+                            <termNote type="grammaticalGender">NotSelected</termNote>

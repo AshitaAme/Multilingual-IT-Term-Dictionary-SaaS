@@ -1,1 +1,1 @@
-export { TagCardsDisplay } from './components/tag-cards-display';
+export { TagCardDisplay } from './components/tag-card-display';

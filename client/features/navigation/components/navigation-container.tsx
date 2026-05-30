@@ -3,7 +3,7 @@
 import { cn } from '@/shared/utils/utils';
 
 import UserMenu from './user-menu';
-import IconsNav from './icons-nav';
+import IconNav from './icon-nav';
 import { ThemeToggle } from './theme-toggle';
 import { LocaleMenu } from './locale-menu';
 import { NavigationContainerProps } from '../types/navigation-container-props';
@@ -26,7 +26,7 @@ export function NavigationContainer({
     >
       {/* Left section: Icons with links */}
       <div className="flex pl-2 gap-2 justify-start">
-        <IconsNav />
+        <IconNav />
       </div>
 
       {/* Center section: Search */}
