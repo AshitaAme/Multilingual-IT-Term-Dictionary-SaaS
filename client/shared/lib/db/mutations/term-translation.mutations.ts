@@ -1,11 +1,10 @@
+import { sql } from 'drizzle-orm';
 import { db } from '../db';
 import { termTranslations } from '../schemas/dictionary.schema';
 
-type upsertTermTranslationInput = typeof termTranslations.$inferInsert;
+export type TermTranslationInput = typeof termTranslations.$inferInsert;
 
-export async function upsertTermTranslation(
-  values: upsertTermTranslationInput,
-) {
+export async function upsertTermTranslation(values: TermTranslationInput) {
   await db
     .insert(termTranslations)
     .values(values)
@@ -14,7 +13,21 @@ export async function upsertTermTranslation(
       set: {
         name: values.name,
         definition: values.definition,
-        updatedAt: values.updatedAt,
+        updatedAt: new Date(),
+      },
+    });
+}
+
+export async function upsertTermTranslations(values: TermTranslationInput[]) {
+  await db
+    .insert(termTranslations)
+    .values(values)
+    .onConflictDoUpdate({
+      target: [termTranslations.termId, termTranslations.languageCode],
+      set: {
+        name: sql`excluded.name`,
+        definition: sql`excluded.definition`,
+        updatedAt: new Date(),
       },
     });
 }

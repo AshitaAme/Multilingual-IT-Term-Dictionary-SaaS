@@ -1,12 +1,11 @@
+import { sql } from 'drizzle-orm';
 import { db } from '../db';
 import { tagTranslations } from '../schemas/dictionary.schema';
 
-export async function upsertTagTranslation(values: {
-  tagId: string;
-  languageCode: string;
-  name: string;
-}) {
-  const [result] = await db
+export type TagTranslationInput = typeof tagTranslations.$inferInsert;
+
+export async function upsertTagTranslation(values: TagTranslationInput) {
+  await db
     .insert(tagTranslations)
     .values(values)
     .onConflictDoUpdate({
@@ -16,6 +15,17 @@ export async function upsertTagTranslation(values: {
       },
     })
     .returning();
+}
 
-  return result;
+export async function upsertTagTranslations(values: TagTranslationInput[]) {
+  await db
+    .insert(tagTranslations)
+    .values(values)
+    .onConflictDoUpdate({
+      target: [tagTranslations.tagId, tagTranslations.languageCode],
+      set: {
+        name: sql`excluded.name`,
+      },
+    })
+    .returning();
 }

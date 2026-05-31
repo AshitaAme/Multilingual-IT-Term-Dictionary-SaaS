@@ -1,14 +1,8 @@
 import * as fs from 'node:fs';
 import { XMLParser } from 'fast-xml-parser';
 import path from 'node:path';
-
-export interface ParsedTerm {
-  source: string; // source language term
-  sourceLang: string; // source language code
-  target: string; // target language term
-  targetLang: string; // target language code
-  definition?: string; // optional definition from descripGrp
-}
+import { ParseError } from '@/shared/errors/errors';
+import { ParsedTerm } from './transfer-tbx';
 
 export function parseTbx(filePath: string): ParsedTerm[] {
   const xml = fs.readFileSync(filePath, 'utf-8');
@@ -25,6 +19,9 @@ export function parseTbx(filePath: string): ParsedTerm[] {
 
   const root = parser.parse(xml);
   const termEntries: TermEntry[] = root?.martif?.text?.body?.termEntry ?? [];
+  if (termEntries.length === 0) {
+    throw new ParseError(`${parseTbx.name}: Empty tbx file or parse failed`);
+  }
 
   return parseMSTerm(termEntries);
 }
@@ -70,7 +67,7 @@ export function parseMSTerm(termEntries: TermEntry[]) {
       if (!descrips) continue;
       for (const descrip of descrips) {
         if (descrip['@_type'] === 'definition') {
-          parsedTerm.definition = descrip['#text'];
+          parsedTerm.sourceDefinition = descrip['#text'];
         }
       }
     }
@@ -90,6 +87,9 @@ export function parseMSTerm(termEntries: TermEntry[]) {
 
   const logPath = path.join(__dirname, 'logs/MS-Tbx.log');
   fs.writeFileSync(logPath, log.join('\n'));
+  if (!res || res.length === 0) {
+    throw new Error(`${parseMSTerm.name}: Parse Failed`);
+  }
   return res;
 }
 

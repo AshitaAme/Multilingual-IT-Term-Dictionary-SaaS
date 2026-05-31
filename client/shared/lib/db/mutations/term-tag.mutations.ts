@@ -2,25 +2,23 @@ import { and, eq } from 'drizzle-orm';
 import { db } from '../db';
 import { termTags } from '../schemas/dictionary.schema';
 
-export async function upsertTermTag(values: { termId: string; tagId: string }) {
-  const [result] = await db
-    .insert(termTags)
-    .values(values)
-    .onConflictDoNothing()
-    .returning();
+export type TermTagInput = typeof termTags.$inferInsert;
 
-  return result;
+export async function insertTermTag(values: TermTagInput) {
+  await db.insert(termTags).values(values);
 }
 
-export async function deleteTermTag(values: { termId: string; tagId: string }) {
-  const [result] = await db
+export async function insertTermTags(values: TermTagInput[]) {
+  await db.insert(termTags).values(values);
+}
+
+export async function deleteTermTag(values: TermTagInput) {
+  await db
     .delete(termTags)
     .where(
       and(eq(termTags.termId, values.termId), eq(termTags.tagId, values.tagId)),
     )
     .returning();
-
-  return result;
 }
 
 export async function replaceTermTags(values: {
