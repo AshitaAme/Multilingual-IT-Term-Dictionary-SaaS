@@ -1,4 +1,4 @@
-import { TagCardsDisplay } from '@/features/tags';
+import { TagCardDisplay } from '@/features/tags';
 import { TypingAnimation } from '@/shared/components/ui/typing-animation';
 
 export default function Home() {
@@ -8,7 +8,7 @@ export default function Home() {
         <TypingAnimation>Hello Word!</TypingAnimation>
       </h1>
 
-      <TagCardsDisplay />
+      <TagCardDisplay />
     </main>
   );
 }

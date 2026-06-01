@@ -81,7 +81,7 @@ export default function UserMenu() {
                 alt={session.user.name ?? ''}
               />
               <AvatarFallback className="text-sm font-semibold">
-                N
+                {session.user.name?.[0] ?? '?'}
               </AvatarFallback>
             </Avatar>
             <span className="truncate max-w-30 text-[14px] mt-2 font-semibold">

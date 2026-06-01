@@ -9,6 +9,14 @@ export async function getUserByEmail(email: string) {
     .where(eq(users.email, email))
     .then((res) => res[0]);
 }
+export async function getUserById(id: string) {
+  return await db
+    .select()
+    .from(users)
+    .where(eq(users.id, id))
+    .then((res) => res[0]);
+}
+
 type UserInsert = typeof users.$inferInsert;
 
 export async function insertUser(data: UserInsert) {

@@ -1,5 +1,5 @@
 {
-  "id": "a865e388-6fcd-4336-807c-a161da052507",
+  "id": "4d7bc781-8565-4074-a63b-a6dbdbaa961a",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -773,12 +773,6 @@
           "notNull": true,
           "default": "'published'"
         },
-        "created_by": {
-          "name": "created_by",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -792,6 +786,12 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
@@ -1004,6 +1004,14 @@
           "primaryKey": false,
           "notNull": false
         },
+        "role": {
+          "name": "role",
+          "type": "role",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'user'"
+        },
         "emailVerified": {
           "name": "emailVerified",
           "type": "timestamp",
@@ -1081,6 +1089,14 @@
       "values": [
         "draft",
         "published"
+      ]
+    },
+    "public.role": {
+      "name": "role",
+      "schema": "public",
+      "values": [
+        "user",
+        "admin"
       ]
     }
   },

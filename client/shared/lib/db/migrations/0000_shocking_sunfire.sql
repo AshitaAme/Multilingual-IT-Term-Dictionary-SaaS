@@ -1,4 +1,5 @@
 CREATE TYPE "public"."term_status" AS ENUM('draft', 'published');--> statement-breakpoint
+CREATE TYPE "public"."role" AS ENUM('user', 'admin');--> statement-breakpoint
 CREATE TABLE "language" (
 	"code" text PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
@@ -75,9 +76,9 @@ CREATE TABLE "term" (
 	"id" text PRIMARY KEY NOT NULL,
 	"slug" text NOT NULL,
 	"status" "term_status" DEFAULT 'published' NOT NULL,
-	"created_by" text,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
+	"created_by" text,
 	CONSTRAINT "term_slug_unique" UNIQUE("slug")
 );
 --> statement-breakpoint
@@ -108,6 +109,7 @@ CREATE TABLE "user" (
 	"email" text NOT NULL,
 	"image" text,
 	"password" text,
+	"role" "role" DEFAULT 'user' NOT NULL,
 	"emailVerified" timestamp,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	CONSTRAINT "user_email_unique" UNIQUE("email")

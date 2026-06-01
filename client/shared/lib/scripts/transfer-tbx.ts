@@ -94,7 +94,7 @@ export async function transferTbx(filePath: string) {
   const termSlugIdMap = new Map(terms.map((t) => [t.slug, t.id]));
   const tagSlugIdMap = new Map(tags.map((t) => [t.slug, t.id]));
 
-  // 3. Build translation & association payloads
+  // 3. Build translations & associations
   const termTranslationPayloads: TermTranslationInput[] = [];
   const tagTranslationPayloads: TagTranslationInput[] = [];
   const termTagPayloads: TermTagInput[] = [];
@@ -133,6 +133,7 @@ export async function transferTbx(filePath: string) {
     );
 
     // 3.2 Build term tag associations
+
     const tagSlugs = termTagMap.get(slugify(source));
     tagSlugs?.forEach((tagSlug) => {
       const tagId = tagSlugIdMap.get(tagSlug)!; // For one unique slug, there must be one id
@@ -140,9 +141,10 @@ export async function transferTbx(filePath: string) {
     });
 
     // 3.3 Build tag translations
-    // SourceTags and targetTags are guaranteed to have the same length in AIEnrichTerm()
-    // so we can safely index into targetTags by position.
+
     sourceTags?.forEach((sourceTag, index) => {
+      // SourceTags and targetTags are guaranteed to have the same length in AIEnrichTerm()
+      // so we can safely index into targetTags by position.
       const tagId = tagSlugIdMap.get(slugify(sourceTag))!;
       const targetTag = targetTags![index];
       tagTranslationPayloads.push(
