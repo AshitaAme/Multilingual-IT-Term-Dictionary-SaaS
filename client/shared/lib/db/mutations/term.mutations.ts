@@ -1,4 +1,4 @@
-import { sql } from 'drizzle-orm';
+import { sql, count } from 'drizzle-orm';
 import { db } from '../db';
 import { terms } from '../schemas/dictionary.schema';
 
@@ -20,6 +20,21 @@ export async function TermInput(values: TermInput) {
   return term;
 }
 
+export async function insertTerms(values: TermInput[]) {
+  const term = await db
+    .insert(terms)
+    .values(values)
+    .onConflictDoUpdate({
+      target: terms.slug,
+      set: {
+        slug: sql`${terms.slug}`, // Same value inserted. Use this for returning conflict data.
+      },
+    })
+    .returning();
+
+  return term;
+}
+
 export async function upsertTerms(values: TermInput[]) {
   const term = await db
     .insert(terms)
@@ -34,4 +49,9 @@ export async function upsertTerms(values: TermInput[]) {
     .returning();
 
   return term;
+}
+
+export async function countTerms() {
+  const result = await db.select({ count: count() }).from(terms);
+  return result[0].count;
 }

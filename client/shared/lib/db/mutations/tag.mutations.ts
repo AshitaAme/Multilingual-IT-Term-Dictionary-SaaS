@@ -1,4 +1,4 @@
-import { sql } from 'drizzle-orm';
+import { count, sql } from 'drizzle-orm';
 import { db } from '../db';
 import { tags } from '../schemas/dictionary.schema';
 
@@ -20,6 +20,21 @@ export async function upsertTag(values: TagInput) {
   return result;
 }
 
+export async function insertTags(values: TagInput[]) {
+  const result = await db
+    .insert(tags)
+    .values(values)
+    .onConflictDoUpdate({
+      target: tags.slug,
+      set: {
+        slug: sql`${tags.slug}`, // Same value inserted. Use this for returning conflict data.
+      },
+    })
+    .returning();
+
+  return result;
+}
+
 export async function upsertTags(values: TagInput[]) {
   const result = await db
     .insert(tags)
@@ -34,4 +49,9 @@ export async function upsertTags(values: TagInput[]) {
     .returning();
 
   return result;
+}
+
+export async function countTags() {
+  const result = await db.select({ count: count() }).from(tags);
+  return result[0].count;
 }

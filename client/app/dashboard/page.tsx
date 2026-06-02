@@ -1,9 +1,9 @@
-import { ImportTerm } from '@/features/dashboard/components/import-term';
+import { DashboardContainer } from '@/features/dashboard';
 
-export default function dashboard() {
+export default function Dashboard() {
   return (
-    <div className="flex items-center justify-center">
-      <ImportTerm />
+    <div className="min-h-screen">
+      <DashboardContainer />
     </div>
   );
 }

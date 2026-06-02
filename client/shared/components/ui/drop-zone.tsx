@@ -1,26 +1,46 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { FileUp } from 'lucide-react';
 import { Card } from './card';
+import { transferTbx } from '@/shared/lib/scripts/transfer-tbx';
 
 // Defines the allowed file extensions as a union type
 export const AcceptedFileExtensions = ['tbx', 'csv'] as const;
 export type AcceptedFileType = (typeof AcceptedFileExtensions)[number];
 
-export function DropZone() {
+export function DropZone({
+  children,
+  className,
+}: Readonly<{ children: React.ReactNode; className?: string }>) {
+  const [isProcessing, setIsProcessing] = useState(false);
+
   // useCallback memoizes the onDrop handler to prevent unnecessary re-renders
   const onDrop = useCallback((acceptedFiles: File[]) => {
     // Filter files to only allow .tbx and .csv extensions
+
     const filtered = acceptedFiles.filter((file) => {
       const ext = file.name.split('.').pop() as AcceptedFileType;
       return AcceptedFileExtensions.includes(ext);
     });
-    console.log(filtered);
+
+    setIsProcessing(true);
+    try {
+      console.log(`[${DropZone.name}]: Transfer started! `);
+      filtered.forEach(async (file) => {
+        try {
+          const xml = await file.text();
+          await transferTbx({ xml });
+        } catch (e) {
+          console.error('This file failed', file.name, e);
+        }
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   }, []);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     // Restrict accepted MIME types and file extensions
     accept: {
@@ -28,20 +48,15 @@ export function DropZone() {
       'application/x-tbx': ['.tbx'],
     },
     maxSize: 50 * 1024 * 1024, // 50MB in bytes
+    noDrag: isProcessing,
+    noClick: isProcessing,
   });
 
   return (
     // getRootProps() spreads drag-and-drop event listeners onto the Card
-    <Card
-      {...getRootProps()}
-      className="w-full h-full border-2 border-dashed border-foreground rounded-lg flex flex-col items-center justify-center cursor-pointer"
-    >
-      {/* getInputProps() wires up the hidden file input for click-to-upload */}
+    <Card {...getRootProps()} className={className}>
+      {children}
       <input {...getInputProps()} />
-      <FileUp className="mb-2" />
-      <span>
-        {isDragActive ? 'Drop the file here...' : 'Choose a file up to 50MB'}
-      </span>
     </Card>
   );
 }

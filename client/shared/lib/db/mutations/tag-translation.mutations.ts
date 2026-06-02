@@ -4,6 +4,10 @@ import { tagTranslations } from '../schemas/dictionary.schema';
 
 export type TagTranslationInput = typeof tagTranslations.$inferInsert;
 
+export async function insertTagTranslations(values: TagTranslationInput[]) {
+  await db.insert(tagTranslations).values(values).onConflictDoNothing();
+}
+
 export async function upsertTagTranslation(values: TagTranslationInput) {
   await db
     .insert(tagTranslations)
@@ -26,6 +30,5 @@ export async function upsertTagTranslations(values: TagTranslationInput[]) {
       set: {
         name: sql`excluded.name`,
       },
-    })
-    .returning();
+    });
 }

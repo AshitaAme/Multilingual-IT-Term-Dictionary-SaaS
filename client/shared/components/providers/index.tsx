@@ -16,7 +16,11 @@ export default function AppProviders({
   locale: string;
 }>) {
   return (
-    <NextIntlClientProvider messages={messages} locale={locale}>
+    <NextIntlClientProvider
+      timeZone="America/New_York"
+      messages={messages}
+      locale={locale}
+    >
       <SessionProvider>
         <ThemeProvider
           attribute="class"

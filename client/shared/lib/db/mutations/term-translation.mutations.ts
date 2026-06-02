@@ -4,6 +4,10 @@ import { termTranslations } from '../schemas/dictionary.schema';
 
 export type TermTranslationInput = typeof termTranslations.$inferInsert;
 
+export async function insertTermTranslations(values: TermTranslationInput[]) {
+  await db.insert(termTranslations).values(values).onConflictDoNothing();
+}
+
 export async function upsertTermTranslation(values: TermTranslationInput) {
   await db
     .insert(termTranslations)

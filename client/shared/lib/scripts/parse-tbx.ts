@@ -1,16 +1,15 @@
-import * as fs from 'node:fs';
 import { XMLParser } from 'fast-xml-parser';
-import path from 'node:path';
 import { ParseError } from '@/shared/errors/errors';
-import { ParsedTerm } from './transfer-tbx';
+import { ParsedTerm, ParsedTermSchema } from './parse-schemas';
+import * as fs from 'node:fs';
 
-export function parseTbx(filePath: string): ParsedTerm[] {
-  const xml = fs.readFileSync(filePath, 'utf-8');
-
+export function parseTbx(xml: string): ParsedTerm[] {
   const parser = new XMLParser({
     ignoreAttributes: false,
     attributeNamePrefix: '@_',
     textNodeName: '#text',
+    parseTagValue: false,
+    parseAttributeValue: false,
     trimValues: true,
     // Force these nodes to always parse as arrays, even when only one element exists
     isArray: (tagName) =>
@@ -55,10 +54,10 @@ export function parseMSTerm(termEntries: TermEntry[]) {
 
         if (index === 0) {
           parsedTerm.source = termValue;
-          parsedTerm.sourceLang = lang;
+          parsedTerm.sourceLang = normalizeLanguageCode(lang);
         } else {
           parsedTerm.target = termValue;
-          parsedTerm.targetLang = lang;
+          parsedTerm.targetLang = normalizeLanguageCode(lang);
         }
       }
 
@@ -73,24 +72,37 @@ export function parseMSTerm(termEntries: TermEntry[]) {
     }
 
     // Only include entries with both source and target populated
-    if (
-      parsedTerm.source.trim() &&
-      parsedTerm.target.trim() &&
-      parsedTerm.targetLang.trim()
-    ) {
-      res.push(parsedTerm);
-      log.push(`Success: ${termEntry.id} ${JSON.stringify(parsedTerm)}`);
+
+    const parsed = ParsedTermSchema.safeParse(parsedTerm);
+    if (parsed.success) {
+      res.push(parsed.data);
+      log.push(`Success: ${termEntry.id} ${JSON.stringify(parsed.data)}`);
     } else {
       log.push(`Failure: ${termEntry.id} ${JSON.stringify(parsedTerm)}`);
     }
   }
 
-  const logPath = path.join(__dirname, 'logs/MS-Tbx.log');
-  fs.writeFileSync(logPath, log.join('\n'));
+  const failures = log.filter((l) => l.startsWith('Failure'));
+  if (failures.length > 0) {
+    console.warn(
+      `[parseMSTerm] [${failures.length}/${log.length}] entries failed:\n`,
+    );
+  }
+
+  fs.writeFileSync('./parse-log.txt', log.join('\n') + '\n', 'utf-8');
+
   if (!res || res.length === 0) {
     throw new Error(`${parseMSTerm.name}: Parse Failed`);
   }
   return res;
+}
+
+/** Normalize language codes to match your database language table */
+function normalizeLanguageCode(code: string): string {
+  if (code.includes('-')) {
+    return code.split('-')[0].toLowerCase();
+  }
+  return code.toLowerCase();
 }
 
 interface Descrip {

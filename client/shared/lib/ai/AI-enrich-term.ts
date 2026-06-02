@@ -2,30 +2,16 @@ import { deepseek } from './deepseek';
 import OpenAI from 'openai';
 import * as fs from 'node:fs';
 import pLimit from 'p-limit';
-import z from 'zod';
 import { AppError } from '@/shared/errors/errors';
+
+import { buildPrompt } from './build-prompt';
 import {
   EnrichedTerm,
-  EnrichedTermSchema,
   ParsedTerm,
-} from '../scripts/transfer-tbx';
-import { buildPrompt } from './build-prompt';
-
-// ─── Type ──────────────────────────────────
-
-const CheckpointDataSchema = z.object({
-  results: z.array(EnrichedTermSchema.nullable()),
-  completedAt: z.number(),
-});
-
-export type CheckpointData = z.infer<typeof CheckpointDataSchema>;
-
-// AI response schema
-const EnrichedSchema = z.object({
-  targetDefinition: z.string().min(1).optional(),
-  sourceTags: z.array(z.string().min(1)).optional(),
-  targetTags: z.array(z.string().min(1)).optional(),
-});
+  EnrichedSchema,
+  CheckpointData,
+  CheckpointDataSchema,
+} from '../scripts/parse-schemas';
 
 // ─── Config ──────────────────────────────────
 interface EnrichOptions {
@@ -38,8 +24,8 @@ interface EnrichOptions {
 const DEFAULT_OPTIONS: Required<EnrichOptions> = {
   concurrency: 30,
   maxRetries: 3,
-  checkpointPath: '',
-  checkpointInterval: 200,
+  checkpointPath: './checkpoint.log',
+  checkpointInterval: 100,
 };
 
 export async function AIEnrichTerm(
@@ -113,12 +99,7 @@ export async function AIEnrichTerm(
     );
   }
 
-  // 4. Remove checkpoint file on clean completion
-  if (opts.checkpointPath && fs.existsSync(opts.checkpointPath)) {
-    fs.unlinkSync(opts.checkpointPath);
-  }
-
-  // 5. Return results
+  // 4. Return results
   console.log(`Done: ${total} terms processed`);
   return results as EnrichedTerm[];
 }
@@ -206,7 +187,7 @@ function saveCheckpoint(path: string, results: (EnrichedTerm | null)[]) {
     const data: CheckpointData = { results, completedAt: Date.now() };
 
     // Write to temp file first to prevent writing failure damages original checkpoint file
-    fs.writeFileSync(path + '.tmp', JSON.stringify(data), 'utf-8');
+    fs.writeFileSync(path + '.tmp', JSON.stringify(data, null, 2), 'utf-8');
     fs.renameSync(path + '.tmp', path);
   } catch (err) {
     console.warn(`${saveCheckpoint.name} Failed to save:`, err);

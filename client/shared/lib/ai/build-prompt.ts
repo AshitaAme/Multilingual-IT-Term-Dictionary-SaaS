@@ -1,4 +1,5 @@
-import { ParsedTerm } from '../scripts/transfer-tbx';
+import { ParsedTerm } from '../scripts/parse-schemas';
+
 /** Preferred tag vocabulary; reused across prompts for consistency */
 const PRESET_TAGS = [
   'computerArchitecture',
@@ -20,7 +21,7 @@ export function buildPrompt(term: ParsedTerm): string {
   const lines = [
     'You are a terminology enrichment assistant. Return a JSON object with these fields:',
     `- targetDefinition: ${defInstruction}`,
-    `- sourceTags: array of 3-5 tags in ${term.sourceLang} for the term "${term.source}"`,
+    `- sourceTags: array of 3 tags in ${term.sourceLang} for the term "${term.source}"`,
     `- targetTags: translate sourceTags to ${term.targetLang}`,
     '',
     'Preferred tags (use these when they fit, exact spelling):',
