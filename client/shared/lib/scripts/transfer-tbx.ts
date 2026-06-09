@@ -1,47 +1,73 @@
 'use server';
 
+/**
+ * transfer-tbx.ts  (refactored)
+ *
+ * Pipeline:
+ *   1. Parse TBX XML → enrich with AI
+ *   2. Build all payloads (terms, tags, translations, associations)
+ *   3. Serialize payloads to CSV and upload to S3 in parallel  ← staging / audit
+ *   4. Stream each CSV into Postgres via COPY FROM STDIN        ← fast bulk write
+ *   5. Delete S3 staging files (fire-and-forget; kept on error for audit)
+ */
+
 import { parseTbx } from './parse-tbx';
-import {
-  insertTerms,
-  TermInput,
-  upsertTerms,
-} from '../db/mutations/term.mutations';
 import { AIEnrichTerm } from '../ai/AI-enrich-term';
 import { NotFoundError } from '@/shared/errors/errors';
-import slugify from 'slugify';
-import {
-  insertTags,
-  TagInput,
-  upsertTags,
-} from '../db/mutations/tag.mutations';
-import {
-  insertTagTranslations,
-  TagTranslationInput,
-  upsertTagTranslations,
-} from '../db/mutations/tag-translation.mutations';
-import {
-  insertTermTags,
-  TermTagInput,
-} from '../db/mutations/term-tag.mutations';
-import {
-  insertTermTranslations,
-  TermTranslationInput,
-  upsertTermTranslations,
-} from '../db/mutations/term-translation.mutations';
-
-import { setTimeout } from 'node:timers/promises';
-import { ParsedTerm, EnrichedTerm } from './parse-schemas';
 import { auth } from '../auth/auth';
-import * as fs from 'node:fs';
+import { pgPool } from '../db/db';
+import type { Pool } from 'pg';
+import slugify from 'slugify';
+import { randomUUID } from 'node:crypto';
 
-/**
- * Parse a TBX file, enrich every term with AI metadata, then persist all
- * to the database.
- *
- * Bulk writes are chunked into batches of {@link DB_BATCH_SIZE} rows and
- * wrapped with {@link withRetry} so transient database errors do not abort
- * an otherwise-valid import.
- */
+import type { ParsedTerm, EnrichedTerm } from './parse-schemas';
+import { deleteCsvFromS3, uploadCsvToS3 } from '../aws/s3-csv';
+import { copyInsert, copyUpsert } from '../db/pg-copy';
+
+// ─── columns ───────────────────────────
+
+const TERM_COLS = ['id', 'slug', 'created_by'] as const;
+const TAG_COLS = ['id', 'slug', 'color'] as const;
+const TERM_TRANSLATION_COLS = [
+  'term_id',
+  'language_code',
+  'name',
+  'definition',
+  'created_by',
+] as const;
+const TAG_TRANSLATION_COLS = ['tag_id', 'language_code', 'name'] as const;
+const TERM_TAG_COLS = ['term_id', 'tag_id'] as const;
+
+// ─── types for CSV rows ────────────────────────
+interface TermRow {
+  id: string;
+  slug: string;
+  created_by: string;
+}
+interface TagRow {
+  id: string;
+  slug: string;
+  color: string;
+}
+interface TermTranslationRow {
+  term_id: string;
+  language_code: string;
+  name: string;
+  definition?: string;
+  created_by: string;
+}
+interface TagTranslationRow {
+  tag_id: string;
+  language_code: string;
+  name: string;
+}
+interface TermTagRow {
+  term_id: string;
+  tag_id: string;
+}
+
+// ─── main export ──────────────────────────────────────────────────────────────
+
 export async function transferTbx({
   xml,
   allowUpdate = false,
@@ -49,95 +75,130 @@ export async function transferTbx({
   xml: string;
   allowUpdate?: boolean;
 }) {
+  // ── auth ──────────────────────────────────────────────────────────────────
   const session = await auth();
   const userId = session?.user.id;
+  if (!userId) throw new NotFoundError('User not found');
 
-  if (!userId) {
-    throw new NotFoundError('User not found');
-  }
-
+  // ── parse + AI enrich ─────────────────────────────────────────────────────
   const parsedTerms: ParsedTerm[] = parseTbx(xml);
   const enrichedTerms: EnrichedTerm[] = await AIEnrichTerm(parsedTerms);
 
-  // 1. Build term & tag payloads
-  const termPayloads: TermInput[] = [];
-  const tagPayloads: TagInput[] = [];
-  // Keep track of the relationship between term and tags
-  const termTagMap = new Map<string, string[]>(); // termSlug → tagSlug[]
-  const termSet = new Set<string>();
-  const tagSet = new Set<string>();
+  // ── build payloads ────────────────────────────────────────────────────────
+  const {
+    termRows,
+    tagRows,
+    termTranslationRows,
+    tagTranslationRows,
+    termTagRows,
+  } = buildPayloads(enrichedTerms, userId);
 
-  for (const enrichedTerm of enrichedTerms) {
-    const { source, sourceTags } = enrichedTerm;
-    const termSlug = slugify(source);
+  // ── S3 staging: upload all tables in parallel ─────────────────────────────
+  const runId = randomUUID(); // one prefix per import run
+  const s3Keys = await uploadStagingFiles(runId, {
+    termRows,
+    tagRows,
+    termTranslationRows,
+    tagTranslationRows,
+    termTagRows,
+  });
 
-    // 1.1 Check same term slug
-    if (termSet.has(termSlug)) continue;
-    termSet.add(termSlug);
+  // ── pg COPY ───────────────────────────────────────────────────────────────
+  // Drizzle exposes the underlying pg.Pool via $client
+  const pool = pgPool;
 
-    // 1.2 Build term payload
-    const termPayload: TermInput = {
-      slug: termSlug,
-      createdBy: userId,
-    };
-    termPayloads.push(termPayload);
+  try {
+    await bulkWrite(pool, allowUpdate, {
+      termRows,
+      tagRows,
+      termTranslationRows,
+      tagTranslationRows,
+      termTagRows,
+    });
+  } catch (err) {
+    // Leave S3 files intact so the failed import can be inspected / replayed
+    console.error(
+      '[transferTbx] COPY failed – S3 staging files retained at',
+      s3Keys,
+    );
+    throw err;
+  }
 
-    // 1.4 Build tag payload
-    if (!sourceTags) continue;
+  // ── cleanup S3 staging files (fire-and-forget) ────────────────────────────
+  void Promise.allSettled(s3Keys.map(deleteCsvFromS3)).then((results) => {
+    results.forEach((r, i) => {
+      if (r.status === 'rejected')
+        console.warn(
+          '[transferTbx] Failed to delete S3 staging file',
+          s3Keys[i],
+          r.reason,
+        );
+    });
+  });
+}
+
+// ─── payload builder ──────────────────────────────────────────────────────────
+
+function buildPayloads(
+  enrichedTerms: EnrichedTerm[],
+  userId: string,
+): {
+  termRows: TermRow[];
+  tagRows: TagRow[];
+  termTranslationRows: TermTranslationRow[];
+  tagTranslationRows: TagTranslationRow[];
+  termTagRows: TermTagRow[];
+} {
+  // Use temporary UUIDs for term/tag IDs so that we can build all foreign-key
+  // relationships in-memory without an extra database round-trip.
+  const termSlugIdMap = new Map<string, string>(); // slug → uuid
+  const tagSlugIdMap = new Map<string, string>(); // slug → uuid
+
+  const termRows: TermRow[] = [];
+  const tagRows: TagRow[] = [];
+  const termTranslationRows: TermTranslationRow[] = [];
+  const tagTranslationRows: TagTranslationRow[] = [];
+  const termTagRows: TermTagRow[] = [];
+
+  // Track what we've already emitted to avoid duplicates
+  const seenTermSlugs = new Set<string>();
+  const seenTagSlugs = new Set<string>();
+  const seenTermTrans = new Set<string>(); // termId
+  const seenTagTrans = new Set<string>(); // tagId
+  const seenTermTags = new Set<string>(); // termId#tagId
+
+  // ── termTagMap: source term slug → tag slugs ──────────────────────────────
+  const termTagMap = new Map<string, string[]>();
+
+  // ── pass 1: collect unique terms and tags ─────────────────────────────────
+  for (const et of enrichedTerms) {
+    const termSlug = slugify(et.source);
+
+    if (!seenTermSlugs.has(termSlug)) {
+      seenTermSlugs.add(termSlug);
+      const termId = randomUUID();
+      termSlugIdMap.set(termSlug, termId);
+      termRows.push({ id: termId, slug: termSlug, created_by: userId });
+    }
+
+    if (!et.sourceTags) continue;
     termTagMap.set(termSlug, []);
 
-    for (const tag of sourceTags) {
-      // 1.5 Associate tag with term
-      const tagSlug = slugify(tag);
+    for (const sourceTag of et.sourceTags) {
+      const tagSlug = slugify(sourceTag);
       termTagMap.get(termSlug)!.push(tagSlug);
 
-      // 1.6 Check same tag slug
-      if (tagSet.has(tagSlug)) continue;
-
-      // 1.7 Build tag payload
-      tagSet.add(tagSlug);
-      const tagPayload: TagInput = {
-        slug: tagSlug,
-        color: pickTagColor(),
-      };
-      tagPayloads.push(tagPayload);
+      if (!seenTagSlugs.has(tagSlug)) {
+        seenTagSlugs.add(tagSlug);
+        const tagId = randomUUID();
+        tagSlugIdMap.set(tagSlug, tagId);
+        tagRows.push({ id: tagId, slug: tagSlug, color: pickTagColor() });
+      }
     }
   }
 
-  // Write log
-  fs.writeFileSync(
-    './transfer-tbx-terms.log',
-    JSON.stringify(termPayloads, null, 2),
-    'utf-8',
-  );
-  // 2. Persist terms & tags
-  const terms = allowUpdate
-    ? await batchCollect(termPayloads, upsertTerms)
-    : await batchCollect(termPayloads, insertTerms);
-  const tags = allowUpdate
-    ? await batchCollect(tagPayloads, upsertTags)
-    : await batchCollect(tagPayloads, insertTags);
-
-  fs.writeFileSync(
-    './transfer-tbx-term.log',
-    JSON.stringify(terms ?? [], null, 2),
-    'utf-8',
-  );
-
-  // Keep track of the relationship between slug and id of term and tag
-  const termSlugIdMap = new Map(terms.map((t) => [t.slug, t.id]));
-  const tagSlugIdMap = new Map(tags.map((t) => [t.slug, t.id]));
-
-  // 3. Build translations & associations
-  const termTranslationPayloads: TermTranslationInput[] = [];
-  const tagTranslationPayloads: TagTranslationInput[] = [];
-  const termTagPayloads: TermTagInput[] = [];
-
-  termSet.clear();
-  tagSet.clear();
-  const termTagSet = new Set<string>();
-
-  for (const enrichedTerm of enrichedTerms) {
+  // ── pass 2: build translations + associations ─────────────────────────────
+  for (const et of enrichedTerms) {
     const {
       source,
       sourceLang,
@@ -147,153 +208,218 @@ export async function transferTbx({
       targetLang,
       targetDefinition,
       targetTags,
-    } = enrichedTerm;
+    } = et;
 
-    const termId = termSlugIdMap.get(slugify(source))!;
+    const termSlug = slugify(source);
+    const termId = termSlugIdMap.get(termSlug)!;
 
-    // 3.1 Build term translations
-    // Each term has two translations: source language + target language.
-    if (!termSet.has(termId)) {
-      termSet.add(termId);
-      termTranslationPayloads.push(
+    // Term translations (one pair per unique term)
+    if (!seenTermTrans.has(termId)) {
+      seenTermTrans.add(termId);
+      termTranslationRows.push(
         {
-          termId,
-          languageCode: sourceLang,
+          term_id: termId,
+          language_code: sourceLang,
           name: source,
           definition: sourceDefinition,
-          createdBy: userId,
+          created_by: userId,
         },
         {
-          termId,
-          languageCode: targetLang,
+          term_id: termId,
+          language_code: targetLang,
           name: target,
           definition: targetDefinition,
-          createdBy: userId,
+          created_by: userId,
         },
       );
     }
 
-    // 3.2 Build term tag associations
-
-    const tagSlugs = termTagMap.get(slugify(source));
-    tagSlugs?.forEach((tagSlug) => {
-      const tagId = tagSlugIdMap.get(tagSlug)!; // For one unique slug, there must be one id
-      const termTagId = termId + '#' + tagId;
-      if (!termTagSet.has(termTagId)) {
-        termTagSet.add(termTagId);
-        termTagPayloads.push({ termId, tagId });
+    // Term ↔ tag associations
+    termTagMap.get(termSlug)?.forEach((tagSlug) => {
+      const tagId = tagSlugIdMap.get(tagSlug)!;
+      const pairKey = `${termId}#${tagId}`;
+      if (!seenTermTags.has(pairKey)) {
+        seenTermTags.add(pairKey);
+        termTagRows.push({ term_id: termId, tag_id: tagId });
       }
     });
 
-    // 3.3 Build tag translations
-
-    sourceTags?.forEach((sourceTag, index) => {
-      // SourceTags and targetTags are guaranteed to have the same length in AIEnrichTerm()
-      // so we can safely index into targetTags by position.
+    // Tag translations
+    sourceTags?.forEach((sourceTag, i) => {
       const tagId = tagSlugIdMap.get(slugify(sourceTag))!;
-      if (!tagSet.has(tagId)) {
-        tagSet.add(tagId);
-        const targetTag = targetTags![index];
-        tagTranslationPayloads.push(
-          { tagId, languageCode: sourceLang, name: sourceTag },
-          { tagId, languageCode: targetLang, name: targetTag },
+      if (!seenTagTrans.has(tagId)) {
+        seenTagTrans.add(tagId);
+        const targetTag = targetTags![i];
+        tagTranslationRows.push(
+          { tag_id: tagId, language_code: sourceLang, name: sourceTag },
+          { tag_id: tagId, language_code: targetLang, name: targetTag },
         );
       }
     });
   }
 
-  fs.writeFileSync(
-    './transfer-tbx-termTranslation.log',
-    JSON.stringify(termTranslationPayloads ?? [], null, 2),
-    'utf-8',
-  );
-  fs.writeFileSync(
-    './transfer-tbx-termTag.log',
-    JSON.stringify(termTagPayloads ?? [], null, 2),
-    'utf-8',
-  );
-  fs.writeFileSync(
-    './transfer-tbx-tagTranslation.log',
-    JSON.stringify(tagTranslationPayloads ?? [], null, 2),
-    'utf-8',
-  );
+  return {
+    termRows,
+    tagRows,
+    termTranslationRows,
+    tagTranslationRows,
+    termTagRows,
+  };
+}
 
-  // 4: persist translations & associations in batches
+// ─── S3 staging ───────────────────────────────────────────────────────────────
+
+async function uploadStagingFiles(
+  runId: string,
+  payloads: {
+    termRows: TermRow[];
+    tagRows: TagRow[];
+    termTranslationRows: TermTranslationRow[];
+    tagTranslationRows: TagTranslationRow[];
+    termTagRows: TermTagRow[];
+  },
+): Promise<string[]> {
+  const prefix = `tbx-imports/${runId}`;
+
+  const keys = [
+    `${prefix}/terms.csv`,
+    `${prefix}/tags.csv`,
+    `${prefix}/term_translations.csv`,
+    `${prefix}/tag_translations.csv`,
+    `${prefix}/term_tags.csv`,
+  ];
+
+  await Promise.all([
+    uploadCsvToS3(keys[0], payloads.termRows),
+    uploadCsvToS3(keys[1], payloads.tagRows),
+    uploadCsvToS3(keys[2], payloads.termTranslationRows),
+    uploadCsvToS3(keys[3], payloads.tagTranslationRows),
+    uploadCsvToS3(keys[4], payloads.termTagRows),
+  ]);
+
+  return keys;
+}
+
+// ─── pg COPY orchestration ────────────────────────────────────────────────────
+
+async function bulkWrite(
+  pool: Pool,
+  allowUpdate: boolean,
+  payloads: {
+    termRows: TermRow[];
+    tagRows: TagRow[];
+    termTranslationRows: TermTranslationRow[];
+    tagTranslationRows: TagTranslationRow[];
+    termTagRows: TermTagRow[];
+  },
+): Promise<void> {
+  const {
+    termRows,
+    tagRows,
+    termTranslationRows,
+    tagTranslationRows,
+    termTagRows,
+  } = payloads;
+
   if (allowUpdate) {
-    await batchInsert(termTranslationPayloads, upsertTermTranslations);
-    await batchInsert(termTagPayloads, insertTermTags);
-    await batchInsert(tagTranslationPayloads, upsertTagTranslations);
+    // ── upsert path: COPY → temp → INSERT ON CONFLICT ─────────────────────
+    // Terms and tags must land first (FK targets)
+    await Promise.all([
+      copyInsert<TermRow>({
+        pool,
+        table: 'terms',
+        columns: [...TERM_COLS],
+        rows: termRows,
+      }),
+      copyInsert<TagRow>({
+        pool,
+        table: 'tags',
+        columns: [...TAG_COLS],
+        rows: tagRows,
+      }),
+    ]);
+
+    // Then translations + associations (depend on term/tag IDs)
+    await Promise.all([
+      copyUpsert<TermTranslationRow>({
+        pool,
+        table: 'term_translations',
+        columns: [...TERM_TRANSLATION_COLS],
+        rows: termTranslationRows,
+        conflictColumns: ['term_id', 'language_code'],
+        updateColumns: ['name', 'definition'],
+      }),
+      copyUpsert<TagTranslationRow>({
+        pool,
+        table: 'tag_translations',
+        columns: [...TAG_TRANSLATION_COLS],
+        rows: tagTranslationRows,
+        conflictColumns: ['tag_id', 'language_code'],
+        updateColumns: ['name'],
+      }),
+      copyInsert<TermTagRow>({
+        // associations: ignore duplicates via DO NOTHING handled in schema
+        pool,
+        table: 'term_tags',
+        columns: [...TERM_TAG_COLS],
+        rows: termTagRows,
+      }),
+    ]);
   } else {
-    await batchInsert(termTranslationPayloads, insertTermTranslations);
-    await batchInsert(termTagPayloads, insertTermTags);
-    await batchInsert(tagTranslationPayloads, insertTagTranslations);
+    // ── insert path: COPY directly into target tables ──────────────────────
+    await Promise.all([
+      copyInsert<TermRow>({
+        pool,
+        table: 'terms',
+        columns: [...TERM_COLS],
+        rows: termRows,
+      }),
+      copyInsert<TagRow>({
+        pool,
+        table: 'tags',
+        columns: [...TAG_COLS],
+        rows: tagRows,
+      }),
+    ]);
+
+    await Promise.all([
+      copyInsert<TermTranslationRow>({
+        pool,
+        table: 'term_translations',
+        columns: [...TERM_TRANSLATION_COLS],
+        rows: termTranslationRows,
+      }),
+      copyInsert<TagTranslationRow>({
+        pool,
+        table: 'tag_translations',
+        columns: [...TAG_TRANSLATION_COLS],
+        rows: tagTranslationRows,
+      }),
+      copyInsert<TermTagRow>({
+        pool,
+        table: 'term_tags',
+        columns: [...TERM_TAG_COLS],
+        rows: termTagRows,
+      }),
+    ]);
   }
 }
 
-/** Pick a random color for a tag from predefined set. */
+// ─── helpers ─────────────────────────────────────────────────────────────────
 
 const TAG_COLORS = [
-  '#EF4444', // red
-  '#F97316', // orange
-  '#EAB308', // yellow
-  '#22C55E', // green
-  '#14B8A6', // teal
-  '#3B82F6', // blue
-  '#8B5CF6', // violet
-  '#EC4899', // pink
-  '#6B7280', // gray
-  '#F59E0B', // amber
+  '#EF4444',
+  '#F97316',
+  '#EAB308',
+  '#22C55E',
+  '#14B8A6',
+  '#3B82F6',
+  '#8B5CF6',
+  '#EC4899',
+  '#6B7280',
+  '#F59E0B',
 ];
 
 function pickTagColor(): string {
   return TAG_COLORS[Math.floor(Math.random() * TAG_COLORS.length)];
-}
-
-/** Maximum rows per INSERT statement. */
-const DB_BATCH_SIZE = 20;
-
-/** Splice large data persistence into multiple batches
- * so that database won't crash
- */
-async function batchInsert<T>(
-  items: T[],
-  fn: (batch: T[]) => Promise<void>,
-  size = DB_BATCH_SIZE,
-): Promise<void> {
-  for (let i = 0; i < items.length; i += size) {
-    await withRetry(() => fn(items.slice(i, i + size)));
-  }
-}
-
-async function batchCollect<T, R>(
-  items: T[],
-  fn: (batch: T[]) => Promise<R[]>,
-  size = DB_BATCH_SIZE,
-): Promise<R[]> {
-  const results: R[] = [];
-  for (let i = 0; i < items.length; i += size) {
-    const batch = await withRetry(() => fn(items.slice(i, i + size)));
-    results.push(...batch);
-  }
-  return results;
-}
-
-/**
- * Retry function with exponential back-off on failure.
- */
-async function withRetry<T>(fn: () => Promise<T>, retries = 3): Promise<T> {
-  let lastError: unknown;
-  for (let attempt = 0; attempt <= retries; attempt++) {
-    try {
-      return await fn();
-    } catch (err) {
-      lastError = err;
-      if (attempt < retries) {
-        // Exponential back-off: 500 ms → 1 s → 2 s
-        await setTimeout(500 * 2 ** attempt);
-      }
-    }
-  }
-  console.log(`Retry failed: ${lastError}`);
-  throw lastError;
 }
