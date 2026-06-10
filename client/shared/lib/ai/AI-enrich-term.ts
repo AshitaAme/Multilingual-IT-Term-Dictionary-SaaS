@@ -2,77 +2,32 @@ import { deepseek } from './deepseek';
 import OpenAI from 'openai';
 import * as fs from 'node:fs';
 import pLimit from 'p-limit';
-import { z } from 'zod';
 import { AppError } from '@/shared/errors/errors';
-import { SYSTEM_PROMPT, buildBatchPrompt } from './build-prompt';
+import { SYSTEM_PROMPT } from './prompts';
 
 import {
   EnrichedTerm,
   ParsedTerm,
   CheckpointData,
   CheckpointDataSchema,
+  EnrichedSchema,
 } from '../scripts/parse-schemas';
-
-// ─── Config ──────────────────────────────────
-
-interface EnrichOptions {
+export interface EnrichOptions {
   concurrency?: number; // Max in-flight requests (default: 10)
   maxRetries?: number; // Max retries per batch (default: 3)
   checkpointPath?: string; // Path to checkpoint file; omit to disable
-  checkpointInterval?: number; // Save checkpoint every N batches (default: 5)
 }
 
-const DEFAULT_OPTIONS: Required<EnrichOptions> = {
-  concurrency: 10,
+export const DEFAULT_OPTIONS: Required<EnrichOptions> = {
+  concurrency: 50,
   maxRetries: 3,
   checkpointPath: './checkpoint.log',
-  checkpointInterval: 5,
 };
 
-const BATCH_SIZE = 20;
-
-// ─── Response Schema ──────────────────────────────────
-
-const EnrichedItemSchema = z.object({
-  targetDefinition: z.string().optional(),
-  sourceTags: z.array(z.string()).length(3),
-  targetTags: z.array(z.string()).length(3),
-});
-
-const EnrichedBatchSchema = z.array(EnrichedItemSchema);
-
 // Structured output schema passed directly to the API
-const RESPONSE_FORMAT = {
-  type: 'json_schema' as const,
-  json_schema: {
-    name: 'enriched_batch',
-    schema: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          targetDefinition: { type: 'string' },
-          sourceTags: {
-            type: 'array',
-            items: { type: 'string' },
-            minItems: 3,
-            maxItems: 3,
-          },
-          targetTags: {
-            type: 'array',
-            items: { type: 'string' },
-            minItems: 3,
-            maxItems: 3,
-          },
-        },
-        required: ['sourceTags', 'targetTags'],
-      },
-    },
-    strict: true,
-  },
-} as const;
-
-// ─── Main ──────────────────────────────────
+export const RESPONSE_FORMAT = {
+  type: 'json_object' as const,
+};
 
 export async function AIEnrichTerm(
   parsedTerms: ParsedTerm[],
@@ -80,7 +35,6 @@ export async function AIEnrichTerm(
 ): Promise<EnrichedTerm[]> {
   const opts = { ...DEFAULT_OPTIONS, ...options };
   const total = parsedTerms.length;
-  const totalBatches = Math.ceil(total / BATCH_SIZE);
   const limit = pLimit(opts.concurrency);
   const startTime = Date.now();
 
@@ -94,41 +48,28 @@ export async function AIEnrichTerm(
   }
 
   // 2. Dispatch batches
-  let processedBatches = 0;
+  let processed = 0;
 
-  const tasks = Array.from({ length: totalBatches }, (_, batchIndex) =>
+  const tasks = parsedTerms.map((term, i) =>
     limit(async () => {
-      const startIndex = batchIndex * BATCH_SIZE;
-      const batchTerms = parsedTerms.slice(startIndex, startIndex + BATCH_SIZE);
+      // 2.1 Skip completed term
+      if (results[i] != null) return;
 
-      // Skip batch if all entries are already done
-      if (batchTerms.every((_, i) => results[startIndex + i] !== null)) return;
+      // 2.2 Send enrich request
+      const enriched = await enrichTerm(term, opts.maxRetries);
+      if (enriched) results[i] = enriched;
 
-      const enriched = await enrichBatch(
-        batchTerms,
-        batchIndex,
-        opts.maxRetries,
-      );
-      enriched.forEach((item, i) => {
-        if (item !== null) results[startIndex + i] = item;
-      });
+      processed++;
 
-      processedBatches++;
-
-      // 2.1 Print progress
-      const totalSuccess = results.filter(Boolean).length;
-      const elapsed = (Date.now() - startTime) / 1000;
-      const rate = totalSuccess / elapsed;
-      const remaining = (total - totalSuccess) / rate;
-      process.stdout.write(
-        `\r[progress] ${totalSuccess}/${total} | batch ${processedBatches}/${totalBatches} | ${rate.toFixed(1)} terms/s | ETA ${formatSeconds(remaining)}   `,
-      );
-
-      // 2.2 Save checkpoint
-      if (
-        opts.checkpointPath &&
-        processedBatches % opts.checkpointInterval === 0
-      ) {
+      // 2.3 Print progress and save checkpoint
+      if (processed % 50 === 0 || processed === total) {
+        const totalSuccess = results.filter(Boolean).length;
+        const elapsed = (Date.now() - startTime) / 1000;
+        const rate = totalSuccess / elapsed;
+        const remaining = (total - totalSuccess) / rate;
+        process.stdout.write(
+          `\r[progress] ${totalSuccess}/${total} | ${rate.toFixed(1)} terms/s | ETA ${formatSeconds(remaining)}   `,
+        );
         saveCheckpoint(opts.checkpointPath, results);
       }
     }),
@@ -155,13 +96,10 @@ export async function AIEnrichTerm(
   return results as EnrichedTerm[];
 }
 
-// ─── Batch Request with Retry ──────────────────────────────────
-
-async function enrichBatch(
-  terms: ParsedTerm[],
-  batchIndex: number,
+async function enrichTerm(
+  term: ParsedTerm,
   maxRetries: number,
-): Promise<(EnrichedTerm | null)[]> {
+): Promise<EnrichedTerm | null> {
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 60_000);
@@ -172,7 +110,7 @@ async function enrichBatch(
           model: 'deepseek-v4-flash',
           messages: [
             { role: 'system', content: SYSTEM_PROMPT },
-            { role: 'user', content: buildBatchPrompt(terms) },
+            { role: 'user', content: JSON.stringify(term) },
           ],
           response_format: RESPONSE_FORMAT,
         },
@@ -180,36 +118,27 @@ async function enrichBatch(
       );
 
       const content = response.choices[0].message.content ?? '[]';
-      const parsed = EnrichedBatchSchema.safeParse(JSON.parse(content));
+      const parsed = EnrichedSchema.safeParse(JSON.parse(content));
+      if (!parsed.success) throw new AppError('Parsed failed');
 
-      if (!parsed.success || parsed.data.length !== terms.length) {
-        throw new AppError(
-          `enrichBatch[${batchIndex}]: response length mismatch or schema error`,
-        );
-      }
-
-      return parsed.data.map((item, i) => ({ ...terms[i], ...item }));
+      return { ...parsed.data, ...term };
     } catch (err: unknown) {
       const isLast = attempt === maxRetries;
 
       if (err instanceof Error && err.name === 'AbortError') {
-        console.error(
-          `\n[timeout] batch[${batchIndex}] attempt ${attempt} timed out`,
-        );
-        if (isLast) return new Array(terms.length).fill(null);
+        console.error(`\n[timeout] timed out`);
+        if (isLast) return null;
         continue;
       }
 
       if (!(err instanceof OpenAI.APIError)) {
-        console.error(`\n[error] batch[${batchIndex}] unexpected error:`, err);
-        return new Array(terms.length).fill(null);
+        console.error(`\n[error] unexpected error:`, err);
+        return null;
       }
 
       if (isLast) {
-        console.error(
-          `\n[error] batch[${batchIndex}] failed after all retries: ${err.message}`,
-        );
-        return new Array(terms.length).fill(null);
+        console.error(`\n[error] Failed after all retries: ${err.message}`);
+        return null;
       }
 
       const delay =
@@ -222,10 +151,8 @@ async function enrichBatch(
     }
   }
 
-  return new Array(terms.length).fill(null);
+  return null;
 }
-
-// ─── Checkpoint Helpers ──────────────────────────────────
 
 function saveCheckpoint(path: string, results: (EnrichedTerm | null)[]) {
   try {
@@ -254,8 +181,6 @@ function loadCheckpoint(path: string, total: number): (EnrichedTerm | null)[] {
     return [];
   }
 }
-
-// ─── Utilities ──────────────────────────────────
 
 function sleep(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));

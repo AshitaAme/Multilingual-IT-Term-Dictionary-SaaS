@@ -3,22 +3,17 @@ import { Readable } from 'node:stream';
 import copyFrom from 'pg-copy-streams';
 import { stringify } from 'csv-stringify';
 import type { Pool, PoolClient } from 'pg';
-
-// ─── types ───────────────────────────────────────────────────────────────────
-
+import { randomUUID } from 'node:crypto';
 export interface CopyOptions<T> {
   pool: Pool;
   table: string;
   columns: (keyof T & string)[];
   rows: T[];
 }
-
 export interface UpsertOptions<T> extends CopyOptions<T> {
   conflictColumns: (keyof T & string)[];
   updateColumns: (keyof T & string)[];
 }
-
-// ─── public API ──────────────────────────────────────────────────────────────
 
 export async function copyInsert<T extends object>(
   opts: CopyOptions<T>,
@@ -37,7 +32,7 @@ export async function copyUpsert<T extends object>(
   const { pool, table, columns, rows, conflictColumns, updateColumns } = opts;
   if (!rows.length) return;
 
-  const tmp = `_tmp_${table}_${Date.now()}`;
+  const tmp = `_tmp_${table}_${randomUUID().replaceAll('-', '')}`;
 
   await withTransaction(pool, async (client) => {
     await client.query(
@@ -60,8 +55,6 @@ export async function copyUpsert<T extends object>(
   });
 }
 
-// ─── helpers ─────────────────────────────────────────────────────────────────
-
 function rowsToCSVStream<T>(
   rows: T[],
   columns: (keyof T & string)[],
@@ -80,7 +73,6 @@ async function streamCopy<T>(
 ): Promise<void> {
   const cols = columns.map((c) => `"${c}"`).join(', ');
   const sql = `COPY "${table}" (${cols}) FROM STDIN CSV HEADER`;
-
   await pipeline(
     rowsToCSVStream(rows, columns),
     client.query(copyFrom.from(sql)),

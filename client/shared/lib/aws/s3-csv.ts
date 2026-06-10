@@ -34,7 +34,6 @@ export async function uploadCsvToS3<T extends object>(
   rows: T[],
 ): Promise<void> {
   if (!key) throw new Error('S3 key must not be empty');
-  if (rows.length === 0) throw new Error(`No rows to upload for key: ${key}`);
 
   const { bucket, client } = getConfig();
 
@@ -62,9 +61,8 @@ export async function uploadCsvToS3<T extends object>(
   }
 }
 
-export async function deleteCsvFromS3(key: string): Promise<void> {
+export async function deleteCsvFromS3(key: string) {
   if (!key) throw new Error('S3 key must not be empty');
-
   const { bucket, client } = getConfig();
 
   try {

@@ -1,7 +1,6 @@
 import { Card } from '@/shared/components/ui/card';
 import { ImportTerm } from './import-term';
 import { ClickCard } from '@/shared/components/ui/click-card';
-import { Button } from '@/shared/components/ui/button';
 import { countDictionary } from '../actions/count-dictionary.action';
 import { toast } from 'sonner';
 

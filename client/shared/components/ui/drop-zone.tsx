@@ -16,7 +16,7 @@ export function DropZone({
   const [isProcessing, setIsProcessing] = useState(false);
 
   // useCallback memoizes the onDrop handler to prevent unnecessary re-renders
-  const onDrop = useCallback((acceptedFiles: File[]) => {
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
     // Filter files to only allow .tbx and .csv extensions
 
     const filtered = acceptedFiles.filter((file) => {
@@ -27,14 +27,13 @@ export function DropZone({
     setIsProcessing(true);
     try {
       console.log(`[${DropZone.name}]: Transfer started! `);
-      filtered.forEach(async (file) => {
-        try {
-          const xml = await file.text();
-          await transferTbx({ xml });
-        } catch (e) {
-          console.error('This file failed', file.name, e);
-        }
-      });
+      await Promise.all(
+        filtered.map(async (file) => {
+          const formData = new FormData();
+          formData.append('file', file);
+          await transferTbx(formData);
+        }),
+      );
     } finally {
       setIsProcessing(false);
     }
