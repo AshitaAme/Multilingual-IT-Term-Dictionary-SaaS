@@ -7,7 +7,6 @@ import { auth } from '../auth/auth';
 import type { Pool } from 'pg';
 import slugify from 'slugify';
 import { randomUUID } from 'node:crypto';
-
 import type { ParsedTerm, EnrichedTerm } from './parse-schemas';
 import { uploadCsvToS3 } from '../aws/s3-csv';
 import { copyInsert, copyUpsert } from '../db/pg-copy';
@@ -114,6 +113,7 @@ function buildPayloads(
   for (const et of enrichedTerms) {
     const termSlug = slugify(et.source);
 
+    // 1.1 Build term payloads
     if (!seenTermSlugs.has(termSlug)) {
       seenTermSlugs.add(termSlug);
       const termId = randomUUID();
@@ -126,8 +126,11 @@ function buildPayloads(
 
     for (const sourceTag of et.sourceTags) {
       const tagSlug = slugify(sourceTag);
+
+      // 1.2 Build relation between term and tag
       termTagMap.get(termSlug)!.push(tagSlug);
 
+      // 1.3 Build tag payloads
       if (!seenTagSlugs.has(tagSlug)) {
         seenTagSlugs.add(tagSlug);
         const tagId = randomUUID();
@@ -161,7 +164,7 @@ function buildPayloads(
     const termSlug = slugify(source);
     const termId = termSlugIdMap.get(termSlug)!;
 
-    // 2.1 Term translations
+    // 2.1 Build term translations
     if (!seenTermTrans.has(termId)) {
       seenTermTrans.add(termId);
       termTranslationRows.push(
@@ -182,7 +185,7 @@ function buildPayloads(
       );
     }
 
-    // 2.2 Term tag associations
+    // 2.2 Build term tag associations
     termTagMap.get(termSlug)?.forEach((tagSlug) => {
       const tagId = tagSlugIdMap.get(tagSlug)!;
       const pairKey = `${termId}#${tagId}`;
@@ -192,7 +195,7 @@ function buildPayloads(
       }
     });
 
-    // 2.3 Tag translations
+    // 2.3 Build tag translations
     sourceTags?.forEach((sourceTag, i) => {
       const tagId = tagSlugIdMap.get(slugify(sourceTag))!;
       if (!seenTagTrans.has(tagId)) {

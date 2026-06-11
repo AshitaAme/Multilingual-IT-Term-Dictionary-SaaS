@@ -25,7 +25,7 @@ import { Separator } from '@/shared/components/ui/separator';
 import { initiateSignupAction } from '../actions/initiate-signup.action';
 import { useRouter } from 'next/navigation';
 import { CredentialsFormProps } from '../types/credentials-form-props';
-import { useAuthModalStore } from '../store/auth-modal.store';
+import { useAuthModalStore } from '../stores/auth.store';
 import { initiateResetPasswordAction } from '../actions/initiate-reset-password.action';
 
 export function CredentialsForm({

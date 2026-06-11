@@ -3,7 +3,7 @@ import OpenAI from 'openai';
 import * as fs from 'node:fs';
 import pLimit from 'p-limit';
 import { AppError } from '@/shared/errors/errors';
-import { SYSTEM_PROMPT } from './prompts';
+import { ENRICH_TERM_SYSTEM_PROMPT } from './prompts';
 
 import {
   EnrichedTerm,
@@ -109,7 +109,7 @@ async function enrichTerm(
         {
           model: 'deepseek-v4-flash',
           messages: [
-            { role: 'system', content: SYSTEM_PROMPT },
+            { role: 'system', content: ENRICH_TERM_SYSTEM_PROMPT },
             { role: 'user', content: JSON.stringify(term) },
           ],
           response_format: RESPONSE_FORMAT,

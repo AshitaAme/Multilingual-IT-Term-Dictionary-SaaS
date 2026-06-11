@@ -26,7 +26,7 @@ export default function IconNav() {
                 size="icon"
                 className="cursor-pointer rounded-md hover:[&_svg]:scale-115"
               >
-                <HomeIcon className="transition-all duration-200" />
+                <HomeIcon className="transition-all duration-300" />
               </Button>
             </TooltipWrapper>
           </NavigationMenuLink>
@@ -39,9 +39,9 @@ export default function IconNav() {
               <Button
                 variant="outline"
                 size="icon"
-                className="cursor-pointer rounded-md hover:[&_svg]:scale-115 "
+                className="cursor-pointer rounded-md hover:[&_svg]:scale-110 "
               >
-                <Book className="transition-all duration-200" />
+                <Book className="transition-all duration-300" />
               </Button>
             </TooltipWrapper>
           </NavigationMenuLink>

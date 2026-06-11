@@ -1,6 +1,12 @@
 'use client';
 
-import { CreditCardIcon, LogIn, LogOut, SettingsIcon } from 'lucide-react';
+import {
+  CreditCardIcon,
+  LayoutDashboard,
+  LogIn,
+  LogOut,
+  SettingsIcon,
+} from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 import { Button } from '@/shared/components/ui/button';
 import {
@@ -16,17 +22,20 @@ import {
   AvatarFallback,
   AvatarImage,
 } from '@/shared/components/ui/avatar';
-import { useAuthModalStore } from '@/features/auth/store/auth-modal.store';
+import { useAuthModalStore } from '@/features/auth/stores/auth.store';
 import { cn } from '@/shared/utils/utils';
 import { useRouter } from 'next/navigation';
 import { TooltipWrapper } from '@/shared/components/ui/tooltipWrapper';
 import { useTranslations } from 'next-intl';
+import { useRole } from '@/features/auth';
 
 // User navigation component
 export default function UserMenu() {
   const { data: session } = useSession();
   const { onOpen } = useAuthModalStore();
   const router = useRouter();
+  const { role } = useRole();
+  const isAdmin = role === 'admin';
   const t = useTranslations('nav');
 
   if (!session) {
@@ -94,6 +103,19 @@ export default function UserMenu() {
         </DropdownMenuGroup>
 
         <DropdownMenuGroup className="p-2">
+          {/* Profile */}
+          {isAdmin && (
+            <>
+              <DropdownMenuSeparator className="mx-2 my-2" />
+              <DropdownMenuItem
+                onClick={() => router.push('/dashboard')}
+                className="cursor-pointer hover:bg-muted! px-2 py-1.5"
+              >
+                <LayoutDashboard />
+                {t('dashboard')}
+              </DropdownMenuItem>
+            </>
+          )}
           <DropdownMenuSeparator className="mx-2 my-2" />
           {/* Profile */}
           <DropdownMenuItem

@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useAuthModalStore } from '../store/auth-modal.store';
+import { useAuthModalStore } from '../stores/auth.store';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 import { AUTH_ERRORS, ROUTES } from '../../../shared/constants/constants';

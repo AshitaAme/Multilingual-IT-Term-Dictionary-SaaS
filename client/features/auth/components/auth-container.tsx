@@ -5,7 +5,7 @@ import { CredentialsForm } from './credentials-form';
 import { VerificationOTP } from './verification-OTP';
 import { ShineBorder } from '@/shared/components/ui/shine-border';
 import { Card } from '@/shared/components/ui/card';
-import { useAuthModalStore } from '../store/auth-modal.store';
+import { useAuthModalStore } from '../stores/auth.store';
 import { Credentials } from '../types/credentials';
 import { AuthRedirectHandler } from './auth-redirect-handler';
 import { X } from 'lucide-react';

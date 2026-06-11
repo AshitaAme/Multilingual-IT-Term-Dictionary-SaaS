@@ -15,7 +15,7 @@ import { verifySignupAction } from '../actions/verify-signup.action';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import { VerificationOTPProps } from '../types/verification-OTP-props';
-import { useAuthModalStore } from '../store/auth-modal.store';
+import { useAuthModalStore } from '../stores/auth.store';
 import { verifyResetPasswordAction } from '../actions/verify-reset-password-action';
 import { resendVerificationAction } from '../actions/resend-verification.action';
 import { useEffect, useState } from 'react';
