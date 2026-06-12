@@ -1,8 +1,9 @@
-import { Card } from '@/shared/components/ui/card';
 import { ImportTerm } from './import-term';
 import { ClickCard } from '@/shared/components/ui/click-card';
 import { countDictionary } from '../actions/count-dictionary.action';
 import { toast } from 'sonner';
+import { cn } from '@/shared/utils/utils';
+import { Button } from '@/shared/components/ui/button';
 
 export async function DictionaryDataDisplay() {
   const res = await countDictionary();
@@ -10,19 +11,36 @@ export async function DictionaryDataDisplay() {
   const { termCount, tagCount } = res.data!;
 
   return (
-    <div className="grid grid-cols-3 mt-10">
+    <div
+      className={cn(
+        'grid grid-cols-3 mt-10 px-1/2',
+        'md:px-[10%] ',
+        'pt-[6.5%] lg:pt-[5.5%] pb-[15%] lg:px-[20%]',
+      )}
+    >
       <div className="flex items-center justify-center">
-        <ClickCard className="w-50 h-50 flex items-center justify-center">
+        <ClickCard className="w-50 h-50 flex items-center justify-center cursor-default">
           <span className="text-3xl font-bold">Term</span>
           <span>{termCount}</span>
-          {/* <Button></Button> */}
+          <Button
+            variant="outline"
+            className="cursor-pointer bg-muted-foreground"
+          >
+            Manipulate
+          </Button>
         </ClickCard>
       </div>
       <div className="flex items-center justify-center">
-        <Card className="w-50 h-50 flex items-center justify-center">
+        <ClickCard className="w-50 h-50 flex items-center justify-center cursor-default">
           <span className="text-3xl font-bold">Tag</span>
           <span>{tagCount}</span>
-        </Card>
+          <Button
+            variant="outline"
+            className="cursor-pointer bg-muted-foreground"
+          >
+            Manipulate
+          </Button>
+        </ClickCard>
       </div>
       <div className="flex items-center justify-center">
         <ImportTerm />
