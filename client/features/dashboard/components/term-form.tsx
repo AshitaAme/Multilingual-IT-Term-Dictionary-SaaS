@@ -5,7 +5,7 @@ import {
   CardTitle,
 } from '@/shared/components/ui/card';
 import { useForm, useFieldArray } from 'react-hook-form';
-import { TermFormInput, TermFormSchema } from '../schemas/term-form.schema';
+import { TermInput, TermSchema } from '../schemas/term.schema';
 import {
   Field,
   FieldError,
@@ -16,30 +16,31 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/shared/components/ui/input';
 import { cn } from '@/shared/utils/utils';
 import { X, Plus, Trash2 } from 'lucide-react';
-import { useState, KeyboardEvent } from 'react';
+import { useState } from 'react';
 import {
   NativeSelect,
   NativeSelectOption,
 } from '@/shared/components/ui/native-select';
+import { useLocale } from 'next-intl';
+import { Button } from '@/shared/components/ui/button';
 
 export default function TermForm() {
   const [open, setOpen] = useState(false);
   const [tagInput, setTagInput] = useState('');
   const [openTags, setOpenTags] = useState(false);
+  const locale = useLocale();
 
   const {
     register,
     handleSubmit,
     control,
     formState: { errors },
-    watch,
-    setValue,
-  } = useForm<TermFormInput>({
-    resolver: zodResolver(TermFormSchema),
+  } = useForm<TermInput>({
+    resolver: zodResolver(TermSchema),
     mode: 'onSubmit',
     defaultValues: {
       slug: '',
-      tagIds: [],
+      tagInfos: [],
       langInfos: [
         { languageCode: '', name: '', definition: '' },
         { languageCode: '', name: '', definition: '' },
@@ -53,26 +54,17 @@ export default function TermForm() {
     remove: removeLang,
   } = useFieldArray({ control, name: 'langInfos' });
 
-  const tagIds = watch('tagIds');
-  const addTag = (tagId: string) => {
-    if (!tagIds.includes(tagId)) {
-      setValue('tagIds', [...tagIds, tagId], { shouldValidate: true });
-    }
-  };
-  const removeTag = (index: number) => {
-    setValue(
-      'tagIds',
-      tagIds.filter((_, i) => i !== index),
-      { shouldValidate: true },
-    );
-  };
+  const {
+    fields: tagFields,
+    append: appendTag,
+    remove: removeTag,
+  } = useFieldArray({ control, name: 'tagInfos' });
 
-  const onSubmit = async (data: TermFormInput) => {
+  const onSubmit = async (data: TermInput) => {
     console.log('Submitted:', data);
   };
 
   if (!open) return;
-
   return (
     <Card
       className={cn('relative w-full max-w-sm rounded-md bg-background py-0')}
@@ -104,16 +96,29 @@ export default function TermForm() {
 
           {/* tags */}
           <FieldGroup>
-            <Field data-invalid={!!errors.tagIds}>
+            <Field data-invalid={!!errors.tagInfos}>
               <FieldLabel htmlFor="tags">Tags</FieldLabel>
+              <Button variant="outline" onClick={() => setOpenTags(true)}>
+                Add tags
+              </Button>
+              {tagFields.map((field, index) => (
+                <div key={field.id} className="flex h-4 border-2 relative">
+                  field.name
+                  <X
+                    size={10}
+                    className="absolute right-0.5 top-1/2 -translate-y-1/2"
+                    onClick={() => removeTag(index)}
+                  ></X>
+                </div>
+              ))}
 
-              {errors.tagIds && !Array.isArray(errors.tagIds) && (
-                <FieldError>{errors.tagIds.message}</FieldError>
+              {errors.tagInfos && !Array.isArray(errors.tagInfos) && (
+                <FieldError>{errors.tagInfos.message}</FieldError>
               )}
             </Field>
           </FieldGroup>
 
-          {/* languageSet */}
+          {/* languages */}
           <FieldGroup className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">Different Languages</span>

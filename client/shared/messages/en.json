@@ -39,14 +39,19 @@
     "languages": "languages"
   },
   "tag": {
-  "all": "All",
-  "computerArchitecture": "Computer Architecture",
-  "frontend": "Frontend",
-  "backend": "Backend",
-  "ai": "AI",
-  "data": "Data",
-  "cloudService": "Cloud Service",
-  "git": "Git",
-  "nextjs": "Next.js"
-}
+    "all": "All",
+    "computerArchitecture": "Computer Architecture",
+    "frontend": "Frontend",
+    "backend": "Backend",
+    "ai": "AI",
+    "data": "Data",
+    "cloudService": "Cloud Service",
+    "git": "Git",
+    "nextjs": "Next.js"
+  },
+  "dashboard": {
+    "slug": "Slug",
+    "tags": "Tags",
+    "differentLanguages": "Different Languages"
+  }
 }

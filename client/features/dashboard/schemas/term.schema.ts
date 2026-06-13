@@ -1,6 +1,6 @@
 import z from 'zod';
 
-export const LangInfoSchema = z.object({
+const LangInfoSchema = z.object({
   languageCode: z.string().min(1, { message: 'Language code is required.' }),
   name: z
     .string()
@@ -12,10 +12,15 @@ export const LangInfoSchema = z.object({
     .max(100, { message: 'Definition cannot exceed 100 characters.' }),
 });
 
-export const TermFormSchema = z.object({
+const TagInfoSchema = z.object({
+  tagId: z.string().min(1, { message: 'Tag cannot be empty.' }),
+  name: z.string(),
+});
+
+export const TermSchema = z.object({
   slug: z.string().min(1, { message: 'Slug is required.' }),
-  tagIds: z
-    .array(z.string().min(1, { message: 'Tag cannot be empty.' }))
+  tagInfos: z
+    .array(TagInfoSchema)
     .min(1, { message: 'At least one tag is required.' }),
   // FIX: Pass the schema object directly, do not wrap it in z.object() again
   langInfos: z
@@ -24,4 +29,4 @@ export const TermFormSchema = z.object({
 });
 
 // TypeScript type inference
-export type TermFormInput = z.infer<typeof TermFormSchema>;
+export type TermInput = z.infer<typeof TermSchema>;
