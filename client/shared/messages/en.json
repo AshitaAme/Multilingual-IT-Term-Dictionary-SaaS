@@ -49,9 +49,20 @@
     "git": "Git",
     "nextjs": "Next.js"
   },
+
   "dashboard": {
     "slug": "Slug",
     "tags": "Tags",
-    "differentLanguages": "Different Languages"
+    "differentLanguages": "Different Languages",
+    "searchTag": "Search tag...",
+    "loading": "Loading...",
+    "noResults": "No results",
+    "attach": "Attach",
+    "cancel": "Cancel",
+    "addTerm": "Add Term",
+
+    "addTag": "Add tag",
+    "updateTerm": "Update term",
+    "updateTag": "Update tag"
   }
 }

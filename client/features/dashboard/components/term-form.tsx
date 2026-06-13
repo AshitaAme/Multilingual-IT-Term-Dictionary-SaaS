@@ -27,7 +27,7 @@ import { Button } from '@/shared/components/ui/button';
 export default function TermForm() {
   const [open, setOpen] = useState(false);
   const [tagInput, setTagInput] = useState('');
-  const [openTags, setOpenTags] = useState(false);
+  const [openSeachTag, setOpenSearchTag] = useState(false);
   const locale = useLocale();
 
   const {
@@ -40,7 +40,10 @@ export default function TermForm() {
     mode: 'onSubmit',
     defaultValues: {
       slug: '',
-      tagInfos: [],
+      tagInfos: [
+        { tagId: '', name: '' },
+        { tagId: '', name: '' },
+      ],
       langInfos: [
         { languageCode: '', name: '', definition: '' },
         { languageCode: '', name: '', definition: '' },
@@ -69,13 +72,8 @@ export default function TermForm() {
     <Card
       className={cn('relative w-full max-w-sm rounded-md bg-background py-0')}
     >
-      <X
-        size={16}
-        onClick={() => setOpen(false)}
-        className="absolute z-10 right-2.5 top-2.5 cursor-pointer"
-      />
       <CardHeader className="relative items-center h-18 w-full px-0">
-        <CardTitle>Add Term</CardTitle>
+        <CardTitle> Term</CardTitle>
       </CardHeader>
 
       <CardContent>
@@ -83,7 +81,9 @@ export default function TermForm() {
           {/* slug */}
           <FieldGroup>
             <Field data-invalid={!!errors.slug}>
-              <FieldLabel htmlFor="slug">Slug</FieldLabel>
+              <FieldLabel htmlFor="slug" className="sr-only">
+                Slug
+              </FieldLabel>
               <Input
                 {...register('slug')}
                 id="slug"
@@ -97,8 +97,10 @@ export default function TermForm() {
           {/* tags */}
           <FieldGroup>
             <Field data-invalid={!!errors.tagInfos}>
-              <FieldLabel htmlFor="tags">Tags</FieldLabel>
-              <Button variant="outline" onClick={() => setOpenTags(true)}>
+              <FieldLabel htmlFor="tags" className="sr-only">
+                Tags
+              </FieldLabel>
+              <Button variant="outline" onClick={() => setOpenSearchTag(true)}>
                 Add tags
               </Button>
               {tagFields.map((field, index) => (
@@ -155,7 +157,7 @@ export default function TermForm() {
                 <Field data-invalid={!!errors.langInfos?.[index]?.languageCode}>
                   <FieldLabel
                     htmlFor={`languageCode-${index}`}
-                    className="text-xs"
+                    className="sr-only"
                   >
                     Language Code
                   </FieldLabel>
@@ -181,7 +183,7 @@ export default function TermForm() {
                 </Field>
 
                 <Field data-invalid={!!errors.langInfos?.[index]?.name}>
-                  <FieldLabel htmlFor={`name-${index}`} className="text-xs">
+                  <FieldLabel htmlFor={`name-${index}`} className="sr-only">
                     Name
                   </FieldLabel>
                   <Input
@@ -198,7 +200,7 @@ export default function TermForm() {
                 </Field>
 
                 <Field data-invalid={!!errors.langInfos?.[index]?.definition}>
-                  <FieldLabel htmlFor={`def-${index}`} className="text-xs">
+                  <FieldLabel htmlFor={`def-${index}`} className="sr-only">
                     Definition
                   </FieldLabel>
                   <Input

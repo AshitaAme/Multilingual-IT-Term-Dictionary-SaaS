@@ -25,7 +25,14 @@ export const TermSchema = z.object({
   // FIX: Pass the schema object directly, do not wrap it in z.object() again
   langInfos: z
     .array(LangInfoSchema)
-    .min(2, { message: 'At least one language definition is required.' }),
+    .min(2, { message: 'At least one language definition is required.' })
+    .refine(
+      (items) => {
+        const codes = items.map((i) => i.languageCode);
+        return new Set(codes).size === codes.length;
+      },
+      { message: 'languageCode must be unique' },
+    ),
 });
 
 // TypeScript type inference

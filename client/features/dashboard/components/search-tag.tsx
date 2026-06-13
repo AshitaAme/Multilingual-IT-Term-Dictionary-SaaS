@@ -2,7 +2,12 @@
 
 import { Button } from '@/shared/components/ui/button';
 import { ButtonGroup } from '@/shared/components/ui/button-group';
-import { Card, CardContent, CardHeader } from '@/shared/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
 import { SearchIcon, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
@@ -10,16 +15,19 @@ import { getTagListAction } from '../actions/get-tag-list.action';
 import { toast } from 'sonner';
 import { useState, useEffect, useMemo } from 'react';
 import { TagItem } from '../types/tag-item';
+import { cn } from '@/shared/utils/utils';
+import { SearchTagProps } from '../types/search-tag-props';
 
 const PAGE_SIZE = 20;
 
-export default function SearchTag() {
-  const t = useTranslations();
+export default function SearchTag(data: SearchTagProps) {
+  const t = useTranslations('dashboard');
   const locale = useLocale();
 
-  const [tags, setTags] = useState<TagItem[]>([]);
-  const [search, setSearch] = useState('');
-  const [page, setPage] = useState(1);
+  const [tags, setTags] = useState<TagItem[]>([]); // tags for display
+  const { clickedTagSet, setOpenSearchTag } = data; // tags clicked and switch for SearchTag
+  const [search, setSearch] = useState(''); // query condition
+  const [page, setPage] = useState(1); // current page
   const [loading, setLoading] = useState(false);
 
   const languageCode = useMemo(() => {
@@ -28,7 +36,7 @@ export default function SearchTag() {
     return 'en';
   }, [locale]);
 
-  // Fetch tags on mount
+  // Fetch and set tags from server
   useEffect(() => {
     const fetchTags = async () => {
       setLoading(true);
@@ -40,25 +48,27 @@ export default function SearchTag() {
     fetchTags();
   }, [languageCode]);
 
-  // Filter tags by search query (client-side)
+  // Tags to be displayed under search query condition
   const filteredTags = useMemo(() => {
     const query = search.trim().toLowerCase();
     if (!query) return tags;
     return tags.filter((tag) => tag.name.toLowerCase().includes(query));
   }, [tags, search]);
 
+  // Tags displayed on current page
   const totalPages = Math.max(1, Math.ceil(filteredTags.length / PAGE_SIZE));
-
   const pagedTags = useMemo(() => {
     const start = (page - 1) * PAGE_SIZE;
     return filteredTags.slice(start, start + PAGE_SIZE);
   }, [filteredTags, page]);
 
+  // Set search query condition when input changes
   const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Search is reactive; this triggers explicit button-click UX feedback
     setSearch(e.target.value);
     setPage(1);
   };
+
+  // Set page to the beginning when search button is clicked
   const handleSearchClick = () => {
     setPage(1);
   };
@@ -68,10 +78,9 @@ export default function SearchTag() {
       <CardHeader>
         <ButtonGroup>
           <Input
-            placeholder={t('search')}
+            placeholder={t('searchTag')}
             value={search}
             onChange={handleSearchInput}
-            onKeyDown={(e) => e.key === 'Enter' && handleSearchClick()}
           />
           <Button
             variant="outline"
@@ -102,28 +111,34 @@ export default function SearchTag() {
         {/* Tag list */}
         {!loading &&
           pagedTags.map((tag) => (
-            <div
+            <Button
               key={tag.tagId}
-              className="flex items-center px-3 py-2 rounded-md border border-border bg-muted/40 hover:bg-muted transition-colors duration-150 text-sm"
+              className={cn(
+                'flex items-center px-3 py-2 rounded-md border border-border bg-muted/40',
+                'hover:bg-muted transition-colors duration-150 text-sm',
+                clickedTagSet.has(tag) && 'bg-muted/80',
+              )}
+              onClick={() => clickedTagSet.add(tag)}
             >
               <span className="flex-1 truncate">{tag.name}</span>
               <span className="text-xs text-muted-foreground ml-2 shrink-0">
                 #{tag.tagId}
               </span>
-            </div>
+            </Button>
           ))}
 
         {/* Pagination */}
         {!loading && filteredTags.length > 0 && (
           <div className="flex items-center justify-between pt-2">
+            {/* Proportion of amount accumulated to total amount*/}
             <span className="text-xs text-muted-foreground">
-              {/* e.g. "21–40 / 153" */}
               {(page - 1) * PAGE_SIZE + 1}–
               {Math.min(page * PAGE_SIZE, filteredTags.length)} /{' '}
               {filteredTags.length}
             </span>
 
             <div className="flex items-center gap-1">
+              {/* Last page */}
               <Button
                 variant="ghost"
                 size="icon"
@@ -134,10 +149,11 @@ export default function SearchTag() {
                 <ChevronLeftIcon className="size-4" />
               </Button>
 
-              <span className="text-xs tabular-nums w-16 text-center">
+              <span className="text-xs w-16 text-center">
                 {page} / {totalPages}
               </span>
 
+              {/* Next page */}
               <Button
                 variant="ghost"
                 size="icon"
@@ -151,6 +167,29 @@ export default function SearchTag() {
           </div>
         )}
       </CardContent>
+      <CardFooter>
+        <Button variant="outline" onClick={() => setOpenSearchTag(false)}>
+          {t('attach')}
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => {
+            clickedTagSet.clear();
+            setOpenSearchTag(false);
+          }}
+        >
+          {t('cancel')}
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => {
+            clickedTagSet.clear();
+            setOpenSearchTag(false);
+          }}
+        >
+          {t('addTag')}
+        </Button>
+      </CardFooter>
     </Card>
   );
 }
