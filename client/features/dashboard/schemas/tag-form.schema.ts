@@ -5,7 +5,7 @@ const LangInfoSchema = z.object({
   name: z.string().min(1).max(15),
 });
 
-export const TagSchema = z.object({
+export const TagFormSchema = z.object({
   slug: z.string().min(1).max(15),
   color: z.string().min(1).max(30),
   langInfos: z
@@ -20,4 +20,4 @@ export const TagSchema = z.object({
     ),
 });
 
-export type TagInput = z.infer<typeof TagSchema>;
+export type TagFormInput = z.infer<typeof TagFormSchema>;

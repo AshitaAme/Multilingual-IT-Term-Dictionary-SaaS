@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader } from '@/shared/components/ui/card';
 import { useTranslations } from 'next-intl';
-import { TagInput, TagSchema } from '../schemas/tag.schema';
+import { TagFormInput, TagFormSchema } from '../schemas/tag-form.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useFieldArray, useForm } from 'react-hook-form';
 import {
@@ -25,8 +25,8 @@ export default function TagForm() {
     register,
     control,
     formState: { errors },
-  } = useForm<TagInput>({
-    resolver: zodResolver(TagSchema),
+  } = useForm<TagFormInput>({
+    resolver: zodResolver(TagFormSchema),
     mode: 'onSubmit',
     defaultValues: {
       slug: '',

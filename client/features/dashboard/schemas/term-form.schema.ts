@@ -17,7 +17,7 @@ const TagInfoSchema = z.object({
   name: z.string(),
 });
 
-export const TermSchema = z.object({
+export const TermFormSchema = z.object({
   slug: z.string().min(1, { message: 'Slug is required.' }),
   tagInfos: z
     .array(TagInfoSchema)
@@ -33,7 +33,10 @@ export const TermSchema = z.object({
       },
       { message: 'languageCode must be unique' },
     ),
+  status: z.enum(['published', 'draft']),
+  createdBy: z.string(),
 });
 
 // TypeScript type inference
-export type TermInput = z.infer<typeof TermSchema>;
+export type TermFormInput = z.infer<typeof TermFormSchema>;
+export type TagInfoInput = z.infer<typeof TagInfoSchema>;

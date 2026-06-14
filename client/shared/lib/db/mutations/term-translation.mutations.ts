@@ -1,4 +1,4 @@
-import { sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { db } from '../db';
 import { termTranslations } from '../schemas/dictionary.schema';
 
@@ -34,4 +34,22 @@ export async function upsertTermTranslations(values: TermTranslationInput[]) {
         updatedAt: new Date(),
       },
     });
+}
+
+export async function replaceTermTranslations({
+  termId,
+  inputs,
+}: {
+  termId: string;
+  inputs: TermTranslationInput[];
+}) {
+  return await db.transaction(async (tx) => {
+    await tx
+      .delete(termTranslations)
+      .where(eq(termTranslations.termId, termId));
+
+    if (inputs.length === 0) return [];
+
+    await tx.insert(termTranslations).values(inputs);
+  });
 }

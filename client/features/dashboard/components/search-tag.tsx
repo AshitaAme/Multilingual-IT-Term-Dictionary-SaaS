@@ -14,18 +14,21 @@ import { useLocale, useTranslations } from 'next-intl';
 import { getTagListAction } from '../actions/get-tag-list.action';
 import { toast } from 'sonner';
 import { useState, useEffect, useMemo } from 'react';
-import { TagItem } from '../types/tag-item';
 import { cn } from '@/shared/utils/utils';
 import { SearchTagProps } from '../types/search-tag-props';
+import { TagInfoInput } from '../schemas/term-form.schema';
 
 const PAGE_SIZE = 20;
 
-export default function SearchTag(data: SearchTagProps) {
+export default function SearchTag({
+  setOpenSearchTag,
+  clickedTagSet,
+  appendTag,
+}: Readonly<SearchTagProps>) {
   const t = useTranslations('dashboard');
   const locale = useLocale();
 
-  const [tags, setTags] = useState<TagItem[]>([]); // tags for display
-  const { clickedTagSet, setOpenSearchTag } = data; // tags clicked and switch for SearchTag
+  const [tags, setTags] = useState<TagInfoInput[]>([]); // tags for display
   const [search, setSearch] = useState(''); // query condition
   const [page, setPage] = useState(1); // current page
   const [loading, setLoading] = useState(false);
@@ -69,9 +72,7 @@ export default function SearchTag(data: SearchTagProps) {
   };
 
   // Set page to the beginning when search button is clicked
-  const handleSearchClick = () => {
-    setPage(1);
-  };
+  const handleSearchClick = () => setPage(1);
 
   return (
     <Card>
@@ -168,7 +169,13 @@ export default function SearchTag(data: SearchTagProps) {
         )}
       </CardContent>
       <CardFooter>
-        <Button variant="outline" onClick={() => setOpenSearchTag(false)}>
+        <Button
+          variant="outline"
+          onClick={() => {
+            clickedTagSet.forEach((tag) => appendTag(tag));
+            setOpenSearchTag(false);
+          }}
+        >
           {t('attach')}
         </Button>
         <Button
@@ -180,13 +187,7 @@ export default function SearchTag(data: SearchTagProps) {
         >
           {t('cancel')}
         </Button>
-        <Button
-          variant="outline"
-          onClick={() => {
-            clickedTagSet.clear();
-            setOpenSearchTag(false);
-          }}
-        >
+        <Button variant="outline" onClick={() => {}}>
           {t('addTag')}
         </Button>
       </CardFooter>

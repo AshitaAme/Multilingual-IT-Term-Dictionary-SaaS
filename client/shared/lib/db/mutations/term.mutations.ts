@@ -1,10 +1,11 @@
-import { sql, count } from 'drizzle-orm';
+import { sql, count, eq } from 'drizzle-orm';
 import { db } from '../db';
 import { terms } from '../schemas/dictionary.schema';
+import { NotFoundError } from '@/shared/errors/errors';
 
 export type TermInput = typeof terms.$inferInsert;
 
-export async function TermInput(values: TermInput) {
+export async function upsertTerm(values: TermInput) {
   const [term] = await db
     .insert(terms)
     .values(values)
@@ -54,4 +55,9 @@ export async function upsertTerms(values: TermInput[]) {
 export async function countTerms() {
   const result = await db.select({ count: count() }).from(terms);
   return result[0].count;
+}
+
+export async function getTermBySlug(slug: string) {
+  const result = await db.select().from(terms).where(eq(terms.slug, slug));
+  return result[0];
 }

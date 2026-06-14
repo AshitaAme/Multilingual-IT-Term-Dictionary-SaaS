@@ -5,7 +5,11 @@ import {
   CardTitle,
 } from '@/shared/components/ui/card';
 import { useForm, useFieldArray } from 'react-hook-form';
-import { TermInput, TermSchema } from '../schemas/term.schema';
+import {
+  TagInfoInput,
+  TermFormInput,
+  TermFormSchema,
+} from '../schemas/term-form.schema';
 import {
   Field,
   FieldError,
@@ -21,34 +25,44 @@ import {
   NativeSelect,
   NativeSelectOption,
 } from '@/shared/components/ui/native-select';
-import { useLocale } from 'next-intl';
 import { Button } from '@/shared/components/ui/button';
+import { TermFormProps } from '../types/term-form-props';
+import SearchTag from './search-tag';
+import { updateTermAction } from '../actions/update-term.action';
+import { insertTermAction } from '../actions/insert-term.action';
 
-export default function TermForm() {
-  const [open, setOpen] = useState(false);
-  const [tagInput, setTagInput] = useState('');
-  const [openSeachTag, setOpenSearchTag] = useState(false);
-  const locale = useLocale();
+export default function TermForm({
+  open,
+  setOpen,
+  isUpdate,
+  currentTerm,
+}: Readonly<TermFormProps>) {
+  const [openSearchTag, setOpenSearchTag] = useState(false);
 
   const {
     register,
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<TermInput>({
-    resolver: zodResolver(TermSchema),
+    setError,
+    clearErrors,
+    reset,
+  } = useForm<TermFormInput>({
+    resolver: zodResolver(TermFormSchema),
     mode: 'onSubmit',
-    defaultValues: {
-      slug: '',
-      tagInfos: [
-        { tagId: '', name: '' },
-        { tagId: '', name: '' },
-      ],
-      langInfos: [
-        { languageCode: '', name: '', definition: '' },
-        { languageCode: '', name: '', definition: '' },
-      ],
-    },
+    defaultValues: isUpdate
+      ? currentTerm
+      : {
+          slug: '',
+          tagInfos: [
+            { tagId: '', name: '' },
+            { tagId: '', name: '' },
+          ],
+          langInfos: [
+            { languageCode: '', name: '', definition: '' },
+            { languageCode: '', name: '', definition: '' },
+          ],
+        },
   });
 
   const {
@@ -62,18 +76,36 @@ export default function TermForm() {
     append: appendTag,
     remove: removeTag,
   } = useFieldArray({ control, name: 'tagInfos' });
+  const clickedTagSet = new Set<TagInfoInput>();
 
-  const onSubmit = async (data: TermInput) => {
+  const onSubmit = async (data: TermFormInput) => {
     console.log('Submitted:', data);
+    const res = isUpdate
+      ? await updateTermAction(data)
+      : await insertTermAction(data);
+    if (!res.success) {
+      setError('root.serverError', {
+        type: 'server',
+        message: res?.error,
+      });
+      return;
+    }
+    reset();
+    setOpen(false);
   };
 
   if (!open) return;
   return (
-    <Card
-      className={cn('relative w-full max-w-sm rounded-md bg-background py-0')}
-    >
+    <Card className={cn('w-full max-w-sm rounded-md bg-background py-0')}>
       <CardHeader className="relative items-center h-18 w-full px-0">
-        <CardTitle> Term</CardTitle>
+        <X
+          className="absolute z-10 right-2.5 top-2.5 cursor-pointer"
+          onClick={() => {
+            reset();
+            setOpen(false);
+          }}
+        />
+        <CardTitle>Term</CardTitle>
       </CardHeader>
 
       <CardContent>
@@ -110,9 +142,17 @@ export default function TermForm() {
                     size={10}
                     className="absolute right-0.5 top-1/2 -translate-y-1/2"
                     onClick={() => removeTag(index)}
-                  ></X>
+                  />
                 </div>
               ))}
+
+              {openSearchTag && (
+                <SearchTag
+                  setOpenSearchTag={setOpenSearchTag}
+                  clickedTagSet={clickedTagSet}
+                  appendTag={appendTag}
+                />
+              )}
 
               {errors.tagInfos && !Array.isArray(errors.tagInfos) && (
                 <FieldError>{errors.tagInfos.message}</FieldError>
@@ -155,15 +195,12 @@ export default function TermForm() {
                 )}
 
                 <Field data-invalid={!!errors.langInfos?.[index]?.languageCode}>
-                  <FieldLabel
-                    htmlFor={`languageCode-${index}`}
-                    className="sr-only"
-                  >
+                  <FieldLabel htmlFor={`langCode-${index}`} className="sr-only">
                     Language Code
                   </FieldLabel>
                   <NativeSelect
                     {...register(`langInfos.${index}.languageCode`)}
-                    id={`languageCode-${index}`}
+                    id={`langCode-${index}`}
                   >
                     <NativeSelectOption value="">
                       Select language
