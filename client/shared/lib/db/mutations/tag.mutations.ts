@@ -1,4 +1,4 @@
-import { count, sql } from 'drizzle-orm';
+import { count, sql, eq } from 'drizzle-orm';
 import { db } from '../db';
 import { tags } from '../schemas/dictionary.schema';
 
@@ -54,4 +54,9 @@ export async function upsertTags(values: TagInput[]) {
 export async function countTags() {
   const result = await db.select({ count: count() }).from(tags);
   return result[0].count;
+}
+
+export async function getTagBySlug(slug: string) {
+  const result = await db.select().from(tags).where(eq(tags.slug, slug));
+  return result[0];
 }

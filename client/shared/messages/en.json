@@ -51,18 +51,54 @@
   },
 
   "dashboard": {
-    "slug": "Slug",
-    "tags": "Tags",
-    "differentLanguages": "Different Languages",
     "searchTag": "Search tag...",
     "loading": "Loading...",
     "noResults": "No results",
     "attach": "Attach",
     "cancel": "Cancel",
-    "addTerm": "Add Term",
 
-    "addTag": "Add tag",
-    "updateTerm": "Update term",
-    "updateTag": "Update tag"
+    "termForm": {
+      "titleAdd": "Add term",
+      "titleUpdate": "Update term",
+      "slugPlaceholder": "my-term-slug",
+      "addTag": "Add tag",
+      "differentLanguages": "Different Languages",
+      "addLanguage": "Add language",
+      "selectLanguage": "Select language",
+      "lang": {
+        "en": "English",
+        "zh": "中文（简）",
+        "ja": "日本語"
+      },
+      "namePlaceholder": "Language name (max 30 letters)",
+      "label": {
+        "tag": "Tags",
+        "languageCode": "Language Code",
+        "name": "Name",
+        "definition": "Definition"
+      },
+      "definitionPlaceholder": "Definition (max 100 letters)",
+      "submit": "Submit"
+    },
+    "tagForm": {
+      "titleUpdate": "Update tag",
+      "titleAdd": "Add tag",
+      "slugPlaceholder": "Enter tag slug",
+      "colorPlaceholder": "Enter tag color",
+      "addLanguage": "Add language",
+      "selectLanguage": "Select language",
+      "lang": {
+        "en": "English",
+        "zh": "中文（简）",
+        "ja": "日本語"
+      },
+      "namePlaceholder": "Language name (max 30 letters)",
+      "label": {
+        "slug": "Slug",
+        "color": "Color",
+        "languageCode": "Language Code",
+        "name": "Name"
+      }
+    }
   }
 }

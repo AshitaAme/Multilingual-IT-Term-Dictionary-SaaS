@@ -15,15 +15,15 @@ export async function updateTermAction(data: TermFormInput) {
   const { slug, langInfos, tagInfos, status } = parsed.data;
 
   // 2. Update term
-  const termId = crypto.randomUUID();
   const termPayload = {
-    id: termId,
     slug,
     status,
   };
 
+  let termId;
   try {
-    await upsertTerm(termPayload);
+    const res = await upsertTerm(termPayload);
+    termId = res.id;
   } catch (err) {
     console.error(`[updateTermAction] Term update failed`, err);
     return { success: false, error: 'Term update failed' };
@@ -40,7 +40,10 @@ export async function updateTermAction(data: TermFormInput) {
 
   const termTagPayload = {
     termId,
-    tagIds: tagInfos.map((tagInfo) => tagInfo.tagId),
+    inputs: tagInfos.map((tagInfo) => ({
+      termId,
+      tagId: tagInfo.tagId,
+    })),
   };
 
   try {

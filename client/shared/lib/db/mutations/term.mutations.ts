@@ -1,7 +1,6 @@
 import { sql, count, eq } from 'drizzle-orm';
 import { db } from '../db';
 import { terms } from '../schemas/dictionary.schema';
-import { NotFoundError } from '@/shared/errors/errors';
 
 export type TermInput = typeof terms.$inferInsert;
 

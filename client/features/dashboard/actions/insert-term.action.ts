@@ -15,7 +15,7 @@ export async function insertTermAction(data: TermFormInput) {
       error: '[insertTermAction] Term form data parse failed',
     };
 
-  const { slug, langInfos, tagInfos, status } = parsed.data;
+  const { slug, langInfos, tagInfos, status, createdBy } = parsed.data;
 
   //2. Check existence
   try {
@@ -32,13 +32,14 @@ export async function insertTermAction(data: TermFormInput) {
     id: termId,
     slug: slug,
     status,
+    createdBy,
   };
   await upsertTerm(termPayload);
 
   // 4. Insert language and tag information
   const termTranslationPayload = langInfos.map((langInfo) => ({
-    ...langInfo,
     termId,
+    ...langInfo,
   }));
 
   const termTagPayload = tagInfos.map((tagInfo) => ({

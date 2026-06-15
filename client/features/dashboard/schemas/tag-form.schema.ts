@@ -18,6 +18,7 @@ export const TagFormSchema = z.object({
       },
       { message: 'languageCode must be unique' },
     ),
+  isUpdate: z.boolean(),
 });
 
 export type TagFormInput = z.infer<typeof TagFormSchema>;

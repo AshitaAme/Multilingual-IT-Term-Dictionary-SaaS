@@ -1,4 +1,4 @@
-import { sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { db } from '../db';
 import { tagTranslations } from '../schemas/dictionary.schema';
 
@@ -31,4 +31,18 @@ export async function upsertTagTranslations(values: TagTranslationInput[]) {
         name: sql`excluded.name`,
       },
     });
+}
+
+export async function replaceTagTranslations({
+  tagId,
+  inputs,
+}: {
+  tagId: string;
+  inputs: TagTranslationInput[];
+}) {
+  return await db.transaction(async (tx) => {
+    await tx.delete(tagTranslations).where(eq(tagTranslations.tagId, tagId));
+    if (inputs.length === 0) return;
+    await tx.insert(tagTranslations).values(inputs);
+  });
 }

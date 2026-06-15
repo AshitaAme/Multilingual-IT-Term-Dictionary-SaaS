@@ -1,6 +1,11 @@
 'use client';
 
-import { Card, CardContent, CardHeader } from '@/shared/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/shared/components/ui/card';
 import { useTranslations } from 'next-intl';
 import { TagFormInput, TagFormSchema } from '../schemas/tag-form.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -16,26 +21,60 @@ import {
   NativeSelect,
   NativeSelectOption,
 } from '@/shared/components/ui/native-select';
-import { Trash2 } from 'lucide-react';
+import { Trash2, X } from 'lucide-react';
+import { Button } from '@/shared/components/ui/button';
+import { TagFormProps } from '../types/tag-form-props';
+import { updateTagAction } from '../actions/update-tag.action';
+import { insertTagAction } from '../actions/insert-tag.action';
+import { useSession } from 'next-auth/react';
+import { redirect } from 'next/navigation';
+import { retrieveRole } from '@/features/auth';
+import { AUTH_ERRORS } from '@/shared/constants/constants';
+import { useEffect } from 'react';
 
-export default function TagForm() {
+export default function TagForm({
+  isUpdate,
+  currentTag,
+  open,
+  setOpen,
+}: Readonly<TagFormProps>) {
   const t = useTranslations('dashboard');
+  const session = useSession();
+  const userId = session.data?.user.id;
+
+  useEffect(() => {
+    if (!userId) redirect(`/?error=${AUTH_ERRORS.AUTH_REQUIRED}`);
+
+    const fetchUserRole = async () => {
+      const res = await retrieveRole(userId);
+      if (!res.success || res.data != 'admin')
+        redirect(`/?error=${AUTH_ERRORS.ADMIN_ONLY}`);
+    };
+
+    fetchUserRole();
+  }, [userId]);
+
   const {
     handleSubmit,
     register,
     control,
     formState: { errors },
+    setError,
+    clearErrors,
+    reset,
   } = useForm<TagFormInput>({
     resolver: zodResolver(TagFormSchema),
     mode: 'onSubmit',
-    defaultValues: {
-      slug: '',
-      color: '',
-      langInfos: [
-        { languageCode: '', name: '' },
-        { languageCode: '', name: '' },
-      ],
-    },
+    defaultValues: isUpdate
+      ? currentTag
+      : {
+          slug: '',
+          color: '',
+          langInfos: [
+            { languageCode: '', name: '' },
+            { languageCode: '', name: '' },
+          ],
+        },
   });
 
   const {
@@ -44,36 +83,80 @@ export default function TagForm() {
     remove: removeLang,
   } = useFieldArray({ control, name: 'langInfos' });
 
+  const onSubmit = async (data: TagFormInput) => {
+    console.log('Tag form submitted:', data);
+
+    const res = isUpdate
+      ? await updateTagAction(data)
+      : await insertTagAction(data);
+
+    if (!res.success) {
+      setError('root.serverError', {
+        type: 'server',
+        message: res?.error,
+      });
+      return;
+    }
+    reset();
+    setOpen(false);
+  };
+
+  if (!open) return;
   return (
-    <Card>
-      <CardHeader>{t('addTag')}</CardHeader>
+    <Card className="w-full max-w-sm rounded-md bg-background py-0">
+      <CardHeader>
+        {/* Card title: "Update tag" or "Add tag" depending on mode */}
+        <CardTitle>
+          {isUpdate ? t('tagForm.titleUpdate') : t('tagForm.titleAdd')}
+        </CardTitle>
+        <X
+          className="absolute z-10 right-2.5 top-2.5 cursor-pointer"
+          onClick={() => {
+            reset();
+            setOpen(false);
+          }}
+        />
+      </CardHeader>
       <CardContent>
-        <form>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          onChange={() => clearErrors('root.serverError')}
+        >
           <FieldGroup>
+            {/* Slug input */}
             <Field data-invalid={!!errors.slug}>
               <FieldLabel htmlFor="slug" className="sr-only">
-                Slug
+                {t('tagForm.label.slug')}
               </FieldLabel>
               <Input
                 {...register('slug')}
+                readOnly={isUpdate}
                 id="slug"
-                placeholder="Enter tag slug"
+                placeholder={t('tagForm.slugPlaceholder')}
               />
               {errors.slug && <FieldError>{errors.slug.message}</FieldError>}
             </Field>
+
+            {/* Color input */}
             <Field data-invalid={!!errors.color}>
               <FieldLabel htmlFor="color" className="sr-only">
-                Color
+                {t('tagForm.label.color')}
               </FieldLabel>
               <Input
                 {...register('slug')}
                 id="slug"
-                placeholder="Enter tag color"
+                placeholder={t('tagForm.colorPlaceholder')}
               />
               {errors.color && <FieldError>{errors.color.message}</FieldError>}
             </Field>
           </FieldGroup>
+
           <FieldGroup>
+            {/* Button to add a new language entry */}
+            <Button onClick={() => appendLang({ languageCode: '', name: '' })}>
+              {t('tagForm.addLanguage')}
+            </Button>
+
             {langFields.map((field, index) => (
               <div
                 key={field.id}
@@ -89,25 +172,30 @@ export default function TagForm() {
                   </button>
                 )}
 
+                {/* Language code selector */}
                 <Field data-invalid={!!errors.langInfos?.[index]?.languageCode}>
                   <FieldLabel
                     htmlFor={`languageCode-${index}`}
                     className="sr-only"
                   >
-                    Language Code
+                    {t('tagForm.label.languageCode')}
                   </FieldLabel>
                   <NativeSelect
                     {...register(`langInfos.${index}.languageCode`)}
                     id={`languageCode-${index}`}
                   >
                     <NativeSelectOption value="">
-                      Select language
+                      {t('tagForm.selectLanguage')}
                     </NativeSelectOption>
-                    <NativeSelectOption value="en">English</NativeSelectOption>
+                    <NativeSelectOption value="en">
+                      {t('tagForm.lang.en')}
+                    </NativeSelectOption>
                     <NativeSelectOption value="zh">
-                      中文（简）
+                      {t('tagForm.lang.zh')}
                     </NativeSelectOption>
-                    <NativeSelectOption value="ja">日本語</NativeSelectOption>
+                    <NativeSelectOption value="ja">
+                      {t('tagForm.lang.ja')}
+                    </NativeSelectOption>
                   </NativeSelect>
 
                   {errors.langInfos?.[index]?.languageCode && (
@@ -117,14 +205,15 @@ export default function TagForm() {
                   )}
                 </Field>
 
+                {/* Language name input */}
                 <Field data-invalid={!!errors.langInfos?.[index]?.name}>
                   <FieldLabel htmlFor={`name-${index}`} className="sr-only">
-                    Name
+                    {t('tagForm.label.name')}
                   </FieldLabel>
                   <Input
                     {...register(`langInfos.${index}.name`)}
                     id={`name-${index}`}
-                    placeholder="Language name（max 30 letters）"
+                    placeholder={t('tagForm.namePlaceholder')}
                     className="rounded-sm h-8 text-xs focus:ring-1"
                   />
                   {errors.langInfos?.[index]?.name && (
@@ -136,6 +225,9 @@ export default function TagForm() {
               </div>
             ))}
           </FieldGroup>
+
+          {/* Submit button */}
+          <Button type="submit" variant="outline" />
         </form>
       </CardContent>
     </Card>

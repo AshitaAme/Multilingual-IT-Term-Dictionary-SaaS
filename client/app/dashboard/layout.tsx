@@ -9,9 +9,10 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }>) {
   const session = await auth();
-  if (!session) redirect(`/?error=${AUTH_ERRORS.AUTH_REQUIRED}`);
-  const response = await retrieveRole(session.user.id);
-  if (!response.success || response.data != 'admin')
+  const userId = session?.user.id;
+  if (!userId) redirect(`/?error=${AUTH_ERRORS.AUTH_REQUIRED}`);
+  const res = await retrieveRole(session.user.id);
+  if (!res.success || res.data != 'admin')
     redirect(`/?error=${AUTH_ERRORS.ADMIN_ONLY}`);
 
   return <>{children}</>;

@@ -21,18 +21,18 @@ export async function deleteTermTag(values: TermTagInput) {
     .returning();
 }
 
-export async function replaceTermTags(values: {
+export async function replaceTermTags({
+  termId,
+  inputs,
+}: {
   termId: string;
-  tagIds: string[];
+  inputs: TermTagInput[];
 }) {
   return await db.transaction(async (tx) => {
-    await tx.delete(termTags).where(eq(termTags.termId, values.termId));
+    await tx.delete(termTags).where(eq(termTags.termId, termId));
 
-    if (values.tagIds.length === 0) return [];
+    if (inputs.length === 0) return [];
 
-    return await tx
-      .insert(termTags)
-      .values(values.tagIds.map((tagId) => ({ termId: values.termId, tagId })))
-      .returning();
+    return await tx.insert(termTags).values(inputs).returning();
   });
 }
