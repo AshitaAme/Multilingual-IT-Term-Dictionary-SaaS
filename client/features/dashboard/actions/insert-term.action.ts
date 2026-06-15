@@ -5,9 +5,14 @@ import {
 import { TermFormInput, TermFormSchema } from '../schemas/term-form.schema';
 import { insertTermTranslations } from '@/shared/lib/db/mutations/term-translation.mutations';
 import { insertTermTags } from '@/shared/lib/db/mutations/term-tag.mutations';
+import { checkAdminAction } from '@/features/auth';
 
 export async function insertTermAction(data: TermFormInput) {
-  //1. Zod validation
+  // 1. Check role
+  const res = await checkAdminAction();
+  if (!res.success) return res;
+
+  // 2. Zod validation
   const parsed = TermFormSchema.safeParse(data);
   if (!parsed.success)
     return {
@@ -15,9 +20,9 @@ export async function insertTermAction(data: TermFormInput) {
       error: '[insertTermAction] Term form data parse failed',
     };
 
-  const { slug, langInfos, tagInfos, status, createdBy } = parsed.data;
+  const { slug, langInfos, tagInfos, status } = parsed.data;
 
-  //2. Check existence
+  // 3. Check existence
   try {
     const term = await getTermBySlug(slug);
     if (term) return { success: false, error: 'Term already exists' };
@@ -26,17 +31,17 @@ export async function insertTermAction(data: TermFormInput) {
     return { success: false, error: 'Get term failed' };
   }
 
-  //3. Insert term
+  // 4. Insert term
   const termId = crypto.randomUUID();
   const termPayload = {
     id: termId,
     slug: slug,
     status,
-    createdBy,
+    createdBy: res.data?.user.id,
   };
   await upsertTerm(termPayload);
 
-  // 4. Insert language and tag information
+  // 5. Insert language and tag information
   const termTranslationPayload = langInfos.map((langInfo) => ({
     termId,
     ...langInfo,
@@ -60,6 +65,6 @@ export async function insertTermAction(data: TermFormInput) {
     };
   }
 
-  // 5. success
+  // 6. success
   return { success: true };
 }

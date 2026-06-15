@@ -4,19 +4,24 @@ import {
 } from '@/shared/lib/db/mutations/tag.mutations';
 import { TagFormInput, TagFormSchema } from '../schemas/tag-form.schema';
 import { insertTagTranslations } from '@/shared/lib/db/mutations/tag-translation.mutations';
+import { checkAdminAction } from '@/features/auth';
 
 export async function insertTagAction(data: TagFormInput) {
-  //1. Zod validation
+  // 1. Check role of user
+  const res = await checkAdminAction();
+  if (!res.success) return res;
+
+  // 2. Zod validation
   const parsed = TagFormSchema.safeParse(data);
   if (!parsed.success)
     return { success: false, error: 'Tag form data parse failed' };
   const { slug, color, langInfos } = parsed.data;
 
-  //2. Check existence
-  const res = await getTagBySlug(slug);
-  if (!res) return { success: false, error: 'Tag already exists' };
+  // 3. Check existence
+  const tag = await getTagBySlug(slug);
+  if (!tag) return { success: false, error: 'Tag already exists' };
 
-  //3. Insert tag
+  // 4. Insert tag
   const tagId = crypto.randomUUID();
   const tagPayload = {
     id: tagId,
@@ -31,7 +36,7 @@ export async function insertTagAction(data: TagFormInput) {
     return { success: false, error: 'Tag insert failed' };
   }
 
-  //4. Insert tag language information
+  // 5. Insert tag language information
   const tagTranslationPayload = langInfos.map((langInfo) => ({
     tagId,
     ...langInfo,
@@ -51,6 +56,6 @@ export async function insertTagAction(data: TagFormInput) {
     };
   }
 
-  //5. Success
+  // 6. Success
   return { success: true };
 }

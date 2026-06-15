@@ -2,9 +2,14 @@ import { upsertTerm } from '@/shared/lib/db/mutations/term.mutations';
 import { TermFormInput, TermFormSchema } from '../schemas/term-form.schema';
 import { replaceTermTranslations } from '@/shared/lib/db/mutations/term-translation.mutations';
 import { replaceTermTags } from '@/shared/lib/db/mutations/term-tag.mutations';
+import { checkAdminAction } from '@/features/auth';
 
 export async function updateTermAction(data: TermFormInput) {
-  // 1. Zod validation
+  // 1. Check role
+  const res = await checkAdminAction();
+  if (!res.success) return res;
+
+  // 2. Zod validation
   const parsed = TermFormSchema.safeParse(data);
   if (!parsed.success)
     return {
@@ -14,7 +19,7 @@ export async function updateTermAction(data: TermFormInput) {
 
   const { slug, langInfos, tagInfos, status } = parsed.data;
 
-  // 2. Update term
+  // 3. Update term
   const termPayload = {
     slug,
     status,
@@ -29,7 +34,7 @@ export async function updateTermAction(data: TermFormInput) {
     return { success: false, error: 'Term update failed' };
   }
 
-  // 3. Update language and tag information
+  // 4. Update language and tag information
   const termTranslationPayload = {
     termId,
     inputs: langInfos.map((langInfo) => ({
@@ -59,6 +64,6 @@ export async function updateTermAction(data: TermFormInput) {
     };
   }
 
-  // 4. success
+  // 5. success
   return { success: true };
 }

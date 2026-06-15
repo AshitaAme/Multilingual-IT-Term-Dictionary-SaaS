@@ -1,14 +1,19 @@
 import { upsertTag } from '@/shared/lib/db/mutations/tag.mutations';
 import { TagFormInput, TagFormSchema } from '../schemas/tag-form.schema';
 import { replaceTagTranslations } from '@/shared/lib/db/mutations/tag-translation.mutations';
+import { checkAdminAction } from '@/features/auth';
 
 export async function updateTagAction(data: TagFormInput) {
-  //1. Zod validation
+  // 1. Check role of user
+  const res = await checkAdminAction();
+  if (!res.success) return res;
+
+  // 2. Zod validation
   const parsed = TagFormSchema.safeParse(data);
   if (!parsed.success)
     return { success: false, error: 'Tag form parse failed' };
 
-  // 2. Update tag
+  // 3. Update tag
   const { slug, color, langInfos } = parsed.data;
   const tagPayload = {
     slug,
@@ -24,7 +29,7 @@ export async function updateTagAction(data: TagFormInput) {
     return { success: false, error: 'Tag update failed' };
   }
 
-  // 3. Update tag language information
+  // 4. Update tag language information
   const tagTranslationPayload = {
     tagId,
     inputs: langInfos.map((langInfo) => ({
@@ -43,6 +48,6 @@ export async function updateTagAction(data: TagFormInput) {
     return { success: false, error: 'Tag language information update failed' };
   }
 
-  // 4. Success
+  // 5. Success
   return { success: true };
 }

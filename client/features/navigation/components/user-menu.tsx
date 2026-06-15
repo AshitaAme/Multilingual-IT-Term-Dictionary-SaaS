@@ -34,8 +34,7 @@ export default function UserMenu() {
   const { data: session } = useSession();
   const { onOpen } = useAuthModalStore();
   const router = useRouter();
-  const { role } = useRole();
-  const isAdmin = role === 'admin';
+  const { role, loading } = useRole();
   const t = useTranslations('nav');
 
   if (!session) {
@@ -104,7 +103,7 @@ export default function UserMenu() {
 
         <DropdownMenuGroup className="p-2">
           {/* Profile */}
-          {isAdmin && (
+          {!loading && role === 'admin' && (
             <>
               <DropdownMenuSeparator className="mx-2 my-2" />
               <DropdownMenuItem

@@ -34,7 +34,6 @@ export const TermFormSchema = z.object({
       { message: 'languageCode must be unique' },
     ),
   status: z.enum(['published', 'draft']),
-  createdBy: z.string(),
 });
 
 // TypeScript type inference

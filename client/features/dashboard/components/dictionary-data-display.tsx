@@ -1,14 +1,31 @@
+'use client';
+
 import { ImportTerm } from './import-term';
 import { ClickCard } from '@/shared/components/ui/click-card';
 import { countDictionary } from '../actions/count-dictionary.action';
 import { toast } from 'sonner';
 import { cn } from '@/shared/utils/utils';
 import { Button } from '@/shared/components/ui/button';
+import { useEffect, useState } from 'react';
+import TermForm from './term-form';
+import TagForm from './tag-form';
 
-export async function DictionaryDataDisplay() {
-  const res = await countDictionary();
-  if (!res.success) toast.error(`Term and tag's number retrieval failed`);
-  const { termCount, tagCount } = res.data!;
+export function DictionaryDataDisplay() {
+  const [termCount, setTermCount] = useState<number | undefined>();
+  const [tagCount, setTagCount] = useState<number | undefined>();
+
+  useEffect(() => {
+    const count = async () => {
+      const res = await countDictionary();
+      if (!res.success) toast.error("Term and tag's number retrieval failed");
+      setTermCount(res.data?.termCount);
+      setTagCount(res.data?.tagCount);
+    };
+    count();
+  }, []);
+
+  const [openTermForm, setOpenTermForm] = useState(false);
+  const [openTagForm, setOpenTagForm] = useState(false);
 
   return (
     <div
@@ -25,9 +42,13 @@ export async function DictionaryDataDisplay() {
           <Button
             variant="outline"
             className="cursor-pointer bg-muted-foreground"
+            onClick={() => setOpenTermForm(true)}
           >
             Manipulate
           </Button>
+          {openTermForm && (
+            <TermForm onClose={() => setOpenTermForm(false)} isUpdate={false} />
+          )}
         </ClickCard>
       </div>
       <div className="flex items-center justify-center">
@@ -37,9 +58,13 @@ export async function DictionaryDataDisplay() {
           <Button
             variant="outline"
             className="cursor-pointer bg-muted-foreground"
+            onClick={() => setOpenTagForm(true)}
           >
             Manipulate
           </Button>
+          {openTagForm && (
+            <TagForm onClose={() => setOpenTagForm(false)} isUpdate={false} />
+          )}
         </ClickCard>
       </div>
       <div className="flex items-center justify-center">

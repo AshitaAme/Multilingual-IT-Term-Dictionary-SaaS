@@ -1,7 +1,6 @@
 // features/auth/store/auth-modal.store.ts
 import { create } from 'zustand';
-import { retrieveRole } from '../actions/retrieve-role.action';
-import { getSession } from 'next-auth/react';
+import { checkAdminAction } from '../actions/check-admin.action';
 
 type AuthModalStore = {
   open: boolean;
@@ -15,40 +14,34 @@ export const useAuthModalStore = create<AuthModalStore>((set) => ({
   onClose: () => set({ open: false }),
 }));
 
-type AuthRole = 'admin' | 'user' | 'guest' | '';
-const VALID_ROLES = new Set(['admin', 'user', 'guest']);
-
 type AuthRoleStore = {
-  role: AuthRole;
+  role: string;
   loading: boolean;
-  setRole: (role: AuthRole) => void;
+  setRole: (role: string) => void;
   fetchRole: () => Promise<void>;
   clearRole: () => void;
 };
 
 export const useAuthRoleStore = create<AuthRoleStore>((set, get) => ({
   role: '',
-  loading: false,
+  loading: true,
 
   setRole: (role) => set({ role }),
   clearRole: () => set({ role: '', loading: false }),
 
   fetchRole: async () => {
-    if (get().role !== '') return;
+    if (get().role !== '') {
+      set({ loading: false });
+      return;
+    }
 
     try {
       set({ loading: true });
-
-      const session = await getSession();
-      if (!session) {
-        set({ role: 'guest' });
-        return;
-      }
-      const res = await retrieveRole(session.user.id);
-      const role = VALID_ROLES.has(res.data) ? res.data : 'guest';
-      set({ role: role as AuthRole });
+      const res = await checkAdminAction();
+      if (res.success) set({ role: 'admin' });
+      else set({ role: 'user' });
     } catch {
-      set({ role: 'guest' });
+      set({ role: 'user' });
     } finally {
       set({ loading: false });
     }

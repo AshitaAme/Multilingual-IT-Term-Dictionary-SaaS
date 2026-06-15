@@ -21,7 +21,6 @@ import { TagInfoInput } from '../schemas/term-form.schema';
 const PAGE_SIZE = 20;
 
 export default function SearchTag({
-  setOpenSearchTag,
   clickedTagSet,
   appendTag,
 }: Readonly<SearchTagProps>) {
@@ -173,7 +172,6 @@ export default function SearchTag({
           variant="outline"
           onClick={() => {
             clickedTagSet.forEach((tag) => appendTag(tag));
-            setOpenSearchTag(false);
           }}
         >
           {t('attach')}
@@ -182,7 +180,6 @@ export default function SearchTag({
           variant="outline"
           onClick={() => {
             clickedTagSet.clear();
-            setOpenSearchTag(false);
           }}
         >
           {t('cancel')}
