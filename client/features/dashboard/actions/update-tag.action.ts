@@ -1,3 +1,5 @@
+'use server';
+
 import { upsertTag } from '@/shared/lib/db/mutations/tag.mutations';
 import { TagFormInput, TagFormSchema } from '../schemas/tag-form.schema';
 import { replaceTagTranslations } from '@/shared/lib/db/mutations/tag-translation.mutations';

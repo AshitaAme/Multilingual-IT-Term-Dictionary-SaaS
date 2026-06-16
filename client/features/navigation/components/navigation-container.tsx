@@ -32,7 +32,7 @@ export function NavigationContainer({
       {/* Center section: Search */}
       <div className="flex justify-center w-full">{searchMenu}</div>
 
-      {/* Right section: Theme toggle and user nav */}
+      {/* Right section: Locale, theme, and user nav */}
       <div className="flex pr-2 gap-2 justify-end">
         <LocaleMenu />
         <ThemeToggle />

@@ -102,7 +102,7 @@ export default function UserMenu() {
         </DropdownMenuGroup>
 
         <DropdownMenuGroup className="p-2">
-          {/* Profile */}
+          {/* Dashboard */}
           {!loading && role === 'admin' && (
             <>
               <DropdownMenuSeparator className="mx-2 my-2" />

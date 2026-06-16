@@ -17,11 +17,11 @@ import {
   FieldError,
   FieldGroup,
   FieldLabel,
+  FieldTitle,
 } from '@/shared/components/ui/field';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/shared/components/ui/input';
 import { X, Plus, Trash2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
 import {
   NativeSelect,
   NativeSelectOption,
@@ -98,9 +98,10 @@ export default function TermForm({
 
   return createPortal(
     <div className="fixed inset-0 flex items-center justify-center backdrop-blur z-50">
-      <Card className="w-full max-w-sm rounded-md bg-background py-0">
+      <Card className="w-100 rounded-md bg-background py-0">
         <CardHeader className="relative items-center h-18 w-full px-0">
           <X
+            size={16}
             className="absolute z-10 right-2.5 top-2.5 cursor-pointer"
             onClick={() => {
               reset();
@@ -108,20 +109,24 @@ export default function TermForm({
             }}
           />
           {/* Card title */}
-          <CardTitle>{t('termForm.title')}</CardTitle>
+          <CardTitle className="pl-6 pt-4">
+            {t(isUpdate ? 'termForm.titleUpdate' : 'termForm.titleAdd')}
+          </CardTitle>
         </CardHeader>
 
-        <CardContent>
+        <CardContent className="overflow-y-auto y-120">
           <form
             onSubmit={handleSubmit(onSubmit)}
             onChange={() => {
               if (errors.root?.serverError) clearErrors('root.serverError');
             }}
             noValidate
+            className="flex flex-col gap-2"
           >
             {/* Slug field */}
             <FieldGroup>
               <Field data-invalid={!!errors.slug}>
+                <FieldTitle>{t('termForm.label.slug')}</FieldTitle>
                 <FieldLabel htmlFor="slug" className="sr-only">
                   {t('termForm.label.slug')}
                 </FieldLabel>
@@ -138,28 +143,28 @@ export default function TermForm({
             {/* Tags field */}
             <FieldGroup>
               <Field data-invalid={!!errors.tagInfos}>
+                <FieldTitle>{t('termForm.label.tags')}</FieldTitle>
                 <FieldLabel htmlFor="tags" className="sr-only">
                   {t('termForm.label.tags')}
                 </FieldLabel>
                 {/* Button to open tag search */}
-                <Button
-                  variant="outline"
-                  onClick={() => setOpenSearchTag(true)}
-                >
-                  {t('termForm.addTag')}
-                </Button>
-                {tagFields.map((field, index) => (
-                  <div key={field.id} className="flex h-4 border-2 relative">
-                    field.name
-                    <X
-                      size={10}
-                      className="absolute right-0.5 top-1/2 -translate-y-1/2"
-                      onClick={() => removeTag(index)}
-                    />
-                  </div>
-                ))}
-
+                <Card className="ring-1 h-20">
+                  {tagFields.map(
+                    (field, index) =>
+                      field.name !== '' && (
+                        <Button key={field.id} className="border-2 relative">
+                          {field.name}
+                          <X
+                            size={10}
+                            className="absolute right-0.5 top-1/2 -translate-y-1/2"
+                            onClick={() => removeTag(index)}
+                          />
+                        </Button>
+                      ),
+                  )}
+                </Card>
                 <SearchTag
+                  className="h-80"
                   clickedTagSet={clickedTagSet}
                   appendTag={appendTag}
                 />

@@ -1,3 +1,5 @@
+'use server';
+
 import { upsertTerm } from '@/shared/lib/db/mutations/term.mutations';
 import { TermFormInput, TermFormSchema } from '../schemas/term-form.schema';
 import { replaceTermTranslations } from '@/shared/lib/db/mutations/term-translation.mutations';
