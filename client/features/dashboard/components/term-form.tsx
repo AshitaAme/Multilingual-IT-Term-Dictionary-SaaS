@@ -33,6 +33,7 @@ import { updateTermAction } from '../actions/update-term.action';
 import { insertTermAction } from '../actions/insert-term.action';
 import { useTranslations } from 'next-intl';
 import { createPortal } from 'react-dom';
+import { useSet } from '@/shared/hooks/use-set';
 
 export default function TermForm({
   isUpdate,
@@ -78,7 +79,6 @@ export default function TermForm({
     append: appendTag,
     remove: removeTag,
   } = useFieldArray({ control, name: 'tagInfos' });
-  const clickedTagSet = new Set<TagInfoInput>();
 
   const onSubmit = async (data: TermFormInput) => {
     console.log('Submitted:', data);
@@ -98,7 +98,7 @@ export default function TermForm({
 
   return createPortal(
     <div className="fixed inset-0 flex items-center justify-center backdrop-blur z-50">
-      <Card className="w-100 rounded-md bg-background py-0">
+      <Card className="h-160 w-120 rounded-md bg-background py-0">
         <CardHeader className="relative items-center h-18 w-full px-0">
           <X
             size={16}
@@ -114,7 +114,7 @@ export default function TermForm({
           </CardTitle>
         </CardHeader>
 
-        <CardContent className="overflow-y-auto y-120">
+        <CardContent className="overflow-y-auto y-100">
           <form
             onSubmit={handleSubmit(onSubmit)}
             onChange={() => {
@@ -148,25 +148,12 @@ export default function TermForm({
                   {t('termForm.label.tags')}
                 </FieldLabel>
                 {/* Button to open tag search */}
-                <Card className="ring-1 h-20">
-                  {tagFields.map(
-                    (field, index) =>
-                      field.name !== '' && (
-                        <Button key={field.id} className="border-2 relative">
-                          {field.name}
-                          <X
-                            size={10}
-                            className="absolute right-0.5 top-1/2 -translate-y-1/2"
-                            onClick={() => removeTag(index)}
-                          />
-                        </Button>
-                      ),
-                  )}
-                </Card>
+
                 <SearchTag
                   className="h-80"
-                  clickedTagSet={clickedTagSet}
                   appendTag={appendTag}
+                  tagFields={tagFields}
+                  removeTag={removeTag}
                 />
 
                 {errors.tagInfos && !Array.isArray(errors.tagInfos) && (

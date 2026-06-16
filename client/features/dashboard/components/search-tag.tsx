@@ -9,11 +9,11 @@ import {
   CardHeader,
 } from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
-import { SearchIcon, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
+import { SearchIcon, ChevronLeftIcon, ChevronRightIcon, X } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { getTagListAction } from '../actions/get-tag-list.action';
 import { toast } from 'sonner';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { cn } from '@/shared/utils/utils';
 import { SearchTagProps } from '../types/search-tag-props';
 import { TagInfoInput } from '../schemas/term-form.schema';
@@ -21,7 +21,8 @@ import { TagInfoInput } from '../schemas/term-form.schema';
 const PAGE_SIZE = 20;
 
 export default function SearchTag({
-  clickedTagSet,
+  tagFields,
+  removeTag,
   appendTag,
   className,
 }: Readonly<SearchTagProps>) {
@@ -73,118 +74,151 @@ export default function SearchTag({
 
   // Set page to the beginning when search button is clicked
   const handleSearchClick = () => setPage(1);
+  const checkTag = useCallback(
+    (tagId: string) => tagFields.find((t) => t.tagId === tagId),
+    [tagFields],
+  );
+  const toggleTag = useCallback(
+    (tag: TagInfoInput) => {
+      if (checkTag(tag.tagId)) {
+        const index = tagFields.findIndex((t) => t.tagId === tag.tagId);
+        if (index !== -1) removeTag(index);
+      } else {
+        appendTag(tag);
+      }
+    },
+    [checkTag, tagFields, removeTag, appendTag],
+  );
 
   return (
-    <Card className={cn(className, 'rounded-sm p-0 flex flex-col gap-1')}>
-      <CardHeader className="flex items-center justify-center py-2">
-        <ButtonGroup>
-          <Input
-            placeholder={t('searchTag.search')}
-            value={search}
-            onChange={handleSearchInput}
-          />
-          <Button
-            variant="outline"
-            aria-label="Search"
-            className="group/search cursor-pointer"
-            onClick={handleSearchClick}
-          >
-            <SearchIcon className="group-hover/search:scale-110 transition-all duration-500" />
-          </Button>
-        </ButtonGroup>
-      </CardHeader>
-
-      <CardContent className="space-y-2 overflow-y-auto max-h-80">
-        {/* Loading state */}
-        {loading && (
-          <div className="py-8 text-center text-sm text-muted-foreground">
-            {t('searchTag.loading')}
-          </div>
+    <div className="flex flex-col gap-2">
+      <Card className="flex flex-col rounded-sm p-0 bg-background">
+        <CardContent className="flex flex-wrap content-start gap-2 py-2 overflow-y-auto h-30 max-h-30">
+          {tagFields.map(
+            (field, index) =>
+              field.name !== '' && (
+                <Button
+                  type="button"
+                  key={field.id}
+                  className="flex items-center justify-center relative cursor-pointer"
+                  onClick={() => removeTag(index)}
+                >
+                  {field.name}
+                  <X size={10} className="cursor-pointer " />
+                </Button>
+              ),
+          )}
+        </CardContent>
+      </Card>
+      <Card
+        className={cn(
+          className,
+          'rounded-sm p-0 flex flex-col gap-0 bg-background',
         )}
+      >
+        <CardHeader className="flex items-center justify-center py-3">
+          <ButtonGroup>
+            <Input
+              placeholder={t('searchTag.search')}
+              value={search}
+              onChange={handleSearchInput}
+            />
+            <Button
+              variant="outline"
+              aria-label="Search"
+              className="group/search cursor-pointer"
+              onClick={handleSearchClick}
+            >
+              <SearchIcon className="group-hover/search:scale-110 transition-all duration-500" />
+            </Button>
+          </ButtonGroup>
+        </CardHeader>
 
-        {/* Empty state */}
-        {!loading && filteredTags.length === 0 && (
-          <div className="py-8 text-center text-sm text-muted-foreground">
-            {t('searchTag.noResults')}
+        <CardContent className="space-y-2 overflow-y-auto max-h-80">
+          {/* Loading state */}
+          {loading && (
+            <div className="py-8 text-center text-sm text-muted-foreground">
+              {t('searchTag.loading')}
+            </div>
+          )}
+
+          {/* Empty state */}
+          {!loading && filteredTags.length === 0 && (
+            <div className="py-8 text-center text-sm text-muted-foreground">
+              {t('searchTag.noResults')}
+            </div>
+          )}
+
+          {/* Tag list */}
+          <div className="flex flex-wrap gap-2">
+            {!loading &&
+              pagedTags.map((tag) => (
+                <Button
+                  type="button"
+                  key={tag.tagId}
+                  className={cn(
+                    'flex items-center justify-center cursor-pointer opacity-50',
+                    checkTag(tag.tagId) && 'opacity-100',
+                  )}
+                  variant={'outline'}
+                  onClick={() => toggleTag(tag)}
+                >
+                  <span className="flex-1 truncate">{tag.name}</span>
+                </Button>
+              ))}
           </div>
-        )}
 
-        {/* Tag list */}
-        <div className="flex flex-wrap gap-2">
-          {!loading &&
-            pagedTags.map((tag) => (
-              <Button
-                key={tag.tagId}
-                className={cn(
-                  'flex items-center px-3 py-2 rounded-md border border-border bg-muted/40',
-                  'hover:bg-muted transition-colors duration-150 text-sm',
-                  clickedTagSet.has(tag) && 'bg-muted/80',
-                )}
-                onClick={() => clickedTagSet.add(tag)}
-              >
-                <span className="flex-1 truncate">{tag.name}</span>
-              </Button>
-            ))}
-        </div>
-
-        {/* Pagination */}
-        {!loading && filteredTags.length > 0 && (
-          <div className="flex items-center justify-between pt-2">
-            {/* Proportion of amount accumulated to total amount*/}
-            <span className="text-xs text-muted-foreground">
-              {(page - 1) * PAGE_SIZE + 1}–
-              {Math.min(page * PAGE_SIZE, filteredTags.length)} /{' '}
-              {filteredTags.length}
-            </span>
-
-            <div className="flex items-center gap-1">
-              {/* Last page */}
-              <Button
-                variant="ghost"
-                size="icon"
-                disabled={page === 1}
-                onClick={() => setPage((p) => p - 1)}
-                aria-label="Previous page"
-              >
-                <ChevronLeftIcon className="size-4" />
-              </Button>
-
-              <span className="text-xs w-16 text-center">
-                {page} / {totalPages}
+          {/* Pagination */}
+          {!loading && filteredTags.length > 0 && (
+            <div className="flex items-center justify-between pt-2">
+              {/* Proportion of amount accumulated to total amount*/}
+              <span className="text-xs text-muted-foreground">
+                {(page - 1) * PAGE_SIZE + 1}–
+                {Math.min(page * PAGE_SIZE, filteredTags.length)} /{' '}
+                {filteredTags.length}
               </span>
 
-              {/* Next page */}
-              <Button
-                variant="ghost"
-                size="icon"
-                disabled={page === totalPages}
-                onClick={() => setPage((p) => p + 1)}
-                aria-label="Next page"
-              >
-                <ChevronRightIcon className="size-4" />
-              </Button>
+              <div className="flex items-center gap-1">
+                {/* Last page */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  disabled={page === 1}
+                  onClick={() => setPage((p) => p - 1)}
+                  aria-label="Previous page"
+                >
+                  <ChevronLeftIcon className="size-4" />
+                </Button>
+
+                <span className="text-xs w-16 text-center">
+                  {page} / {totalPages}
+                </span>
+
+                {/* Next page */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  disabled={page === totalPages}
+                  onClick={() => setPage((p) => p + 1)}
+                  aria-label="Next page"
+                >
+                  <ChevronRightIcon className="size-4" />
+                </Button>
+              </div>
             </div>
-          </div>
-        )}
-      </CardContent>
-      <CardFooter className="grid grid-cols-2 p-0 rounded-none">
-        <Button
-          className="w-full h-full py-2 rounded-none cursor-pointer border-0"
-          variant="ghost"
-          onClick={() => {
-            clickedTagSet.forEach((tag) => appendTag(tag));
-          }}
-        >
-          {t('searchTag.attach')}
-        </Button>
-        <Button
-          className="w-full h-full py-2 rounded-none cursor-pointer border-0"
-          variant="ghost"
-          onClick={() => {}}
-        >
-          {t('searchTag.generate')}
-        </Button>
-      </CardFooter>
-    </Card>
+          )}
+        </CardContent>
+        <CardFooter className="p-0 rounded-none">
+          <Button
+            type="button"
+            className="w-full h-full py-2 rounded-none cursor-pointer border-0"
+            variant="ghost"
+            onClick={() => {}}
+          >
+            {t('searchTag.generate')}
+          </Button>
+        </CardFooter>
+      </Card>
+    </div>
   );
 }
