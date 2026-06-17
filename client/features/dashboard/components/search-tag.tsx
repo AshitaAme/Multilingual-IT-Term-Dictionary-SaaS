@@ -92,7 +92,7 @@ export default function SearchTag({
 
   return (
     <div className="flex flex-col gap-2">
-      <Card className="flex flex-col rounded-sm p-0 bg-background">
+      <Card className="flex flex-col rounded-sm p-0 py-1 bg-background">
         <CardContent className="flex flex-wrap content-start gap-2 py-2 overflow-y-auto h-30 max-h-30">
           {tagFields.map(
             (field, index) =>
@@ -116,6 +116,7 @@ export default function SearchTag({
           'rounded-sm p-0 flex flex-col gap-0 bg-background',
         )}
       >
+        {/* Search tag */}
         <CardHeader className="flex items-center justify-center py-3">
           <ButtonGroup>
             <Input
@@ -124,6 +125,7 @@ export default function SearchTag({
               onChange={handleSearchInput}
             />
             <Button
+              type="button"
               variant="outline"
               aria-label="Search"
               className="group/search cursor-pointer"
@@ -170,7 +172,7 @@ export default function SearchTag({
 
           {/* Pagination */}
           {!loading && filteredTags.length > 0 && (
-            <div className="flex items-center justify-between pt-2">
+            <div className="flex items-center justify-between py-2">
               {/* Proportion of amount accumulated to total amount*/}
               <span className="text-xs text-muted-foreground">
                 {(page - 1) * PAGE_SIZE + 1}–
@@ -181,6 +183,7 @@ export default function SearchTag({
               <div className="flex items-center gap-1">
                 {/* Last page */}
                 <Button
+                  type="button"
                   variant="ghost"
                   size="icon"
                   disabled={page === 1}
@@ -196,6 +199,7 @@ export default function SearchTag({
 
                 {/* Next page */}
                 <Button
+                  type="button"
                   variant="ghost"
                   size="icon"
                   disabled={page === totalPages}

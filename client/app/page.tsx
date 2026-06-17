@@ -1,4 +1,4 @@
-import { TagCardDisplay } from '@/features/tags';
+import { TagCardDisplay } from '@/features/dictionary';
 import { TypingAnimation } from '@/shared/components/ui/typing-animation';
 
 export default function Home() {

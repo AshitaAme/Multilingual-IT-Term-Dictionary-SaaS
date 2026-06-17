@@ -1,4 +1,4 @@
-import { kv } from '@/shared/lib/redis/redis';
+import { kv } from '@/shared/lib/icons/redis/redis';
 import bcrypt from 'bcryptjs';
 import crypto from 'node:crypto';
 import { PendingUserSchema } from '../schemas/pending-user';

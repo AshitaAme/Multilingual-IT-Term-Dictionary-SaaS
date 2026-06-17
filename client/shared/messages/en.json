@@ -64,15 +64,15 @@
       "titleUpdate": "Update Term",
       "slugPlaceholder": "Enter slug...",
       "addTag": "Add tag",
-      "differentLanguages": "Different Languages",
-      "addLanguage": "Add language",
+      "translations": "Translations",
+      "addTranslation": "Add translation",
       "selectLanguage": "Select language",
       "lang": {
         "en": "English",
         "zh": "中文（简）",
         "ja": "日本語"
       },
-      "namePlaceholder": "Language name (max 30 letters)",
+      "namePlaceholder": "Name (max 30 letters)",
       "label": {
         "slug": "Slug",
         "tags": "Tags",
@@ -84,24 +84,27 @@
       "submit": "Submit"
     },
     "tagForm": {
-      "titleUpdate": "Update tag",
-      "titleAdd": "Add tag",
+      "titleUpdate": "Update Tag",
+      "titleAdd": "Add Tag",
       "slugPlaceholder": "Enter tag slug",
       "colorPlaceholder": "Enter tag color",
       "addLanguage": "Add language",
       "selectLanguage": "Select language",
+      "selectColor": "Select color",
+      "translations": "Translations",
       "lang": {
         "en": "English",
         "zh": "中文（简）",
         "ja": "日本語"
       },
-      "namePlaceholder": "Language name (max 30 letters)",
+      "namePlaceholder": "Name (max 30 letters)",
       "label": {
         "slug": "Slug",
         "color": "Color",
         "languageCode": "Language Code",
         "name": "Name"
-      }
+      },
+      "submit": "Submit"
     }
   }
 }

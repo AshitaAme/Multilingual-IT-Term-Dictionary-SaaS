@@ -7,11 +7,7 @@ import {
   CardTitle,
 } from '@/shared/components/ui/card';
 import { useForm, useFieldArray } from 'react-hook-form';
-import {
-  TagInfoInput,
-  TermFormInput,
-  TermFormSchema,
-} from '../schemas/term-form.schema';
+import { TermFormInput, TermFormSchema } from '../schemas/term-form.schema';
 import {
   Field,
   FieldError,
@@ -21,19 +17,19 @@ import {
 } from '@/shared/components/ui/field';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/shared/components/ui/input';
-import { X, Plus, Trash2 } from 'lucide-react';
+import { X, Plus } from 'lucide-react';
 import {
   NativeSelect,
   NativeSelectOption,
 } from '@/shared/components/ui/native-select';
-import { Button } from '@/shared/components/ui/button';
 import { TermFormProps } from '../types/term-form-props';
 import SearchTag from './search-tag';
 import { updateTermAction } from '../actions/update-term.action';
 import { insertTermAction } from '../actions/insert-term.action';
 import { useTranslations } from 'next-intl';
 import { createPortal } from 'react-dom';
-import { useSet } from '@/shared/hooks/use-set';
+import { cn } from '@/shared/utils/utils';
+import { Button } from '@/shared/components/ui/button';
 
 export default function TermForm({
   isUpdate,
@@ -99,7 +95,7 @@ export default function TermForm({
   return createPortal(
     <div className="fixed inset-0 flex items-center justify-center backdrop-blur z-50">
       <Card className="h-160 w-120 rounded-md bg-background py-0">
-        <CardHeader className="relative items-center h-18 w-full px-0">
+        <CardHeader className="relative items-center h-12 w-full px-0">
           <X
             size={16}
             className="absolute z-10 right-2.5 top-2.5 cursor-pointer"
@@ -109,41 +105,50 @@ export default function TermForm({
             }}
           />
           {/* Card title */}
-          <CardTitle className="pl-6 pt-4">
+          <CardTitle className="pl-5 pt-4">
             {t(isUpdate ? 'termForm.titleUpdate' : 'termForm.titleAdd')}
           </CardTitle>
         </CardHeader>
 
-        <CardContent className="overflow-y-auto y-100">
+        <CardContent className="overflow-y-auto h-140">
           <form
             onSubmit={handleSubmit(onSubmit)}
             onChange={() => {
               if (errors.root?.serverError) clearErrors('root.serverError');
             }}
             noValidate
-            className="flex flex-col gap-2"
+            className="flex flex-col gap-6"
           >
-            {/* Slug field */}
+            {/* Slug */}
             <FieldGroup>
               <Field data-invalid={!!errors.slug}>
-                <FieldTitle>{t('termForm.label.slug')}</FieldTitle>
+                <FieldTitle className="pl-1">
+                  {t('termForm.label.slug')}
+                </FieldTitle>
                 <FieldLabel htmlFor="slug" className="sr-only">
                   {t('termForm.label.slug')}
                 </FieldLabel>
                 <Input
+                  readOnly={isUpdate}
                   {...register('slug')}
                   id="slug"
                   placeholder={t('termForm.slugPlaceholder')}
                   className="rounded-sm h-10 text-sm focus:ring-1"
                 />
-                {errors.slug && <FieldError>{errors.slug.message}</FieldError>}
+                {errors.slug && (
+                  <FieldError className="pl-1">
+                    {errors.slug.message}
+                  </FieldError>
+                )}
               </Field>
             </FieldGroup>
 
-            {/* Tags field */}
+            {/* Tags */}
             <FieldGroup>
               <Field data-invalid={!!errors.tagInfos}>
-                <FieldTitle>{t('termForm.label.tags')}</FieldTitle>
+                <FieldTitle className="pl-1">
+                  {t('termForm.label.tags')}
+                </FieldTitle>
                 <FieldLabel htmlFor="tags" className="sr-only">
                   {t('termForm.label.tags')}
                 </FieldLabel>
@@ -157,130 +162,145 @@ export default function TermForm({
                 />
 
                 {errors.tagInfos && !Array.isArray(errors.tagInfos) && (
-                  <FieldError>{errors.tagInfos.message}</FieldError>
+                  <FieldError className="pl-1">
+                    {errors.tagInfos.message}
+                  </FieldError>
                 )}
               </Field>
             </FieldGroup>
 
-            {/* Language entries section */}
-            <FieldGroup className="space-y-3">
-              <div className="flex items-center justify-between">
-                {/* Section heading */}
-                <span className="text-sm font-medium">
-                  {t('termForm.differentLanguages')}
-                </span>
-                {/* Button to add a new language entry */}
-                <button
-                  type="button"
-                  onClick={() =>
-                    appendLang({ languageCode: '', name: '', definition: '' })
-                  }
-                  className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
-                >
-                  <Plus size={12} /> {t('termForm.addLanguage')}
-                </button>
+            {/* Translation */}
+            <FieldGroup className="gap-3">
+              {/* Translation heading */}
+              <div className="flex flex-col gap-1">
+                {/* Title and add translation */}
+                <div className="flex items-center justify-between px-1">
+                  <span className="text-sm font-medium">
+                    {t('termForm.translations')}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (langFields.length < 3)
+                        appendLang({
+                          languageCode: '',
+                          name: '',
+                          definition: '',
+                        });
+                    }}
+                    className="cursor-pointer inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+                  >
+                    <Plus size={12} /> {t('termForm.addTranslation')}
+                  </button>
+                </div>
+
+                {/* Translation Main Error */}
+                {errors.langInfos && !Array.isArray(errors.langInfos) && (
+                  <FieldError className="pl-1">
+                    {errors.langInfos.message}
+                  </FieldError>
+                )}
               </div>
 
-              {errors.langInfos && !Array.isArray(errors.langInfos) && (
-                <FieldError>{errors.langInfos.message}</FieldError>
-              )}
-
-              {langFields.map((field, index) => (
-                <div
-                  key={field.id}
-                  className="relative rounded-md border border-border p-3 space-y-2"
-                >
-                  {langFields.length > 2 && (
-                    <button
-                      type="button"
-                      onClick={() => removeLang(index)}
-                      className="absolute right-2 top-2 text-muted-foreground hover:text-destructive"
-                    >
-                      <Trash2 size={12} />
-                    </button>
-                  )}
-
-                  {/* Language code selector */}
-                  <Field
-                    data-invalid={!!errors.langInfos?.[index]?.languageCode}
+              {/* Translation fields */}
+              <div className="flex flex-col gap-2">
+                {langFields.map((field, index) => (
+                  <div
+                    key={field.id}
+                    className={cn(
+                      'flex flex-col rounded-md border border-border p-3 space-y-2',
+                      langFields.length > 2 && 'relative pt-6',
+                    )}
                   >
-                    <FieldLabel
-                      htmlFor={`langCode-${index}`}
-                      className="sr-only"
+                    {langFields.length > 2 && (
+                      <X
+                        className="absolute right-1.5 top-1.5"
+                        size={12}
+                        onClick={() => removeLang(index)}
+                      />
+                    )}
+
+                    {/* Language code */}
+                    <Field
+                      data-invalid={!!errors.langInfos?.[index]?.languageCode}
                     >
-                      {t('termForm.label.languageCode')}
-                    </FieldLabel>
-                    <NativeSelect
-                      {...register(`langInfos.${index}.languageCode`)}
-                      id={`langCode-${index}`}
+                      <FieldLabel
+                        htmlFor={`langCode-${index}`}
+                        className="sr-only"
+                      >
+                        {t('termForm.label.languageCode')}
+                      </FieldLabel>
+                      <NativeSelect
+                        {...register(`langInfos.${index}.languageCode`)}
+                        id={`langCode-${index}`}
+                      >
+                        <NativeSelectOption value="">
+                          {t('termForm.selectLanguage')}
+                        </NativeSelectOption>
+                        <NativeSelectOption value="en">
+                          {t('termForm.lang.en')}
+                        </NativeSelectOption>
+                        <NativeSelectOption value="zh">
+                          {t('termForm.lang.zh')}
+                        </NativeSelectOption>
+                        <NativeSelectOption value="ja">
+                          {t('termForm.lang.ja')}
+                        </NativeSelectOption>
+                      </NativeSelect>
+
+                      {errors.langInfos?.[index]?.languageCode && (
+                        <FieldError className="pl-1">
+                          {errors.langInfos[index].languageCode?.message}
+                        </FieldError>
+                      )}
+                    </Field>
+
+                    {/* Language name input */}
+                    <Field data-invalid={!!errors.langInfos?.[index]?.name}>
+                      <FieldLabel htmlFor={`name-${index}`} className="sr-only">
+                        {t('termForm.label.name')}
+                      </FieldLabel>
+                      <Input
+                        {...register(`langInfos.${index}.name`)}
+                        id={`name-${index}`}
+                        placeholder={t('termForm.namePlaceholder')}
+                        className="rounded-sm h-8 text-xs focus:ring-1"
+                      />
+                      {errors.langInfos?.[index]?.name && (
+                        <FieldError className="pl-1">
+                          {errors.langInfos[index].name?.message}
+                        </FieldError>
+                      )}
+                    </Field>
+
+                    {/* Definition input */}
+                    <Field
+                      data-invalid={!!errors.langInfos?.[index]?.definition}
                     >
-                      <NativeSelectOption value="">
-                        {t('termForm.selectLanguage')}
-                      </NativeSelectOption>
-                      <NativeSelectOption value="en">
-                        {t('termForm.lang.en')}
-                      </NativeSelectOption>
-                      <NativeSelectOption value="zh">
-                        {t('termForm.lang.zh')}
-                      </NativeSelectOption>
-                      <NativeSelectOption value="ja">
-                        {t('termForm.lang.ja')}
-                      </NativeSelectOption>
-                    </NativeSelect>
-
-                    {errors.langInfos?.[index]?.languageCode && (
-                      <FieldError>
-                        {errors.langInfos[index].languageCode?.message}
-                      </FieldError>
-                    )}
-                  </Field>
-
-                  {/* Language name input */}
-                  <Field data-invalid={!!errors.langInfos?.[index]?.name}>
-                    <FieldLabel htmlFor={`name-${index}`} className="sr-only">
-                      {t('termForm.label.name')}
-                    </FieldLabel>
-                    <Input
-                      {...register(`langInfos.${index}.name`)}
-                      id={`name-${index}`}
-                      placeholder={t('termForm.namePlaceholder')}
-                      className="rounded-sm h-8 text-xs focus:ring-1"
-                    />
-                    {errors.langInfos?.[index]?.name && (
-                      <FieldError>
-                        {errors.langInfos[index].name?.message}
-                      </FieldError>
-                    )}
-                  </Field>
-
-                  {/* Definition input */}
-                  <Field data-invalid={!!errors.langInfos?.[index]?.definition}>
-                    <FieldLabel htmlFor={`def-${index}`} className="sr-only">
-                      {t('termForm.label.definition')}
-                    </FieldLabel>
-                    <Input
-                      {...register(`langInfos.${index}.definition`)}
-                      id={`def-${index}`}
-                      placeholder={t('termForm.definitionPlaceholder')}
-                      className="rounded-sm h-8 text-xs focus:ring-1"
-                    />
-                    {errors.langInfos?.[index]?.definition && (
-                      <FieldError>
-                        {errors.langInfos[index].definition?.message}
-                      </FieldError>
-                    )}
-                  </Field>
-                </div>
-              ))}
+                      <FieldLabel htmlFor={`def-${index}`} className="sr-only">
+                        {t('termForm.label.definition')}
+                      </FieldLabel>
+                      <Input
+                        {...register(`langInfos.${index}.definition`)}
+                        id={`def-${index}`}
+                        placeholder={t('termForm.definitionPlaceholder')}
+                        className="rounded-sm h-8 text-xs focus:ring-1"
+                      />
+                      {errors.langInfos?.[index]?.definition && (
+                        <FieldError className="pl-1">
+                          {errors.langInfos[index].definition?.message}
+                        </FieldError>
+                      )}
+                    </Field>
+                  </div>
+                ))}
+              </div>
             </FieldGroup>
 
             {/* Submit button */}
-            <button
-              type="submit"
-              className="w-full h-10 rounded-sm bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90"
-            >
+            <Button variant="outline" type="submit" className="mb-6">
               {t('termForm.submit')}
-            </button>
+            </Button>
           </form>
         </CardContent>
       </Card>

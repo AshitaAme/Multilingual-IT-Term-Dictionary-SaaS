@@ -1,6 +1,6 @@
-import { REDIS_KEYS } from '@/shared/lib/redis/redis-keys';
+import { REDIS_KEYS } from '@/shared/lib/icons/redis/redis-keys';
 import { PendingUserSchema } from '../schemas/pending-user';
-import { kv } from '@/shared/lib/redis/redis';
+import { kv } from '@/shared/lib/icons/redis/redis';
 import { NotFoundError, RateLimitError } from '@/shared/errors/errors';
 import crypto from 'node:crypto';
 import { sendVerificationEmail } from '@/shared/lib/email/send-verification-email';

@@ -31,7 +31,7 @@ export const TermFormSchema = z.object({
         const codes = items.map((i) => i.languageCode);
         return new Set(codes).size === codes.length;
       },
-      { message: 'languageCode must be unique' },
+      { message: 'Language code must be unique' },
     ),
   status: z.enum(['published', 'draft']),
 });
