@@ -20,8 +20,13 @@ export async function insertTagAction(data: TagFormInput) {
   const { slug, color, langInfos } = parsed.data;
 
   // 3. Check existence
-  const tag = await getTagBySlug(slug);
-  if (!tag) return { success: false, error: 'Tag already exists' };
+  try {
+    const tag = await getTagBySlug(slug);
+    if (tag) return { success: false, error: 'Tag already exists' };
+  } catch (err) {
+    console.error('[insertTagAction] Existence check failed: ', err);
+    return { success: false, error: 'Tag insert failed' };
+  }
 
   // 4. Insert tag
   const tagId = crypto.randomUUID();
@@ -38,7 +43,7 @@ export async function insertTagAction(data: TagFormInput) {
     return { success: false, error: 'Tag insert failed' };
   }
 
-  // 5. Insert tag language information
+  // 5. Insert tag translation
   const tagTranslationPayload = langInfos.map((langInfo) => ({
     tagId,
     ...langInfo,
@@ -47,16 +52,14 @@ export async function insertTagAction(data: TagFormInput) {
   try {
     await insertTagTranslations(tagTranslationPayload);
   } catch (err) {
-    console.error(
-      '[insertTagAction} Tag language information insert failed: ',
-      err,
-    );
-    return {
-      success: false,
-      error: 'Tag language information insert failed',
-      err,
-    };
+    console.error('[insertTagAction} Tag translation insert failed: ', err);
+    return { success: false, error: 'Tag translation insert failed' };
   }
+
+  console.log(
+    '[insertTagAction]: Tag Translation success',
+    tagTranslationPayload,
+  );
 
   // 6. Success
   return { success: true };

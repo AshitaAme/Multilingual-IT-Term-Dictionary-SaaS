@@ -136,7 +136,7 @@ export default function SearchTag({
           </ButtonGroup>
         </CardHeader>
 
-        <CardContent className="space-y-2 overflow-y-auto max-h-80">
+        <CardContent className="flex-1 flex flex-col space-y-2 overflow-y-auto max-h-80">
           {/* Loading state */}
           {loading && (
             <div className="py-8 text-center text-sm text-muted-foreground">
@@ -152,7 +152,7 @@ export default function SearchTag({
           )}
 
           {/* Tag list */}
-          <div className="flex flex-wrap gap-2">
+          <div className="flex-1 flex flex-wrap gap-2 content-start">
             {!loading &&
               pagedTags.map((tag) => (
                 <Button

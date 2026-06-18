@@ -60,6 +60,8 @@
       "noResults": "No results"
     },
     "termForm": {
+      "published": "published",
+      "draft": "draft",
       "titleAdd": "Add Term",
       "titleUpdate": "Update Term",
       "slugPlaceholder": "Enter slug...",
@@ -74,6 +76,7 @@
       },
       "namePlaceholder": "Name (max 30 letters)",
       "label": {
+        "status": "Status",
         "slug": "Slug",
         "tags": "Tags",
         "languageCode": "Language Code",

@@ -53,10 +53,8 @@ export default function TermForm({
       ? currentTerm
       : {
           slug: '',
-          tagInfos: [
-            { tagId: '', name: '' },
-            { tagId: '', name: '' },
-          ],
+          status: 'published',
+          tagInfos: [],
           langInfos: [
             { languageCode: '', name: '', definition: '' },
             { languageCode: '', name: '', definition: '' },
@@ -77,7 +75,7 @@ export default function TermForm({
   } = useFieldArray({ control, name: 'tagInfos' });
 
   const onSubmit = async (data: TermFormInput) => {
-    console.log('Submitted:', data);
+    console.log('Term Submitted:', data);
     const res = isUpdate
       ? await updateTermAction(data)
       : await insertTermAction(data);
@@ -110,9 +108,11 @@ export default function TermForm({
           </CardTitle>
         </CardHeader>
 
-        <CardContent className="overflow-y-auto h-140">
+        <CardContent className=" flex-1 overflow-y-auto h-140">
           <form
-            onSubmit={handleSubmit(onSubmit)}
+            onSubmit={handleSubmit(onSubmit, (errs) =>
+              console.log('VALIDATION FAILED:', errs),
+            )}
             onChange={() => {
               if (errors.root?.serverError) clearErrors('root.serverError');
             }}
@@ -143,6 +143,32 @@ export default function TermForm({
               </Field>
             </FieldGroup>
 
+            {/* Status */}
+            <FieldGroup {...register('status')} id="status">
+              <Field data-invalid={!!errors.status}>
+                <FieldTitle className="pl-1">
+                  {t('termForm.label.status')}
+                </FieldTitle>
+                <FieldLabel htmlFor="status" className="sr-only">
+                  {t('termForm.label.status')}
+                </FieldLabel>
+                <NativeSelect>
+                  <NativeSelectOption value="published">
+                    {t('termForm.published')}
+                  </NativeSelectOption>
+                  <NativeSelectOption value="published">
+                    {t('termForm.draft')}
+                  </NativeSelectOption>
+                </NativeSelect>
+
+                {errors.status && (
+                  <FieldError className="pl-1">
+                    {errors.status.message}
+                  </FieldError>
+                )}
+              </Field>
+            </FieldGroup>
+
             {/* Tags */}
             <FieldGroup>
               <Field data-invalid={!!errors.tagInfos}>
@@ -152,7 +178,20 @@ export default function TermForm({
                 <FieldLabel htmlFor="tags" className="sr-only">
                   {t('termForm.label.tags')}
                 </FieldLabel>
-                {/* Button to open tag search */}
+
+                {errors.tagInfos && !Array.isArray(errors.tagInfos) && (
+                  <FieldError className="pl-1">
+                    {errors.tagInfos.message}
+                  </FieldError>
+                )}
+
+                {errors.tagInfos &&
+                  Array.isArray(errors.tagInfos) &&
+                  errors.tagInfos.map((err) => (
+                    <FieldError key={err.message} className="pl-1">
+                      {err.message}
+                    </FieldError>
+                  ))}
 
                 <SearchTag
                   className="h-80"
@@ -160,12 +199,6 @@ export default function TermForm({
                   tagFields={tagFields}
                   removeTag={removeTag}
                 />
-
-                {errors.tagInfos && !Array.isArray(errors.tagInfos) && (
-                  <FieldError className="pl-1">
-                    {errors.tagInfos.message}
-                  </FieldError>
-                )}
               </Field>
             </FieldGroup>
 
@@ -296,9 +329,19 @@ export default function TermForm({
                 ))}
               </div>
             </FieldGroup>
+            {/* Global API Error */}
+            {errors.root?.serverError && (
+              <div className="py-1 mt-4 text-center ring-1 rounded-4xl text-destructive text-sm font-medium">
+                {errors.root.serverError.message}
+              </div>
+            )}
 
             {/* Submit button */}
-            <Button variant="outline" type="submit" className="mb-6">
+            <Button
+              variant="outline"
+              type="submit"
+              className="mb-6 cursor-pointer"
+            >
               {t('termForm.submit')}
             </Button>
           </form>

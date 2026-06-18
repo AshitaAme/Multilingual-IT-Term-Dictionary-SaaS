@@ -110,9 +110,11 @@ export default function TagForm({
             {t(isUpdate ? 'tagForm.titleUpdate' : 'tagForm.titleAdd')}
           </CardTitle>
         </CardHeader>
-        <CardContent className="overflow-y-auto h-140">
+        <CardContent className="flex-1 overflow-y-auto h-140">
           <form
-            onSubmit={handleSubmit(onSubmit)}
+            onSubmit={handleSubmit(onSubmit, (errs) =>
+              console.log('VALIDATION FAILED:', errs),
+            )}
             onChange={() => clearErrors('root.serverError')}
             className="flex flex-col gap-6"
           >
@@ -290,7 +292,19 @@ export default function TagForm({
                 ))}
               </div>
             </FieldGroup>
-            <Button variant="outline" type="submit" className="mb-6">
+
+            {/* Global API Error */}
+            {errors.root?.serverError && (
+              <div className="py-1 mt-4 text-center ring-1 rounded-4xl text-destructive text-sm font-medium">
+                {errors.root.serverError.message}
+              </div>
+            )}
+
+            <Button
+              variant="outline"
+              type="submit"
+              className="mb-6 cursor-pointer"
+            >
               {t('tagForm.submit')}
             </Button>
           </form>

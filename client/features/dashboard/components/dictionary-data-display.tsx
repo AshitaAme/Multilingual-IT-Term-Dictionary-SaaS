@@ -30,9 +30,8 @@ export function DictionaryDataDisplay() {
   return (
     <div
       className={cn(
-        'grid grid-cols-3 mt-10 px-1/2',
-        'md:px-[10%] ',
-        'pt-[6.5%] lg:pt-[5.5%] pb-[15%] lg:px-[20%]',
+        'grid md:grid-cols-2 lg:grid-cols-3 gap-x-0 gap-y-20',
+        'pt-[6.5%] lg:pt-[5.5%] pb-[15%] md:pl-[20%] md:pr-[20%]',
       )}
     >
       <div className="flex items-center justify-center">

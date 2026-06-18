@@ -9,7 +9,7 @@ const LangInfoSchema = z.object({
   definition: z
     .string()
     .min(1, { message: 'Definition cannot be empty.' })
-    .max(100, { message: 'Definition cannot exceed 100 characters.' }),
+    .max(200, { message: 'Definition cannot exceed 200 characters.' }),
 });
 
 const TagInfoSchema = z.object({
