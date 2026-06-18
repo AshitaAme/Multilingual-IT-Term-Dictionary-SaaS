@@ -1,7 +1,7 @@
 'use server';
 
 import { upsertTag } from '@/shared/lib/db/mutations/tag.mutations';
-import { TagFormInput, TagFormSchema } from '../schemas/tag-form.schema';
+import { createTagFormSchema, TagFormInput } from '../schemas/tag-form.schema';
 import { replaceTagTranslations } from '@/shared/lib/db/mutations/tag-translation.mutations';
 import { checkAdminAction } from '@/features/auth';
 
@@ -11,6 +11,7 @@ export async function updateTagAction(data: TagFormInput) {
   if (!res.success) return res;
 
   // 2. Zod validation
+  const TagFormSchema = createTagFormSchema();
   const parsed = TagFormSchema.safeParse(data);
   if (!parsed.success)
     return { success: false, error: 'Tag form parse failed' };

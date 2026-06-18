@@ -16,7 +16,7 @@ export async function checkAdminAction() {
     console.log('[checkAdminAction] Success: ', user);
     return { success: true, data: { user: session.user } };
   } catch (err) {
-    console.error('[checkRoleAction] Session or Role retrieval failed: ', err);
+    console.error('[checkAdminAction] Session or Role retrieval failed: ', err);
     return { success: false, error: AUTH_ERRORS.AUTH_FAILURE };
   }
 }

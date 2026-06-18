@@ -1,9 +1,11 @@
 import z from 'zod';
 import type { useTranslations } from 'next-intl';
 
-type Translator = ReturnType<typeof useTranslations>;
+type Translator =
+  | ReturnType<typeof useTranslations>
+  | ((key: string) => string);
 
-export const createTermFormSchema = (t: Translator) => {
+export const createTermFormSchema = (t: Translator = (k: string) => k) => {
   const LangInfoSchema = z.object({
     languageCode: z
       .string()

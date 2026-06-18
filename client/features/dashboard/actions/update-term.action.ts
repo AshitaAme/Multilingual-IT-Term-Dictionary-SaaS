@@ -1,7 +1,10 @@
 'use server';
 
 import { upsertTerm } from '@/shared/lib/db/mutations/term.mutations';
-import { TermFormInput, TermFormSchema } from '../schemas/term-form.schema';
+import {
+  createTermFormSchema,
+  TermFormInput,
+} from '../schemas/term-form.schema';
 import { replaceTermTranslations } from '@/shared/lib/db/mutations/term-translation.mutations';
 import { replaceTermTags } from '@/shared/lib/db/mutations/term-tag.mutations';
 import { checkAdminAction } from '@/features/auth';
@@ -12,6 +15,7 @@ export async function updateTermAction(data: TermFormInput) {
   if (!res.success) return res;
 
   // 2. Zod validation
+  const TermFormSchema = createTermFormSchema();
   const parsed = TermFormSchema.safeParse(data);
   if (!parsed.success)
     return {
