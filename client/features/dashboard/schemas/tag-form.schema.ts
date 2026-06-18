@@ -1,23 +1,41 @@
 import z from 'zod';
+import type { useTranslations } from 'next-intl';
 
-const LangInfoSchema = z.object({
-  languageCode: z.string().min(1).max(15),
-  name: z.string().min(1).max(15),
-});
+type Translator = ReturnType<typeof useTranslations>;
 
-export const TagFormSchema = z.object({
-  slug: z.string().min(1).max(15),
-  color: z.string().min(1).max(30),
-  langInfos: z
-    .array(LangInfoSchema)
-    .min(2)
-    .refine(
-      (items) => {
-        const codes = items.map((i) => i.languageCode);
-        return new Set(codes).size === codes.length;
-      },
-      { message: 'languageCode must be unique' },
-    ),
-});
+export const createTagFormSchema = (t: Translator) => {
+  const LangInfoSchema = z.object({
+    languageCode: z
+      .string()
+      .min(1, { message: t('tagForm.error.languageCodeRequired') })
+      .max(15, { message: t('tagForm.error.languageCodeTooLong') }),
+    name: z
+      .string()
+      .min(1, { message: t('tagForm.error.nameRequired') })
+      .max(15, { message: t('tagForm.error.nameTooLong') }),
+  });
 
-export type TagFormInput = z.infer<typeof TagFormSchema>;
+  return z.object({
+    slug: z
+      .string()
+      .min(1, { message: t('tagForm.error.slugRequired') })
+      .max(15, { message: t('tagForm.error.slugTooLong') }),
+    color: z
+      .string()
+      .min(1, { message: t('tagForm.error.colorRequired') })
+      .max(30, { message: t('tagForm.error.colorTooLong') }),
+    langInfos: z
+      .array(LangInfoSchema)
+      .min(2, { message: t('tagForm.error.langInfosMin') })
+      .max(3, { message: t('tagForm.error.langInfosMax') })
+      .refine(
+        (items) => {
+          const codes = items.map((i) => i.languageCode);
+          return new Set(codes).size === codes.length;
+        },
+        { message: t('tagForm.error.languageCodeDuplicate') },
+      ),
+  });
+};
+
+export type TagFormInput = z.infer<ReturnType<typeof createTagFormSchema>>;

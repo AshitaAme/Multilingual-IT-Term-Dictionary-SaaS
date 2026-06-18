@@ -3,12 +3,11 @@
 import {
   Card,
   CardContent,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/shared/components/ui/card';
 import { useTranslations } from 'next-intl';
-import { TagFormInput, TagFormSchema } from '../schemas/tag-form.schema';
+import { createTagFormSchema, TagFormInput } from '../schemas/tag-form.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import {
@@ -45,6 +44,7 @@ export default function TagForm({
   onClose,
 }: Readonly<TagFormProps>) {
   const t = useTranslations('dashboard');
+  const TagFormSchema = createTagFormSchema(t);
 
   const {
     handleSubmit,

@@ -84,7 +84,19 @@
         "definition": "Definition"
       },
       "definitionPlaceholder": "Definition (max 100 letters)",
-      "submit": "Submit"
+      "submit": "Submit",
+      "error": {
+        "slugRequired": "Slug is required.",
+        "tagRequired": "Tag cannot be empty.",
+        "tagInfosMin": "At least one tag is required.",
+        "languageCodeRequired": "Language code is required.",
+        "nameRequired": "Language name cannot be empty.",
+        "nameTooLong": "Language name cannot exceed 30 characters.",
+        "definitionRequired": "Definition cannot be empty.",
+        "definitionTooLong": "Definition cannot exceed 200 characters.",
+        "langInfosMin": "At least two language definitions are required.",
+        "languageCodeDuplicate": "Language code must be unique."
+      }
     },
     "tagForm": {
       "titleUpdate": "Update Tag",
@@ -107,7 +119,20 @@
         "languageCode": "Language Code",
         "name": "Name"
       },
-      "submit": "Submit"
+      "submit": "Submit",
+      "error": {
+        "slugRequired": "Slug is required",
+        "slugTooLong": "Slug must be at most 15 characters",
+        "colorRequired": "Color is required",
+        "colorTooLong": "Color must be at most 30 characters",
+        "languageCodeRequired": "Language code is required",
+        "languageCodeTooLong": "Language code must be at most 15 characters",
+        "nameRequired": "Name is required",
+        "nameTooLong": "Name must be at most 15 characters",
+        "langInfosMin": "At least 2 language entries are required",
+        "langInfosMax": "At most 3 language entries are allowed",
+        "languageCodeDuplicate": "Language codes must be unique"
+      }
     }
   }
 }

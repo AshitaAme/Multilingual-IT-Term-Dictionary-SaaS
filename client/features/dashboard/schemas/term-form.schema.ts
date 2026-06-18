@@ -1,41 +1,48 @@
 import z from 'zod';
+import type { useTranslations } from 'next-intl';
 
-const LangInfoSchema = z.object({
-  languageCode: z.string().min(1, { message: 'Language code is required.' }),
-  name: z
-    .string()
-    .min(1, { message: 'Language name cannot be empty.' })
-    .max(30, { message: 'Language name cannot exceed 30 characters.' }),
-  definition: z
-    .string()
-    .min(1, { message: 'Definition cannot be empty.' })
-    .max(200, { message: 'Definition cannot exceed 200 characters.' }),
-});
+type Translator = ReturnType<typeof useTranslations>;
 
-const TagInfoSchema = z.object({
-  tagId: z.string().min(1, { message: 'Tag cannot be empty.' }),
-  name: z.string(),
-});
+export const createTermFormSchema = (t: Translator) => {
+  const LangInfoSchema = z.object({
+    languageCode: z
+      .string()
+      .min(1, { message: t('termForm.error.languageCodeRequired') }),
+    name: z
+      .string()
+      .min(1, { message: t('termForm.error.nameRequired') })
+      .max(30, { message: t('termForm.error.nameTooLong') }),
+    definition: z
+      .string()
+      .min(1, { message: t('termForm.error.definitionRequired') })
+      .max(200, { message: t('termForm.error.definitionTooLong') }),
+  });
 
-export const TermFormSchema = z.object({
-  slug: z.string().min(1, { message: 'Slug is required.' }),
-  tagInfos: z
-    .array(TagInfoSchema)
-    .min(1, { message: 'At least one tag is required.' }),
-  // FIX: Pass the schema object directly, do not wrap it in z.object() again
-  langInfos: z
-    .array(LangInfoSchema)
-    .min(2, { message: 'At least one language definition is required.' })
-    .refine(
-      (items) => {
-        const codes = items.map((i) => i.languageCode);
-        return new Set(codes).size === codes.length;
-      },
-      { message: 'Language code must be unique' },
-    ),
-  status: z.enum(['published', 'draft']),
-});
+  const TagInfoSchema = z.object({
+    tagId: z.string().min(1, { message: t('termForm.error.tagRequired') }),
+    name: z.string(),
+  });
 
-// TypeScript type inference
-export type TermFormInput = z.infer<typeof TermFormSchema>;
-export type TagInfoInput = z.infer<typeof TagInfoSchema>;
+  const TermFormSchema = z.object({
+    slug: z.string().min(1, { message: t('termForm.error.slugRequired') }),
+    tagInfos: z
+      .array(TagInfoSchema)
+      .min(1, { message: t('termForm.error.tagInfosMin') }),
+    langInfos: z
+      .array(LangInfoSchema)
+      .min(2, { message: t('termForm.error.langInfosMin') })
+      .refine(
+        (items) => {
+          const codes = items.map((i) => i.languageCode);
+          return new Set(codes).size === codes.length;
+        },
+        { message: t('termForm.error.languageCodeDuplicate') },
+      ),
+    status: z.enum(['published', 'draft']),
+  });
+
+  return TermFormSchema;
+};
+
+export type TermFormInput = z.infer<ReturnType<typeof createTermFormSchema>>;
+export type TagInfoInput = TermFormInput['tagInfos'][number];

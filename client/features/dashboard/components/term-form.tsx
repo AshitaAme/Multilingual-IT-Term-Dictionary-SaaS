@@ -7,7 +7,10 @@ import {
   CardTitle,
 } from '@/shared/components/ui/card';
 import { useForm, useFieldArray } from 'react-hook-form';
-import { TermFormInput, TermFormSchema } from '../schemas/term-form.schema';
+import {
+  createTermFormSchema,
+  TermFormInput,
+} from '../schemas/term-form.schema';
 import {
   Field,
   FieldError,
@@ -37,6 +40,7 @@ export default function TermForm({
   onClose,
 }: Readonly<TermFormProps>) {
   const t = useTranslations('dashboard');
+  const TermFormSchema = createTermFormSchema(t);
 
   const {
     register,
