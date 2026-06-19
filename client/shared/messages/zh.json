@@ -1,0 +1,52 @@
+{
+  "common": {
+    "title": "叶的词典",
+    "description": "搜索IT术语",
+    "welcome": "欢迎来到叶的词典"
+  },
+  "auth": {
+    "signIn": "登录 ๐•ᴗ•๐",
+    "signUp": "注册 つ♡⊂",
+    "forgotPassword": "忘记密码",
+    "back": "...返回",
+    "name": "姓名",
+    "email": "邮箱",
+    "password": "密码",
+    "newPassword": "新密码",
+    "resetPassword": "重置密码",
+    "clickHere": "点击这里",
+    "forgotPasswordHint": "如果您忘记了密码，",
+    "orSignInWith": "或者",
+    "invalidCredentials": "邮箱或密码错误",
+    "somethingWentWrong": "出错了",
+    "signInWithGitHub": "通过 GitHub 登录",
+    "signInWithGoogle": "通过 Google 登录",
+    "signInWithLine": "通过 Line 登录",
+    "verificationCode": "验证码",
+    "waiting": "等待中...{countdown}秒",
+    "resend": "重新发送"
+  },
+  "nav": {
+    "home": "首页",
+    "savedWords": "收藏的词",
+    "signInUp": "登录/注册",
+    "dashboard": "仪表盘",
+    "profile": "个人资料",
+    "settings": "设置",
+    "signOut": "退出登录",
+    "search": "搜索...",
+    "theme": "主题",
+    "languages": "语言"
+  },
+  "tag": {
+  "all": "全部",
+  "computerArchitecture": "计算机架构",
+  "frontend": "前端",
+  "backend": "后端",
+  "ai": "人工智能",
+  "data": "数据",
+  "cloudService": "云服务",
+  "git": "Git",
+  "nextjs": "Next.js"
+}
+}

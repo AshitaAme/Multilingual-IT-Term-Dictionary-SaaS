@@ -1,8 +1,8 @@
-import { kv } from '@/shared/lib/redis/redis';
+import { kv } from '@/shared/lib/icons/redis/redis';
 import { VerificationInput } from '../schemas/verification';
 import { PendingUserSchema } from '../schemas/pending-user';
 import { AppError, NotFoundError } from '@/shared/errors/errors';
-import { insertUser } from './insert-user';
+import { insertUser } from '@/shared/lib/db/mutations/user.mutations';
 
 export async function verifySignup({
   email,

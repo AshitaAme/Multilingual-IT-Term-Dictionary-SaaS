@@ -1,12 +1,12 @@
-import { kv } from '@/shared/lib/redis/redis';
+import { kv } from '@/shared/lib/icons/redis/redis';
 import bcrypt from 'bcryptjs';
 import crypto from 'node:crypto';
 import { PendingUserSchema } from '../schemas/pending-user';
-import { findUserByEmail } from './find-user-by-email';
 import { CredentialsInput } from '../schemas/credentials';
-import { sendVerificationEmail } from '../../../shared/lib/email/send-verification-email';
+import { sendVerificationEmail } from '@/shared/lib/email/send-verification-email';
 import { NotFoundError, RateLimitError } from '@/shared/errors/errors';
-import { REDIS_KEYS } from '@/shared/lib/redis/redis-keys';
+import { REDIS_KEYS } from '@/shared/lib/icons/redis/redis-keys';
+import { getUserByEmail } from '@/shared/lib/db/mutations/user.mutations';
 
 export async function initiateResetPassword({
   email,
@@ -15,7 +15,7 @@ export async function initiateResetPassword({
   // 1. Asynchronously get user data from database and redis
   const key = REDIS_KEYS.auth.resetPassword(email);
   const [activeUser, pendingUserJSON] = await Promise.all([
-    findUserByEmail(email),
+    getUserByEmail(email),
     kv.get<unknown>(key),
   ]);
 

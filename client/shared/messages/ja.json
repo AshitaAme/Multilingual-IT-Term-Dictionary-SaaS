@@ -1,0 +1,52 @@
+{
+  "common": {
+    "title": "葉の辞書",
+    "description": "IT用語検索",
+    "welcome": "葉の辞書へようこそ"
+  },
+  "auth": {
+    "signIn": "ログイン",
+    "signUp": "登録",
+    "forgotPassword": "パスワード忘れ",
+    "back": "...戻る",
+    "name": "名前",
+    "email": "メール",
+    "password": "パスワード",
+    "newPassword": "新パスワード",
+    "resetPassword": "リセット",
+    "clickHere": "こちら",
+    "forgotPasswordHint": "パスワードをお忘れの場合、",
+    "orSignInWith": "または",
+    "invalidCredentials": "メールまたはパスワードが誤っています",
+    "somethingWentWrong": "エラー発生",
+    "signInWithGitHub": "GitHubでログイン",
+    "signInWithGoogle": "Googleでログイン",
+    "signInWithLine": "LINEでログイン",
+    "verificationCode": "認証コード",
+    "waiting": "待機中...{countdown}秒",
+    "resend": "再送信"
+  },
+ "nav": {
+    "home": "ホーム",
+    "savedWords": "お気に入り",
+    "signInUp": "ログイン/登録",
+    "dashboard": "ダッシュボード",
+    "profile": "プロフィール",
+    "settings": "設定",
+    "signOut": "ログアウト",
+    "search": "検索...",
+    "theme": "テーマ",
+    "languages": "言語"
+  },
+  "tag": {
+  "all": "すべて",
+  "computerArchitecture": "アーキテクチャ",
+  "frontend": "フロントエンド",
+  "backend": "バックエンド",
+  "ai": "AI",
+  "data": "データ",
+  "cloudService": "クラウドサービス",
+  "git": "Git",
+  "nextjs": "Next.js"
+}
+}

@@ -1,11 +1,11 @@
-import { kv } from '@/shared/lib/redis/redis';
+import { kv } from '@/shared/lib/icons/redis/redis';
 import bcrypt from 'bcryptjs';
 import crypto from 'node:crypto';
 import { PendingUserSchema } from '../schemas/pending-user';
-import { findUserByEmail } from './find-user-by-email';
 import { CredentialsInput } from '../schemas/credentials';
 import { sendVerificationEmail } from '../../../shared/lib/email/send-verification-email';
 import { ConflictError, RateLimitError } from '@/shared/errors/errors';
+import { getUserByEmail } from '@/shared/lib/db/mutations/user.mutations';
 
 export async function initiateSignup({
   name,
@@ -15,7 +15,7 @@ export async function initiateSignup({
   // 1. Asynchronously get user data from database and redis
   const key = `auth:signup:${email}`;
   const [activeUser, pendingUserJSON] = await Promise.all([
-    findUserByEmail(email),
+    getUserByEmail(email),
     kv.get<unknown>(key),
   ]);
 

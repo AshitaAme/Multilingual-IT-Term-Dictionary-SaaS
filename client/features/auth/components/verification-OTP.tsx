@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeftToLine } from 'lucide-react';
 import { Controller, useForm } from 'react-hook-form';
 import { VerificationInput, VerificationSchema } from '../schemas/verification';
-import { Field, FieldError } from '@/shared/components/ui/field';
+import { Field } from '@/shared/components/ui/field';
 import {
   InputOTP,
   InputOTPGroup,
@@ -15,16 +15,18 @@ import { verifySignupAction } from '../actions/verify-signup.action';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import { VerificationOTPProps } from '../types/verification-OTP-props';
-import { useAuthModalStore } from '../store/auth-modal.store';
+import { useAuthModalStore } from '../stores/auth.store';
 import { verifyResetPasswordAction } from '../actions/verify-reset-password-action';
 import { resendVerificationAction } from '../actions/resend-verification.action';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { cn } from '@/shared/utils/utils';
+import { useTranslations } from 'next-intl';
 
 export function VerificationOTP({
   setStep,
   credentials,
 }: Readonly<VerificationOTPProps>) {
+  const t = useTranslations('auth');
   const router = useRouter();
   const { onClose } = useAuthModalStore();
 
@@ -59,7 +61,7 @@ export function VerificationOTP({
     if (!verified.success) {
       setError('root.serverError', {
         type: 'server',
-        message: verified.error ?? 'Something went wrong',
+        message: verified.error ?? t('somethingWentWrong'),
       });
       return;
     }
@@ -76,7 +78,7 @@ export function VerificationOTP({
     if (signed?.error) {
       setError('root.serverError', {
         type: 'server',
-        message: verified.error ?? 'Something went wrong',
+        message: verified.error ?? t('somethingWentWrong'),
       });
       return;
     }
@@ -108,7 +110,7 @@ export function VerificationOTP({
     if (!resent.success) {
       setError('root.serverError', {
         type: 'server',
-        message: resent.error ?? 'Something went wrong',
+        message: resent.error ?? t('somethingWentWrong'),
       });
       return;
     }
@@ -124,7 +126,9 @@ export function VerificationOTP({
         onClick={() => setStep('credentials')}
         className="absolute left-2.5 top-2.5 cursor-pointer"
       />
-      <span className="mb-8 font-semibold text-[16px]">Verification Code</span>
+      <span className="mb-8 font-semibold text-[16px]">
+        {t('verificationCode')}
+      </span>{' '}
       <form>
         <Controller
           control={control}
@@ -167,11 +171,12 @@ export function VerificationOTP({
             ? 'cursor-not-allowed pointer-events-none'
             : 'cursor-pointer',
         )}
+        onClick={onResend}
       >
         {countdown > 0 ? (
-          <span>Waiting...{countdown}s</span>
+          <span>{t('waiting', { countdown })}</span>
         ) : (
-          <span className="underline underline-offset-2">Resend</span>
+          <span className="underline underline-offset-2">{t('resend')}</span> //
         )}
       </Button>
     </div>

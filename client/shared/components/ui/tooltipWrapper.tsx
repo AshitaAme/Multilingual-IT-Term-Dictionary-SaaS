@@ -10,6 +10,7 @@ export function TooltipWrapper({
   children,
   leftBorder = false,
   rightBorder = false,
+  preventFocus = false,
 }: Readonly<{
   side?: Side;
   label: string;
@@ -17,6 +18,7 @@ export function TooltipWrapper({
   leftBorder?: boolean;
   rightBorder?: boolean;
   open?: boolean;
+  preventFocus?: boolean;
 }>) {
   let alignValue: 'start' | 'end' | 'center' = 'center';
   if (leftBorder) alignValue = 'start';
@@ -24,7 +26,16 @@ export function TooltipWrapper({
 
   return (
     <Tooltip>
-      <TooltipTrigger asChild>{children}</TooltipTrigger>
+      <TooltipTrigger
+        asChild
+        onFocus={(e) => {
+          if (preventFocus) {
+            e.preventDefault();
+          }
+        }}
+      >
+        {children}
+      </TooltipTrigger>
       <TooltipContent side={side} align={alignValue} avoidCollisions>
         <p className="font-semibold pb-0.75">{label}</p>
       </TooltipContent>

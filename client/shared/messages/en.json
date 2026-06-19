@@ -1,0 +1,138 @@
+{
+  "common": {
+    "title": "Leaf Dictionary",
+    "description": "Search IT Terms",
+    "welcome": "Welcome to Leaf Dictionary"
+  },
+  "auth": {
+    "signIn": "Sign in ๐•ᴗ•๐",
+    "signUp": "Sign up つ♡⊂",
+    "forgotPassword": "Forgot Password (✘﹏✘ა)",
+    "back": "...Back",
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "newPassword": "New password",
+    "resetPassword": "Reset Password",
+    "clickHere": "click here",
+    "forgotPasswordHint": "If you forgot your password,",
+    "orSignInWith": "or sign in with",
+    "invalidCredentials": "Invalid email or password",
+    "somethingWentWrong": "Something went wrong",
+    "signInWithGitHub": "Sign in with GitHub",
+    "signInWithGoogle": "Sign in with Google",
+    "signInWithLine": "Sign in with Line",
+    "verificationCode": "Verification Code",
+    "waiting": "Waiting...{countdown}s",
+    "resend": "Resend"
+  },
+  "nav": {
+    "home": "Home",
+    "savedWords": "Saved words",
+    "signInUp": "Sign in/up",
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "settings": "Settings",
+    "signOut": "Sign out",
+    "search": "Search...",
+    "theme": "theme",
+    "languages": "languages"
+  },
+  "tag": {
+    "all": "All",
+    "computerArchitecture": "Computer Architecture",
+    "frontend": "Frontend",
+    "backend": "Backend",
+    "ai": "AI",
+    "data": "Data",
+    "cloudService": "Cloud Service",
+    "git": "Git",
+    "nextjs": "Next.js"
+  },
+
+  "dashboard": {
+    "searchTag": {
+      "generate": "Generate",
+      "search": "Search tag...",
+      "attach": "Attach",
+      "cancel": "Cancel",
+      "loading": "Loading...",
+      "noResults": "No results"
+    },
+    "termForm": {
+      "published": "published",
+      "draft": "draft",
+      "titleAdd": "Add Term",
+      "titleUpdate": "Update Term",
+      "slugPlaceholder": "Enter slug...",
+      "addTag": "Add tag",
+      "translations": "Translations",
+      "addTranslation": "Add translation",
+      "selectLanguage": "Select language",
+      "lang": {
+        "en": "English",
+        "zh": "中文（简）",
+        "ja": "日本語"
+      },
+      "namePlaceholder": "Name (max 30 letters)",
+      "label": {
+        "status": "Status",
+        "slug": "Slug",
+        "tags": "Tags",
+        "languageCode": "Language Code",
+        "name": "Name",
+        "definition": "Definition"
+      },
+      "definitionPlaceholder": "Definition (max 100 letters)",
+      "submit": "Submit",
+      "error": {
+        "slugRequired": "Slug is required.",
+        "tagRequired": "Tag cannot be empty.",
+        "tagInfosMin": "At least one tag is required.",
+        "languageCodeRequired": "Language code is required.",
+        "nameRequired": "Language name cannot be empty.",
+        "nameTooLong": "Language name cannot exceed 30 characters.",
+        "definitionRequired": "Definition cannot be empty.",
+        "definitionTooLong": "Definition cannot exceed 200 characters.",
+        "langInfosMin": "At least two language definitions are required.",
+        "languageCodeDuplicate": "Language code must be unique."
+      }
+    },
+    "tagForm": {
+      "titleUpdate": "Update Tag",
+      "titleAdd": "Add Tag",
+      "slugPlaceholder": "Enter tag slug",
+      "colorPlaceholder": "Enter tag color",
+      "addLanguage": "Add language",
+      "selectLanguage": "Select language",
+      "selectColor": "Select color",
+      "translations": "Translations",
+      "lang": {
+        "en": "English",
+        "zh": "中文（简）",
+        "ja": "日本語"
+      },
+      "namePlaceholder": "Name (max 30 letters)",
+      "label": {
+        "slug": "Slug",
+        "color": "Color",
+        "languageCode": "Language Code",
+        "name": "Name"
+      },
+      "submit": "Submit",
+      "error": {
+        "slugRequired": "Slug is required",
+        "slugTooLong": "Slug must be at most 15 characters",
+        "colorRequired": "Color is required",
+        "colorTooLong": "Color must be at most 30 characters",
+        "languageCodeRequired": "Language code is required",
+        "languageCodeTooLong": "Language code must be at most 15 characters",
+        "nameRequired": "Name is required",
+        "nameTooLong": "Name must be at most 15 characters",
+        "langInfosMin": "At least 2 language entries are required",
+        "langInfosMax": "At most 3 language entries are allowed",
+        "languageCodeDuplicate": "Language codes must be unique"
+      }
+    }
+  }
+}

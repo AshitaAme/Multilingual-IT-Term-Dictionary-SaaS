@@ -1,9 +1,9 @@
-import { kv } from '@/shared/lib/redis/redis';
+import { kv } from '@/shared/lib/icons/redis/redis';
 import { VerificationInput } from '../schemas/verification';
 import { PendingUserSchema } from '../schemas/pending-user';
 import { AppError, NotFoundError } from '@/shared/errors/errors';
-import { updateUserByEmail } from './update-user-by-email';
-import { REDIS_KEYS } from '@/shared/lib/redis/redis-keys';
+import { REDIS_KEYS } from '@/shared/lib/icons/redis/redis-keys';
+import { updateUserByEmail } from '@/shared/lib/db/mutations/user.mutations';
 
 export async function verifyResetPassword({
   email,

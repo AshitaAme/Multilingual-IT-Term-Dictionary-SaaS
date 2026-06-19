@@ -32,3 +32,10 @@ export class RateLimitError extends AppError {
     this.name = 'RateLimitError';
   }
 }
+
+export class ParseError extends AppError {
+  constructor(message = 'Too many requests, please try again later') {
+    super(message);
+    this.name = 'ParseError';
+  }
+}

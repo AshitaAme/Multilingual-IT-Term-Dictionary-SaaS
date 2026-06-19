@@ -3,16 +3,18 @@
 import { Button } from '@/shared/components/ui/button';
 import { TooltipWrapper } from '@/shared/components/ui/tooltipWrapper';
 import { Moon, Sun } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
 
 export function ThemeToggle() {
+  const t = useTranslations('nav');
   const { resolvedTheme, setTheme } = useTheme();
   function toggleTheme() {
     setTheme(resolvedTheme === 'light' ? 'dark' : 'light');
   }
 
   return (
-    <TooltipWrapper label="Theme" side="bottom">
+    <TooltipWrapper label={t('theme')} side="bottom">
       <Button
         variant="outline"
         size="icon"
