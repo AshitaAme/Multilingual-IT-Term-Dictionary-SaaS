@@ -1,4 +1,4 @@
-import { eq, sql } from 'drizzle-orm';
+import { eq, sql, asc } from 'drizzle-orm';
 import { db } from '../db';
 import { tagTranslations } from '../schemas/dictionary.schema';
 
@@ -45,4 +45,17 @@ export async function replaceTagTranslations({
     if (inputs.length === 0) return;
     await tx.insert(tagTranslations).values(inputs);
   });
+}
+
+export async function getTagList(languageCode: string) {
+  const list = await db
+    .select({
+      tagId: tagTranslations.tagId,
+      name: tagTranslations.name,
+      languageCode: tagTranslations.languageCode,
+    })
+    .from(tagTranslations)
+    .where(eq(tagTranslations.languageCode, languageCode))
+    .orderBy(asc(tagTranslations.name));
+  return list;
 }

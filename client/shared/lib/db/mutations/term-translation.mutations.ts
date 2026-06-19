@@ -1,4 +1,4 @@
-import { eq, sql } from 'drizzle-orm';
+import { eq, sql, asc, gt } from 'drizzle-orm';
 import { db } from '../db';
 import { termTranslations } from '../schemas/dictionary.schema';
 
@@ -52,4 +52,18 @@ export async function replaceTermTranslations({
 
     await tx.insert(termTranslations).values(inputs);
   });
+}
+
+export async function getTermList(page: number) {
+  const results = await db
+    .select({
+      termId: termTranslations.termId,
+      languageCode: termTranslations.languageCode,
+      name: termTranslations.name,
+    })
+    .from(termTranslations)
+    .orderBy(asc(termTranslations.termId))
+    .limit(100)
+    .offset((page - 1) * 100);
+  return results;
 }

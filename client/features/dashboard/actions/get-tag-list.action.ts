@@ -1,6 +1,6 @@
 'use server';
 
-import { getTagList } from '../services/get-tag-list';
+import { getTagList } from '@/shared/lib/db/mutations/tag-translation.mutations';
 
 export async function getTagListAction(languageCode: string) {
   if (
