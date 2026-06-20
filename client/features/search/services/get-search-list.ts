@@ -7,9 +7,9 @@ import {
 } from '@/shared/lib/db/schemas/dictionary.schema';
 import { asc, eq, and, inArray } from 'drizzle-orm';
 import { SearchItem } from '../types/search-item';
-import { getOrInsert } from '@/shared/utils/utils';
+import { mapGetOrInsert } from '@/shared/utils/utils';
 
-export async function getSearchList(page: number, tagLanguageCode: string) {
+export async function getSearchList(page: number, userLang: string) {
   return await db.transaction(async (tx) => {
     // 1. Get paged term list
     const pagedTerms = await tx
@@ -39,7 +39,7 @@ export async function getSearchList(page: number, tagLanguageCode: string) {
       .where(
         and(
           inArray(termTags.termId, termIds),
-          eq(tagTranslations.languageCode, tagLanguageCode),
+          eq(tagTranslations.languageCode, userLang),
         ),
       );
 
@@ -54,19 +54,22 @@ export async function getSearchList(page: number, tagLanguageCode: string) {
     const searchItemMap = new Map<string, SearchItem>();
     termTranslationList.forEach((t) => {
       const { termId, languageCode, name, definition } = t;
-      const searchItem = getOrInsert(searchItemMap, termId, {
+      const searchItem = mapGetOrInsert(searchItemMap, termId, {
         termId,
+        displayName: 'N',
         translations: [],
         tags: [],
       });
       searchItem.translations.push({ languageCode, name, definition });
+      if (languageCode === userLang) searchItem.displayName = name;
     });
 
     tagTranslationList.forEach((t) => {
       const { termId, name } = t;
       if (!termId) return;
-      const searchItem = getOrInsert(searchItemMap, termId, {
+      const searchItem = mapGetOrInsert(searchItemMap, termId, {
         termId,
+        displayName: 'N',
         translations: [],
         tags: [],
       });
@@ -75,8 +78,9 @@ export async function getSearchList(page: number, tagLanguageCode: string) {
 
     // 4. Retrieve data from map by termId
     return termIds.map((termId) =>
-      getOrInsert(searchItemMap, termId, {
+      mapGetOrInsert(searchItemMap, termId, {
         termId,
+        displayName: 'N',
         translations: [],
         tags: [],
       }),

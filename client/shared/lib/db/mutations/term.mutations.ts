@@ -51,7 +51,7 @@ export async function upsertTerms(values: TermInput[]) {
   return term;
 }
 
-export async function countTerms() {
+export async function getTermCount() {
   const result = await db.select({ count: count() }).from(terms);
   return result[0].count;
 }

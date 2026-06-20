@@ -1,11 +1,13 @@
-'use client'
+'use client';
 
-import { SearchMenu } from './search-menu'
+import { SearchList } from './search-list';
+import { SearchMenu } from './search-menu';
 
 export function SearchContainer() {
-
-    return (
-        <SearchMenu></SearchMenu>
-        <SearchList></SearchList>
-    )
+  return (
+    <div className="flex">
+      <SearchMenu />
+      <SearchList />
+    </div>
+  );
 }

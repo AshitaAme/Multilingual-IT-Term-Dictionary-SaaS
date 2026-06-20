@@ -1,5 +1,6 @@
 'use server';
 
+import { getLanguageCode } from '@/shared/utils/utils';
 import { getSearchList } from '../services/get-search-list';
 import { getLocale } from 'next-intl/server';
 
@@ -12,9 +13,7 @@ export async function getSearchListAction(page: number) {
   let languageCode;
   try {
     const locale = await getLocale();
-    if (locale.startsWith('cn')) languageCode = 'cn';
-    else if (locale.startsWith('ja')) languageCode = 'ja';
-    else languageCode = 'en';
+    languageCode = getLanguageCode(locale);
   } catch (err) {
     console.warn('[getSearchListAction] Locale fetch failed: ', err);
   }

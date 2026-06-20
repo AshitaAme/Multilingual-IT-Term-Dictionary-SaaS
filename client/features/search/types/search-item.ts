@@ -1,5 +1,6 @@
 export type SearchItem = {
   termId: string;
+  displayName: string;
   translations: {
     languageCode: string;
     name: string;
