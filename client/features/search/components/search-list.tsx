@@ -9,7 +9,7 @@ import { Button } from '@/shared/components/ui/button';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { getPageCount } from '../actions/get- page-count.action';
 
-export function SearchList() {
+export function SearchList({ query }: { query: string }) {
   const [page, setPage] = useState(1);
   const [searchList, setSearchList] = useState<SearchItem[]>([]);
   const [pageCount, setPageCount] = useState(1);
@@ -53,6 +53,9 @@ export function SearchList() {
       <Button onClick={() => handlePageTurning('left')}>
         <ChevronLeftIcon />
       </Button>
+      <span>
+        {page} / {pageCount}
+      </span>
       <Button onClick={() => handlePageTurning('right')}>
         <ChevronRightIcon />
       </Button>
