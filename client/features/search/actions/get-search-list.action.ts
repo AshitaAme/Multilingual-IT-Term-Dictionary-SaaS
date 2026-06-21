@@ -3,11 +3,16 @@
 import { getLanguageCode } from '@/shared/utils/utils';
 import { getSearchList } from '../services/get-search-list';
 import { getLocale } from 'next-intl/server';
+import {
+  SearchListQuery,
+  SearchListQuerySchema,
+} from '../schemas/search-list-query.schema';
 
-export async function getSearchListAction(page: number) {
-  // 1. Parameter validation
-  if (!Number.isInteger(page) || page < 1)
-    return { success: false, error: 'Invalid input' };
+export async function getSearchListAction(data: SearchListQuery) {
+  // 1. Zod validation
+  const parsed = SearchListQuerySchema.safeParse(data);
+  if (!parsed.success) return { success: false, error: 'Invalid input' };
+  const { page, query } = parsed.data;
 
   // 2. Get language code
   let languageCode;
@@ -20,7 +25,7 @@ export async function getSearchListAction(page: number) {
 
   // 3. Get search list
   try {
-    const list = await getSearchList(page, languageCode || 'en');
+    const list = await getSearchList(page, languageCode || 'en', query);
     return { success: true, data: list };
   } catch (err) {
     console.error('[getTermListAction] Term list fetch failed: ', err);

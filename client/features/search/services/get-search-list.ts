@@ -5,16 +5,21 @@ import {
   termTags,
   termTranslations,
 } from '@/shared/lib/db/schemas/dictionary.schema';
-import { asc, eq, and, inArray } from 'drizzle-orm';
+import { asc, eq, and, inArray, ilike } from 'drizzle-orm';
 import { SearchItem } from '../types/search-item';
 import { mapGetOrInsert } from '@/shared/utils/utils';
 
-export async function getSearchList(page: number, userLang: string) {
+export async function getSearchList(
+  page: number,
+  userLang: string,
+  query: string,
+) {
   return await db.transaction(async (tx) => {
     // 1. Get paged term list
     const pagedTerms = await tx
       .select({ id: terms.id })
       .from(terms)
+      .where(ilike(terms.slug, `%${query}%`))
       .orderBy(asc(terms.slug))
       .limit(100)
       .offset((page - 1) * 100);

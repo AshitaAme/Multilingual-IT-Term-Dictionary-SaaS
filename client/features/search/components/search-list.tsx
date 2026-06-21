@@ -7,16 +7,16 @@ import { SearchItem } from '../types/search-item';
 import { toast } from 'sonner';
 import { Button } from '@/shared/components/ui/button';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
-import { getPageCount } from '../actions/get- page-count.action';
+import { getPageCount } from '../actions/get-page-count.action';
 
-export function SearchList({ query }: { query: string }) {
+export function SearchList({ query }: Readonly<{ query: string }>) {
   const [page, setPage] = useState(1);
   const [searchList, setSearchList] = useState<SearchItem[]>([]);
   const [pageCount, setPageCount] = useState(1);
 
   useEffect(() => {
     const fetchList = async () => {
-      const res = await getSearchListAction(page);
+      const res = await getSearchListAction({ page, query });
       if (!res.success) toast.error(res.error);
       setSearchList(res.data!);
     };
@@ -27,7 +27,7 @@ export function SearchList({ query }: { query: string }) {
     };
     fetchList();
     countPages();
-  }, [page]);
+  }, [page, query]);
 
   const handlePageTurning = (direction: string) => {
     if (direction === 'left' && page !== 1) setPage(page - 1);
