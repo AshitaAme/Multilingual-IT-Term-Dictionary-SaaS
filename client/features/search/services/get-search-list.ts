@@ -5,7 +5,7 @@ import {
   termTags,
   termTranslations,
 } from '@/shared/lib/db/schemas/dictionary.schema';
-import { asc, eq, and, inArray, ilike } from 'drizzle-orm';
+import { asc, eq, and, inArray, ilike, or, exists, sql } from 'drizzle-orm';
 import { SearchItem } from '../types/search-item';
 import { mapGetOrInsert } from '@/shared/utils/utils';
 
@@ -15,18 +15,61 @@ export async function getSearchList(
   query: string,
 ) {
   return await db.transaction(async (tx) => {
-    // 1. Get paged term list
+    // 1. Build search condition on query params
+    const queryParams = query
+      .split(' ')
+      .map((q) => q.trim())
+      .filter((q) => q.length > 0);
+
+    const searchCondition =
+      queryParams.length === 0
+        ? undefined
+        : and(
+            ...queryParams.map((q) =>
+              or(
+                exists(
+                  tx
+                    .select({ one: sql`1` })
+                    .from(termTranslations)
+                    .where(
+                      and(
+                        eq(termTranslations.termId, terms.id),
+                        ilike(termTranslations.name, `%${q}%`),
+                      ),
+                    ),
+                ),
+                exists(
+                  tx
+                    .select({ one: sql`1` })
+                    .from(termTags)
+                    .innerJoin(
+                      tagTranslations,
+                      eq(tagTranslations.tagId, termTags.tagId),
+                    )
+                    .where(
+                      and(
+                        eq(termTags.termId, terms.id),
+                        ilike(tagTranslations.name, `%${q}%`),
+                      ),
+                    ),
+                ),
+              ),
+            ),
+          );
+
+    // 2. Get paged terms
     const pagedTerms = await tx
       .select({ id: terms.id })
       .from(terms)
-      .where(ilike(terms.slug, `%${query}%`))
+      .where(searchCondition)
       .orderBy(asc(terms.slug))
       .limit(100)
       .offset((page - 1) * 100);
+
     const termIds = pagedTerms.map((t) => t.id);
     if (termIds.length === 0) return [];
 
-    // 2. Get term and tag translations for each term id
+    // 3. Get term and tag translations for each term id
     const fetchTermTranslations = tx
       .select({
         termId: termTranslations.termId,
@@ -55,7 +98,7 @@ export async function getSearchList(
 
     if (termTranslationList.length === 0) return [];
 
-    // 3. Reform data into SearchItem type with map
+    // 4. Reform data into SearchItem type with map
     const searchItemMap = new Map<string, SearchItem>();
     termTranslationList.forEach((t) => {
       const { termId, languageCode, name, definition } = t;
@@ -81,7 +124,7 @@ export async function getSearchList(
       searchItem.tags.push(name);
     });
 
-    // 4. Retrieve data from map by termId
+    // 5. Retrieve data from map by termId
     return termIds.map((termId) =>
       mapGetOrInsert(searchItemMap, termId, {
         termId,

@@ -11,6 +11,7 @@ import {
   pgEnum,
 } from 'drizzle-orm/pg-core';
 import { users } from './user.schema';
+import { sql } from 'drizzle-orm';
 
 // ========== Language ==========
 export const languages = pgTable('language', {
@@ -56,6 +57,10 @@ export const termTranslations = pgTable(
     primaryKey({ columns: [t.termId, t.languageCode] }),
     index('idx_term_translation_lang').on(t.languageCode),
     index('idx_term_translation_name').on(t.name),
+    index('idx_term_translation_name_trgm').using(
+      'gin',
+      sql`${t.name} gin_trgm_ops`,
+    ),
   ],
 );
 
@@ -84,6 +89,10 @@ export const tagTranslations = pgTable(
   (t) => [
     primaryKey({ columns: [t.tagId, t.languageCode] }),
     index('idx_tag_translation_lang').on(t.languageCode),
+    index('idx_tag_translation_name_trgm').using(
+      'gin',
+      sql`${t.name} gin_trgm_ops`,
+    ),
   ],
 );
 
