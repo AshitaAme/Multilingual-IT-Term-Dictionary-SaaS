@@ -5,12 +5,21 @@ import { ButtonGroup } from '@/shared/components/ui/button-group';
 import { Input } from '@/shared/components/ui/input';
 import { SearchIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useMemo, useState } from 'react';
 import { useSearchStore } from '../stores/search.store';
+import { usePathname, useRouter } from 'next/navigation';
+import { cn } from '@/shared/utils/utils';
 
-export function SearchBox() {
+const SEARCH_PATH = '/search';
+
+export function SearchBox({
+  variant,
+}: Readonly<{ variant?: 'navigation' | 'search' }>) {
   const t = useTranslations('nav');
   const setQuery = useSearchStore((state) => state.setQuery);
+  const router = useRouter();
+  const pathname = usePathname();
+  const isSearch = useMemo(() => variant === 'search', [variant]);
 
   const [inputValue, setInputValue] = useState('');
 
@@ -18,9 +27,27 @@ export function SearchBox() {
     setInputValue(e.target.value);
   };
 
-  const handleButtonClick = () => {
+  const handleSearch = () => {
     setQuery(inputValue);
+    setInputValue('');
+    if (pathname !== SEARCH_PATH) router.push(SEARCH_PATH);
   };
+
+  if (isSearch)
+    return (
+      <Input
+        className="rounded-2xl w-80 h-10"
+        placeholder={t('search')}
+        value={inputValue}
+        onChange={handleInputChange}
+        maxLength={70}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
+            handleSearch();
+          }
+        }}
+      />
+    );
 
   return (
     <ButtonGroup>
@@ -29,15 +56,22 @@ export function SearchBox() {
         value={inputValue}
         onChange={handleInputChange}
         maxLength={70}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
+            handleSearch();
+          }
+        }}
       />
-      <Button
-        variant="outline"
-        aria-label="Search"
-        className="group/search cursor-pointer"
-        onClick={handleButtonClick}
-      >
-        <SearchIcon className="group-hover/search:scale-110 transition-all duration-500" />
-      </Button>
+      {
+        <Button
+          className={cn('group/search cursor-pointer')}
+          variant="outline"
+          aria-label="Search"
+          onClick={handleSearch}
+        >
+          <SearchIcon className="group-hover/search:scale-110 transition-all duration-500" />
+        </Button>
+      }
     </ButtonGroup>
   );
 }

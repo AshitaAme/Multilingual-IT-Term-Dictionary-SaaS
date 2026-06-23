@@ -24,43 +24,60 @@ export function SearchList() {
     };
     const countPages = async () => {
       const res = await getPageCount();
-      if (!res.success) toast.error(res.error);
+      if (!res.success) {
+        toast.error(res.error);
+        setSearchList([]);
+        return;
+      }
       setPageCount(res.data!);
     };
     fetchList();
     countPages();
   }, [page, query]);
 
-  const handlePageTurning = (direction: string) => {
+  const handlePageTurning = (direction: 'left' | 'right') => {
     if (direction === 'left' && page !== 1) setPage(page - 1);
     if (direction === 'right' && page !== pageCount) setPage(page + 1);
   };
 
   return (
-    <div className="flex w-full max-w-sm flex-col gap-2 text-sm">
-      {searchList.map((termItem, index) => (
-        <div key={termItem.termId}>
-          {index !== 0 && <Separator />}
-          <dl className="flex items-center justify-between">
-            <dt>{termItem.displayName}</dt>
-            <dd className="text-muted-foreground">
-              {termItem.tags.map((tag) => (
-                <div key={tag}>{tag}</div>
-              ))}
-            </dd>
-          </dl>
-        </div>
-      ))}
-
-      <Button onClick={() => handlePageTurning('left')}>
-        <ChevronLeftIcon />
-      </Button>
-      <span>
-        {page} / {pageCount}
-      </span>
-      <Button onClick={() => handlePageTurning('right')}>
-        <ChevronRightIcon />
-      </Button>
+    <div className="flex flex-col gap-8 w-full">
+      <div className="flex w-full flex-col gap-2 text-sm">
+        {searchList?.map((termItem, index) => (
+          <div key={termItem.termId}>
+            {index !== 0 && <Separator />}
+            <dl className="flex items-center justify-between">
+              <dt>{termItem.displayName}</dt>
+              <dd className="text-muted-foreground">
+                {termItem.tags.map((tag) => (
+                  <div key={tag}>{tag}</div>
+                ))}
+              </dd>
+            </dl>
+          </div>
+        ))}
+      </div>
+      <div className="flex flex-row items-center justify-center gap-4">
+        <Button
+          className="cursor-pointer"
+          variant="outline"
+          size="icon"
+          onClick={() => handlePageTurning('left')}
+        >
+          <ChevronLeftIcon />
+        </Button>
+        <span>
+          {page} / {pageCount}
+        </span>
+        <Button
+          className="cursor-pointer"
+          variant="outline"
+          size="icon"
+          onClick={() => handlePageTurning('right')}
+        >
+          <ChevronRightIcon />
+        </Button>
+      </div>
     </div>
   );
 }

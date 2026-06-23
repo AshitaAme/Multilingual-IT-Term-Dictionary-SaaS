@@ -28,7 +28,7 @@ export async function getSearchListAction(data: SearchListQuery) {
     const list = await getSearchList(page, languageCode || 'en', query);
     return { success: true, data: list };
   } catch (err) {
-    console.error('[getTermListAction] Term list fetch failed: ', err);
-    return { success: false, error: 'Term list fetch failed' };
+    console.error('[getSearchListAction] Term list fetch failed: ', query, err);
+    return { success: false, error: 'Items list fetch failed' };
   }
 }
