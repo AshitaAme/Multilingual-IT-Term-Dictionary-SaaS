@@ -1,14 +1,16 @@
+'use client';
+
 import { Button } from '@/shared/components/ui/button';
 import { ButtonGroup } from '@/shared/components/ui/button-group';
 import { Input } from '@/shared/components/ui/input';
 import { SearchIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, useState } from 'react';
+import { useSearchStore } from '../stores/search.store';
 
-export function SearchMenu({
-  setQuery,
-}: Readonly<{ setQuery: (val: string) => void }>) {
+export function SearchBox() {
   const t = useTranslations('nav');
+  const setQuery = useSearchStore((state) => state.setQuery);
 
   const [inputValue, setInputValue] = useState('');
 
@@ -20,20 +22,13 @@ export function SearchMenu({
     setQuery(inputValue);
   };
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setQuery(inputValue);
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [inputValue, setQuery]);
-
   return (
     <ButtonGroup>
       <Input
         placeholder={t('search')}
         value={inputValue}
         onChange={handleInputChange}
+        maxLength={70}
       />
       <Button
         variant="outline"

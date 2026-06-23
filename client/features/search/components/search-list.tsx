@@ -8,8 +8,10 @@ import { toast } from 'sonner';
 import { Button } from '@/shared/components/ui/button';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { getPageCount } from '../actions/get-page-count.action';
+import { useSearchStore } from '../stores/search.store';
 
-export function SearchList({ query }: Readonly<{ query: string }>) {
+export function SearchList() {
+  const query = useSearchStore((state) => state.query);
   const [page, setPage] = useState(1);
   const [searchList, setSearchList] = useState<SearchItem[]>([]);
   const [pageCount, setPageCount] = useState(1);
