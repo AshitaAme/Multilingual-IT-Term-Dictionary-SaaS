@@ -17,10 +17,14 @@ export async function getSearchList(
 ) {
   return await db.transaction(async (tx) => {
     // 1. Build search condition on query params
-    const queryParams = query
-      .split(' ')
-      .map((q) => q.trim())
-      .filter((q) => q.length > 0);
+    const queryParams = [
+      ...new Set(
+        query
+          .split(' ')
+          .map((q) => q.trim())
+          .filter((q) => q.length > 0),
+      ),
+    ];
 
     const searchCondition =
       queryParams.length === 0

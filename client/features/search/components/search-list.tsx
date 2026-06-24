@@ -8,11 +8,13 @@ import { toast } from 'sonner';
 import { Button } from '@/shared/components/ui/button';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { getPageCount } from '../actions/get-page-count.action';
-import { useSearchStore } from '../stores/search.store';
+import { useInputStore, useSearchStore } from '../stores/search.store';
+import { MAX_INPUT_LENGTH } from '../constants/search.constants';
 
 export function SearchList() {
   const query = useSearchStore((state) => state.query);
-  const setQuery = useSearchStore((state) => state.setQuery);
+  const input = useInputStore((state) => state.input);
+  const setInput = useInputStore((state) => state.setInput);
   const [page, setPage] = useState(1);
   const [searchList, setSearchList] = useState<SearchItem[]>([]);
   const [pageCount, setPageCount] = useState(1);
@@ -36,8 +38,11 @@ export function SearchList() {
     countPages();
   }, [page, query]);
 
+  const handleTermClick = (item: SearchItem) => {};
+
   const handleTagClick = (tagName: string) => {
-    setQuery(tagName);
+    const newInput = input + tagName + ' ';
+    if (newInput.length <= MAX_INPUT_LENGTH) setInput(newInput);
   };
 
   const handlePageTurning = (direction: 'left' | 'right') => {
@@ -48,13 +53,18 @@ export function SearchList() {
   return (
     <div className="flex flex-col gap-8 w-full">
       <div className="flex w-full flex-col text-sm">
-        {searchList?.map((termItem, index) => (
-          <div key={termItem.termId}>
+        {searchList?.map((item, index) => (
+          <div key={item.termId}>
             {index !== 0 && <Separator />}
-            <div className="flex items-center gap-8 py-2.5">
-              <span>{termItem.displayName}</span>
+            <div
+              onClick={() => handleTermClick}
+              className="w-full rounded-sm px-4 flex gap-8 py-3 cursor-pointer hover:backdrop-brightness-125"
+            >
+              <div className="flex items-center text-left">
+                {item.displayName}
+              </div>
               <div className="flex flex-wrap gap-2 items-center">
-                {termItem.tags.map((tag) => (
+                {item.tags.map((tag) => (
                   <button
                     key={tag.name}
                     className="rounded-4xl px-2 py-0.5 text-sm font-medium cursor-pointer transition-colors hover:opacity-80"
@@ -66,7 +76,10 @@ export function SearchList() {
                         ? `color-mix(in srgb, ${tag.color} 75%, black)`
                         : '#374151',
                     }}
-                    onClick={() => handleTagClick(tag.name)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleTagClick(tag.name);
+                    }}
                   >
                     {tag.name}
                   </button>

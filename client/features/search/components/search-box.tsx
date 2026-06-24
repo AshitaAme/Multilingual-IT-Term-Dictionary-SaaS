@@ -1,14 +1,13 @@
 'use client';
 
-import { Button } from '@/shared/components/ui/button';
-import { ButtonGroup } from '@/shared/components/ui/button-group';
 import { Input } from '@/shared/components/ui/input';
 import { SearchIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { ChangeEvent, useMemo, useState } from 'react';
-import { useSearchStore } from '../stores/search.store';
+import { ChangeEvent, useMemo } from 'react';
+import { useInputStore, useSearchStore } from '../stores/search.store';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/shared/utils/utils';
+import { MAX_INPUT_LENGTH } from '../constants/search.constants';
 
 const SEARCH_PATH = '/search';
 
@@ -17,30 +16,33 @@ export function SearchBox({
 }: Readonly<{ variant?: 'navigation' | 'search' }>) {
   const t = useTranslations('nav');
   const setQuery = useSearchStore((state) => state.setQuery);
+  const input = useInputStore((state) => state.input);
+  const setInput = useInputStore((state) => state.setInput);
   const router = useRouter();
   const pathname = usePathname();
   const isSearch = useMemo(() => variant === 'search', [variant]);
 
-  const [inputValue, setInputValue] = useState('');
-
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
+    setInput(e.target.value);
   };
 
   const handleSearch = () => {
-    setQuery(inputValue);
-    setInputValue('');
+    setQuery(input);
+    setInput('');
     if (pathname !== SEARCH_PATH) router.push(SEARCH_PATH);
   };
 
   return (
     <div className={cn(isSearch ? 'w-120 h-10' : 'w-50 h-8', 'relative')}>
       <Input
-        className={cn('w-full h-full rounded-2xl ring-1 ring-foreground/80')}
+        className={cn(
+          'w-full h-full rounded-2xl ring-1 ring-foreground/80',
+          isSearch ? 'pr-9' : 'pr-7',
+        )}
         placeholder={t('search')}
-        value={inputValue}
+        value={input}
         onChange={handleInputChange}
-        maxLength={70}
+        maxLength={MAX_INPUT_LENGTH}
         onKeyDown={(e) => {
           if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
             handleSearch();
