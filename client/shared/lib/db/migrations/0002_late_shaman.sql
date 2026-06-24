@@ -1,0 +1,1 @@
+ALTER TABLE "tag" ALTER COLUMN "color" SET NOT NULL;

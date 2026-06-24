@@ -70,7 +70,7 @@ export const tags = pgTable('tag', {
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   slug: text('slug').notNull().unique(),
-  color: text('color'),
+  color: text('color').notNull(),
   createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
 });

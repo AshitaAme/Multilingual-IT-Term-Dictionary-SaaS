@@ -12,6 +12,7 @@ import { useSearchStore } from '../stores/search.store';
 
 export function SearchList() {
   const query = useSearchStore((state) => state.query);
+  const setQuery = useSearchStore((state) => state.setQuery);
   const [page, setPage] = useState(1);
   const [searchList, setSearchList] = useState<SearchItem[]>([]);
   const [pageCount, setPageCount] = useState(1);
@@ -35,6 +36,10 @@ export function SearchList() {
     countPages();
   }, [page, query]);
 
+  const handleTagClick = (tagName: string) => {
+    setQuery(tagName);
+  };
+
   const handlePageTurning = (direction: 'left' | 'right') => {
     if (direction === 'left' && page !== 1) setPage(page - 1);
     if (direction === 'right' && page !== pageCount) setPage(page + 1);
@@ -42,18 +47,32 @@ export function SearchList() {
 
   return (
     <div className="flex flex-col gap-8 w-full">
-      <div className="flex w-full flex-col gap-2 text-sm">
+      <div className="flex w-full flex-col text-sm">
         {searchList?.map((termItem, index) => (
           <div key={termItem.termId}>
             {index !== 0 && <Separator />}
-            <dl className="flex items-center justify-between">
-              <dt>{termItem.displayName}</dt>
-              <dd className="text-muted-foreground">
+            <div className="flex items-center gap-8 py-2.5">
+              <span>{termItem.displayName}</span>
+              <div className="flex flex-wrap gap-2 items-center">
                 {termItem.tags.map((tag) => (
-                  <div key={tag}>{tag}</div>
+                  <button
+                    key={tag.name}
+                    className="rounded-4xl px-2 py-0.5 text-sm font-medium cursor-pointer transition-colors hover:opacity-80"
+                    style={{
+                      backgroundColor: tag.color
+                        ? `color-mix(in srgb, ${tag.color} 16%, white)`
+                        : '#f3f4f6',
+                      color: tag.color
+                        ? `color-mix(in srgb, ${tag.color} 75%, black)`
+                        : '#374151',
+                    }}
+                    onClick={() => handleTagClick(tag.name)}
+                  >
+                    {tag.name}
+                  </button>
                 ))}
-              </dd>
-            </dl>
+              </div>
+            </div>
           </div>
         ))}
       </div>

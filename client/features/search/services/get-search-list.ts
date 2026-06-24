@@ -1,5 +1,6 @@
 import { db } from '@/shared/lib/db/db';
 import {
+  tags,
   tagTranslations,
   terms,
   termTags,
@@ -81,9 +82,14 @@ export async function getSearchList(
       .where(inArray(termTranslations.termId, termIds));
 
     const fetchTagTranslations = tx
-      .select({ termId: termTags.termId, name: tagTranslations.name })
+      .select({
+        termId: termTags.termId,
+        name: tagTranslations.name,
+        color: tags.color,
+      })
       .from(tagTranslations)
       .leftJoin(termTags, eq(termTags.tagId, tagTranslations.tagId))
+      .leftJoin(tags, eq(tags.id, tagTranslations.tagId))
       .where(
         and(
           inArray(termTags.termId, termIds),
@@ -113,7 +119,7 @@ export async function getSearchList(
     });
 
     tagTranslationList.forEach((t) => {
-      const { termId, name } = t;
+      const { termId, name, color } = t;
       if (!termId) return;
       const searchItem = mapGetOrInsert(searchItemMap, termId, {
         termId,
@@ -121,7 +127,7 @@ export async function getSearchList(
         translations: [],
         tags: [],
       });
-      searchItem.tags.push(name);
+      searchItem.tags.push({ name, color: color! });
     });
 
     // 5. Retrieve data from map by termId

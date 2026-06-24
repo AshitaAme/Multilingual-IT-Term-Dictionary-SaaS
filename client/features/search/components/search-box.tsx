@@ -33,25 +33,10 @@ export function SearchBox({
     if (pathname !== SEARCH_PATH) router.push(SEARCH_PATH);
   };
 
-  if (isSearch)
-    return (
-      <Input
-        className="rounded-2xl w-80 h-10"
-        placeholder={t('search')}
-        value={inputValue}
-        onChange={handleInputChange}
-        maxLength={70}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
-            handleSearch();
-          }
-        }}
-      />
-    );
-
   return (
-    <ButtonGroup>
+    <div className={cn(isSearch ? 'w-120 h-10' : 'w-50 h-8', 'relative')}>
       <Input
+        className={cn('w-full h-full rounded-2xl ring-1 ring-foreground/80')}
         placeholder={t('search')}
         value={inputValue}
         onChange={handleInputChange}
@@ -62,16 +47,14 @@ export function SearchBox({
           }
         }}
       />
-      {
-        <Button
-          className={cn('group/search cursor-pointer')}
-          variant="outline"
-          aria-label="Search"
-          onClick={handleSearch}
-        >
-          <SearchIcon className="group-hover/search:scale-110 transition-all duration-500" />
-        </Button>
-      }
-    </ButtonGroup>
+      <SearchIcon
+        onClick={handleSearch}
+        className={cn(
+          'absolute bottom-1/2 translate-y-1/2',
+          'cursor-pointer hover:scale-110 transition-all duration-500',
+          isSearch ? 'right-3 size-4.5' : 'right-2.5 size-3.5',
+        )}
+      />
+    </div>
   );
 }

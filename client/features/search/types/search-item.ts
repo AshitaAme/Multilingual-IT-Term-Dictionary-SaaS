@@ -6,5 +6,8 @@ export type SearchItem = {
     name: string;
     definition: string | null;
   }[];
-  tags: string[];
+  tags: {
+    name: string;
+    color: string;
+  }[];
 };
