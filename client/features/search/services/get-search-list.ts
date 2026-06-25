@@ -68,7 +68,7 @@ export async function getSearchList(
       .from(terms)
       .where(searchCondition)
       .orderBy(asc(terms.slug))
-      .limit(100)
+      .limit(101)
       .offset((page - 1) * 100);
 
     const termIds = pagedTerms.map((t) => t.id);
