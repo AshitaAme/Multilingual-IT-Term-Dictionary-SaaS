@@ -17,8 +17,8 @@ export function SearchBox({
   const t = useTranslations('nav');
   const setQuery = useSearchStore((state) => state.setQuery);
   const isSearch = useMemo(() => variant === 'search', [variant]);
-  const [navInput, setNavInput] = useState('');
-  const input = useInputStore((state) => state.input);
+  const [navInput, setNavInput] = useState(''); // for navigation mode
+  const input = useInputStore((state) => state.input); // shared by SearchList
   const setInput = useInputStore((state) => state.setInput);
   const router = useRouter();
 

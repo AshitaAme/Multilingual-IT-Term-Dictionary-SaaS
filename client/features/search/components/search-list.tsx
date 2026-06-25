@@ -20,10 +20,12 @@ export function SearchList() {
   const setInput = useInputStore((state) => state.setInput);
   const setOpenTerm = useOpenTermStore((state) => state.setOpenTerm);
   const setTerm = useOpenTermStore((state) => state.setTerm);
+
   const [page, setPage] = useState(1);
   const [searchList, setSearchList] = useState<SearchItem[]>([]);
   const [hasNextPage, setHasNextPage] = useState(false);
 
+  // Fetch list
   useEffect(() => {
     const fetchList = async () => {
       const res = await getSearchListAction({ page, query });
@@ -34,11 +36,14 @@ export function SearchList() {
     fetchList();
   }, [page, query]);
 
+  // Open term info
   const handleTermClick = (item: SearchItem) => {
+    console.log('[handleClickTerm] Clicked: ', item);
     setTerm(item);
     setOpenTerm(true);
   };
 
+  // Set tag name into input
   const handleTagClick = (tagName: string) => {
     const newInput = input + tagName + ' ';
     if (newInput.length <= MAX_INPUT_LENGTH) setInput(newInput);
@@ -57,7 +62,7 @@ export function SearchList() {
           <div key={item.termId}>
             {index !== 0 && <Separator />}
             <div
-              onClick={() => handleTermClick}
+              onClick={() => handleTermClick(item)}
               className="w-full rounded-sm px-4 flex gap-8 py-3 cursor-pointer hover:backdrop-brightness-125"
             >
               {/* Term name */}
