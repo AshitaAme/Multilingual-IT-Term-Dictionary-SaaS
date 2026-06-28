@@ -11,21 +11,24 @@ import {
 } from '@/shared/components/ui/card';
 import { Star, X } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { checkSavedTermAction } from '../actions/check-saved-term.action';
+import { saveTermAction } from '../actions/save-term.action';
+import { toast } from 'sonner';
+import { unsaveTermAction } from '../actions/unsave-term.action';
 
 export function TermInfo() {
   const openTerm = useOpenTermStore((state) => state.openTerm);
   const setOpenTerm = useOpenTermStore((state) => state.setOpenTerm);
   const term = useOpenTermStore((state) => state.term);
-  const [openSave, setOpenSave] = useState(false);
   const [saved, setSaved] = useState(false);
+
   useEffect(() => {
-    const check = async () => {
+    const checkSave = async () => {
       const res = await checkSavedTermAction(term?.termId);
       if (res.success) setSaved(res.data!);
     };
-    check();
+    checkSave();
   }, [term?.termId]);
 
   const language = (languageCode: string) => {
@@ -39,8 +42,22 @@ export function TermInfo() {
     }
   };
 
-  const handleStarClick = () => {
-    saveTermAction(term?.termId);
+  const handleStarClick = async () => {
+    if (saved) {
+      const res = await unsaveTermAction(term?.termId);
+      if (res.success) {
+        setSaved(false);
+      } else {
+        toast.error(res.error);
+      }
+    } else {
+      const res = await saveTermAction(term?.termId);
+      if (res.success) {
+        setSaved(true);
+      } else {
+        toast.error(res.error);
+      }
+    }
   };
 
   if (!openTerm || !term) return;

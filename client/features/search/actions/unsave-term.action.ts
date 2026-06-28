@@ -1,9 +1,9 @@
 'use server';
 
 import { auth } from '@/shared/lib/auth/auth';
-import { saveTerm } from '@/shared/lib/db/mutations/saved-term.mutations';
+import { deleteSavedTerm } from '@/shared/lib/db/mutations/saved-term.mutations';
 
-export async function saveTermAction(termId: string | undefined) {
+export async function unsaveTermAction(termId: string | undefined) {
   if (!termId || typeof termId !== 'string')
     return { success: false, error: 'Invalid input' };
 
@@ -12,10 +12,10 @@ export async function saveTermAction(termId: string | undefined) {
   if (!userId) return { success: false, error: 'User not found' };
 
   try {
-    await saveTerm(termId, userId);
+    await deleteSavedTerm(termId, userId);
     return { success: true };
   } catch (err) {
-    console.error('[saveTermAction] Save term failed: ', err);
-    return { success: false, error: 'Save term failed' };
+    console.error('[unsaveTermAction] Unsave term failed: ', err);
+    return { success: false, error: 'Unsave term failed' };
   }
 }

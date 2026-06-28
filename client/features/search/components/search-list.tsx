@@ -6,13 +6,15 @@ import { getSearchListAction } from '../actions/get-search-list.action';
 import { SearchItem } from '../types/search-item';
 import { toast } from 'sonner';
 import { Button } from '@/shared/components/ui/button';
-import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
+import { ChevronLeftIcon, ChevronRightIcon, Loader2Icon } from 'lucide-react';
 import {
   useInputStore,
   useOpenTermStore,
   useSearchStore,
 } from '../stores/search.store';
 import { MAX_INPUT_LENGTH } from '../constants/search.constants';
+import { useTheme } from 'next-themes';
+import { cn } from '@/shared/utils/utils';
 
 export function SearchList() {
   const query = useSearchStore((state) => state.query);
@@ -24,6 +26,8 @@ export function SearchList() {
   const [page, setPage] = useState(1);
   const [searchList, setSearchList] = useState<SearchItem[]>([]);
   const [hasNextPage, setHasNextPage] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const theme = useTheme();
 
   // Fetch list
   useEffect(() => {
@@ -32,6 +36,7 @@ export function SearchList() {
       if (!res.success) toast.error(res.error);
       setSearchList(res.data!);
       setHasNextPage(res.data!.length > 100);
+      setIsLoading(false);
     };
     fetchList();
   }, [page, query]);
@@ -54,6 +59,14 @@ export function SearchList() {
     if (direction === 'right' && hasNextPage) setPage(page + 1);
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex w-full items-center justify-center py-20">
+        <Loader2Icon className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-8 w-full">
       <div className="flex w-full flex-col text-sm">
@@ -63,7 +76,12 @@ export function SearchList() {
             {index !== 0 && <Separator />}
             <div
               onClick={() => handleTermClick(item)}
-              className="w-full rounded-sm px-4 flex gap-8 py-3 cursor-pointer hover:backdrop-brightness-125"
+              className={cn(
+                'w-full rounded-sm px-4 flex gap-8 py-3 cursor-pointer',
+                theme.theme === 'dark'
+                  ? 'hover:backdrop-brightness-125'
+                  : 'hover:backdrop-brightness-97',
+              )}
             >
               {/* Term name */}
               <div className="flex items-center text-left">
