@@ -1,7 +1,7 @@
 'use server';
 
 import { auth } from '@/shared/lib/auth/auth';
-import { deleteSavedTerm } from '@/shared/lib/db/mutations/saved-term.mutations';
+import { unsaveTerm } from '../services/unsave-term';
 
 export async function unsaveTermAction(termId: string | undefined) {
   if (!termId || typeof termId !== 'string')
@@ -12,7 +12,7 @@ export async function unsaveTermAction(termId: string | undefined) {
   if (!userId) return { success: false, error: 'User not found' };
 
   try {
-    await deleteSavedTerm(termId, userId);
+    await unsaveTerm(userId, termId);
     return { success: true };
   } catch (err) {
     console.error('[unsaveTermAction] Unsave term failed: ', err);

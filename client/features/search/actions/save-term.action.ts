@@ -1,7 +1,7 @@
 'use server';
 
 import { auth } from '@/shared/lib/auth/auth';
-import { saveTerm } from '@/shared/lib/db/mutations/saved-term.mutations';
+import { saveTerm } from '../services/save-term';
 
 export async function saveTermAction(termId: string | undefined) {
   if (!termId || typeof termId !== 'string')
@@ -12,7 +12,7 @@ export async function saveTermAction(termId: string | undefined) {
   if (!userId) return { success: false, error: 'User not found' };
 
   try {
-    await saveTerm(termId, userId);
+    await saveTerm(userId, termId, true);
     return { success: true };
   } catch (err) {
     console.error('[saveTermAction] Save term failed: ', err);

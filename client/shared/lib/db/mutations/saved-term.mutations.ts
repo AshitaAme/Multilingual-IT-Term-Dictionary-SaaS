@@ -10,7 +10,7 @@ export async function getSavedTerm(termId: string, userId: string) {
   return result;
 }
 
-export async function saveTerm(termId: string, userId: string) {
+export async function insertSavedTerm(termId: string, userId: string) {
   await db.insert(savedTerms).values({ termId, userId });
 }
 
