@@ -16,20 +16,35 @@ import { checkSavedTermAction } from '../actions/check-saved-term.action';
 import { saveTermAction } from '../actions/save-term.action';
 import { toast } from 'sonner';
 import { unsaveTermAction } from '../actions/unsave-term.action';
+import { useSession } from 'next-auth/react';
 
 export function TermInfo() {
   const openTerm = useOpenTermStore((state) => state.openTerm);
   const setOpenTerm = useOpenTermStore((state) => state.setOpenTerm);
   const term = useOpenTermStore((state) => state.term);
+  const termId = term?.termId;
   const [saved, setSaved] = useState(false);
+  const session = useSession();
+  const userId = session.data?.user.id;
 
   useEffect(() => {
     const checkSave = async () => {
-      const res = await checkSavedTermAction(term?.termId);
+      if (!userId) {
+        toast.error('User not found');
+        return;
+      }
+      if (!termId) {
+        toast.error('Term not found');
+        return;
+      }
+      const res = await checkSavedTermAction({ userId, termId });
       if (res.success) setSaved(res.data!);
+      else {
+        toast.error(res.error);
+      }
     };
     checkSave();
-  }, [term?.termId]);
+  }, [termId, userId]);
 
   const language = (languageCode: string) => {
     switch (languageCode) {
@@ -43,15 +58,24 @@ export function TermInfo() {
   };
 
   const handleStarClick = async () => {
+    if (!userId) {
+      toast.error('User not found');
+      return;
+    }
+    if (!termId) {
+      toast.error('Term not found');
+      return;
+    }
+
     if (saved) {
-      const res = await unsaveTermAction(term?.termId);
+      const res = await unsaveTermAction({ userId, termId });
       if (res.success) {
         setSaved(false);
       } else {
         toast.error(res.error);
       }
     } else {
-      const res = await saveTermAction(term?.termId);
+      const res = await saveTermAction({ userId, termId });
       if (res.success) {
         setSaved(true);
       } else {

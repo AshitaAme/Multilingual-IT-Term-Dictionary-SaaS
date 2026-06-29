@@ -1,15 +1,12 @@
 'use server';
 
-import { auth } from '@/shared/lib/auth/auth';
 import { saveTerm } from '../services/save-term';
+import { SaveTermInput, SaveTermSchema } from '../schemas/save-term.schema';
 
-export async function saveTermAction(termId: string | undefined) {
-  if (!termId || typeof termId !== 'string')
-    return { success: false, error: 'Invalid input' };
-
-  const session = await auth();
-  const userId = session?.user.id;
-  if (!userId) return { success: false, error: 'User not found' };
+export async function saveTermAction(data: SaveTermInput) {
+  const parsed = SaveTermSchema.safeParse(data);
+  if (!parsed.success) return { success: false, error: parsed.error.message };
+  const { userId, termId } = parsed.data;
 
   try {
     await saveTerm(userId, termId, true);
