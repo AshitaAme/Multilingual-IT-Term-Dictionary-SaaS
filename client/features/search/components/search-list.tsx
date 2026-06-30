@@ -12,7 +12,7 @@ import {
   useOpenTermStore,
   useSearchStore,
 } from '../stores/search.store';
-import { MAX_INPUT_LENGTH } from '../constants/search.constants';
+import { MAX_SEARCH_LIST_QUERY_LENGTH } from '../constants/search.constants';
 import { useTheme } from 'next-themes';
 import { cn } from '@/shared/utils/utils';
 
@@ -32,6 +32,7 @@ export function SearchList() {
   // Fetch list
   useEffect(() => {
     const fetchList = async () => {
+      setIsLoading(true);
       const res = await getSearchListAction({ page, query });
       if (!res.success) toast.error(res.error);
       setSearchList(res.data!);
@@ -51,7 +52,7 @@ export function SearchList() {
   // Set tag name into input
   const handleTagClick = (tagName: string) => {
     const newInput = input + tagName + ' ';
-    if (newInput.length <= MAX_INPUT_LENGTH) setInput(newInput);
+    if (newInput.length <= MAX_SEARCH_LIST_QUERY_LENGTH) setInput(newInput);
   };
 
   const handlePageTurning = (direction: 'left' | 'right') => {
@@ -105,6 +106,7 @@ export function SearchList() {
                       e.stopPropagation();
                       handleTagClick(tag.name);
                     }}
+                    onKeyDown={(e) => e.preventDefault()}
                   >
                     {tag.name}
                   </button>

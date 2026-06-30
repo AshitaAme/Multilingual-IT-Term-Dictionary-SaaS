@@ -1,1 +1,3 @@
-export const MAX_INPUT_LENGTH = 100;
+export const MAX_SEARCH_LIST_QUERY_LENGTH = 100;
+
+export const MAX_TAG_QUERY_LENGTH = 40;

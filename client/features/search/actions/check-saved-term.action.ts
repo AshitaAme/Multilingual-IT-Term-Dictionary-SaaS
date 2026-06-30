@@ -10,6 +10,7 @@ export async function checkSavedTermAction(data: SaveTermInput) {
 
   try {
     const res = await getSavedTerm(userId, termId);
+    console.log(res);
     return { success: true, data: !!res };
   } catch (err) {
     console.error('[checkSaveAction] Check saved term failed: ', err);
