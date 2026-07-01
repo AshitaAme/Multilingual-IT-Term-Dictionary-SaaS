@@ -6,7 +6,7 @@ import { getSearchListAction } from '../actions/get-search-list.action';
 import { SearchItem } from '../types/search-item';
 import { toast } from 'sonner';
 import { Button } from '@/shared/components/ui/button';
-import { ChevronLeftIcon, ChevronRightIcon, Loader2Icon } from 'lucide-react';
+import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import {
   useInputStore,
   useOpenTermStore,
@@ -15,6 +15,7 @@ import {
 import { MAX_SEARCH_LIST_QUERY_LENGTH } from '../constants/search.constants';
 import { useTheme } from 'next-themes';
 import { cn } from '@/shared/utils/utils';
+import { LoadingCircle } from '@/shared/components/ui/loading-circle';
 
 export function SearchList() {
   const query = useSearchStore((state) => state.query);
@@ -62,8 +63,8 @@ export function SearchList() {
 
   if (isLoading) {
     return (
-      <div className="flex w-full items-center justify-center py-20">
-        <Loader2Icon className="size-8 animate-spin text-muted-foreground" />
+      <div className='className="flex w-full items-center justify-center py-20'>
+        <LoadingCircle size={8} />
       </div>
     );
   }

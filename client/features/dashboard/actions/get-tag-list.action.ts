@@ -1,6 +1,6 @@
 'use server';
 
-import { getTagList } from '@/shared/lib/db/mutations/tag-translation.mutations';
+import { getTagTranslationList } from '@/shared/lib/db/mutations/tag-translation.mutations';
 
 export async function getTagListAction(languageCode: string) {
   if (
@@ -16,7 +16,7 @@ export async function getTagListAction(languageCode: string) {
   }
 
   try {
-    const data = await getTagList(languageCode.trim());
+    const data = await getTagTranslationList(languageCode.trim());
     return { success: true, data };
   } catch (err) {
     console.error(

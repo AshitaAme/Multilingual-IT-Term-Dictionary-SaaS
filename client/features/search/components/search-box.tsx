@@ -1,7 +1,6 @@
 'use client';
 
 import { Input } from '@/shared/components/ui/input';
-import { Menu, Plus, SearchIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { ChangeEvent, useMemo, useState } from 'react';
 import { useInputStore, useSearchStore } from '../stores/search.store';
@@ -22,7 +21,6 @@ export function SearchBox({
   const input = useInputStore((state) => state.input); // shared by SearchList
   const setInput = useInputStore((state) => state.setInput);
   const router = useRouter();
-  const [openTagMenu, setOpenTagMenu] = useState(false);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (isSearch) setInput(e.target.value);

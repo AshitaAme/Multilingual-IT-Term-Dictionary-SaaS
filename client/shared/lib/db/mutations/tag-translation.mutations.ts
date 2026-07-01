@@ -47,7 +47,7 @@ export async function replaceTagTranslations({
   });
 }
 
-export async function getTagList(languageCode: string) {
+export async function getTagTranslationList(languageCode: string) {
   const list = await db
     .select({
       tagId: tagTranslations.tagId,

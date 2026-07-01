@@ -1,11 +1,22 @@
 'use server';
 
-export async function getTagListAction(query: string) {
-  if (!query || typeof query !== 'string')
-    return { success: false, error: 'Invalid query' };
+import { getTagTranslationList as getTagList } from '@/shared/lib/db/mutations/tag-translation.mutations';
+import { getLanguageCode } from '@/shared/utils/utils';
+import { getLocale } from 'next-intl/server';
+
+export async function getTagListAction() {
+  let locale;
   try {
-    const res = getTagList(query);
-    return { success: true, data: res };
+    locale = await getLocale();
+  } catch (err) {
+    console.warn('[getTagListAction] Fetch locale failed: ', err);
+  }
+  const lang = getLanguageCode(locale);
+
+  try {
+    const res = await getTagList(lang);
+    const data = res.map((t) => t.name);
+    return { success: true, data };
   } catch (err) {
     console.error('[getTagListAction] Fetch tag list failed: ', err);
     return { success: false, error: 'Fetch tag list failed' };
