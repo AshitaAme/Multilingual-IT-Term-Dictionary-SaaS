@@ -5,6 +5,8 @@ import { ThemeProvider } from './theme-provider';
 import { TooltipProvider } from '../ui/tooltip';
 import { NextIntlClientProvider } from 'next-intl';
 import type { Messages } from 'next-intl';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useState } from 'react';
 
 export default function AppProviders({
   children,
@@ -15,6 +17,7 @@ export default function AppProviders({
   messages: Messages;
   locale: string;
 }>) {
+  const [client] = useState(() => new QueryClient());
   return (
     <NextIntlClientProvider
       timeZone="America/New_York"
@@ -27,7 +30,11 @@ export default function AppProviders({
           defaultTheme="system"
           enableSystem={true}
         >
-          <TooltipProvider>{children}</TooltipProvider>
+          <TooltipProvider>
+            <QueryClientProvider client={client}>
+              {children}
+            </QueryClientProvider>
+          </TooltipProvider>
         </ThemeProvider>
       </SessionProvider>
     </NextIntlClientProvider>

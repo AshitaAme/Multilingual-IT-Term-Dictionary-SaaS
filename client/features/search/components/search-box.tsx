@@ -8,6 +8,8 @@ import { useRouter } from 'next/navigation';
 import { cn } from '@/shared/utils/utils';
 import { MAX_SEARCH_LIST_QUERY_LENGTH } from '../constants/search.constants';
 import { TagMenu } from './tag-menu';
+import { Search } from 'lucide-react';
+import { TooltipWrapper } from '@/shared/components/ui/tooltipWrapper';
 
 const SEARCH_PATH = '/search';
 
@@ -43,7 +45,7 @@ export function SearchBox({
       <Input
         className={cn(
           'w-full h-full ring-1 ring-foreground/40 focus:ring-foreground border-0',
-          isSearch ? 'pl-3 pr-10 rounded-3xl' : 'pl-3 pr-8 rounded-xl ',
+          isSearch ? 'pl-4 pr-9.5 rounded-3xl' : 'pl-3 pr-8 rounded-xl ',
           'focus:',
         )}
         placeholder={t('search')}
@@ -56,8 +58,16 @@ export function SearchBox({
           }
         }}
       />
-
-      <TagMenu isSearch={isSearch} />
+      {isSearch && <TagMenu />}
+      {!isSearch && (
+        <TooltipWrapper side="bottom" label="Search">
+          <Search
+            onClick={handleSearch}
+            size={16}
+            className="absolute right-4 bottom-1/2 translate-1/2 cursor-pointer hover:scale-110 transition-all duration-150"
+          />
+        </TooltipWrapper>
+      )}
     </div>
   );
 }
