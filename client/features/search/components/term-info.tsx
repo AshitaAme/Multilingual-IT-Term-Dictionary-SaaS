@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/shared/components/ui/card';
-import { Loader2Icon, Star, X } from 'lucide-react';
+import { Star, X } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import { useEffect, useState } from 'react';
 import { checkSavedTermAction } from '../actions/check-saved-term.action';
@@ -17,8 +17,12 @@ import { saveTermAction } from '../actions/save-term.action';
 import { toast } from 'sonner';
 import { unsaveTermAction } from '../actions/unsave-term.action';
 import { useSession } from 'next-auth/react';
+import { LoadingCircle } from '@/shared/components/ui/loading-circle';
+import { TooltipWrapper } from '@/shared/components/ui/tooltipWrapper';
+import { useTranslations } from 'next-intl';
 
 export function TermInfo() {
+  const t = useTranslations('search');
   const openTerm = useOpenTermStore((state) => state.openTerm);
   const setOpenTerm = useOpenTermStore((state) => state.setOpenTerm);
   const term = useOpenTermStore((state) => state.term);
@@ -28,6 +32,7 @@ export function TermInfo() {
   const session = useSession();
   const userId = session.data?.user.id;
   const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     const checkSave = async () => {
@@ -70,6 +75,7 @@ export function TermInfo() {
       return;
     }
 
+    setIsSaving(true);
     if (saved) {
       const res = await unsaveTermAction({ userId, termId });
       if (res.success) {
@@ -85,13 +91,14 @@ export function TermInfo() {
         toast.error(res.error);
       }
     }
+    setIsSaving(false);
   };
 
   if (unActivate) return;
 
   const loadingCircle = (
     <div className="flex w-full items-center justify-center py-[55%]">
-      <Loader2Icon className="size-8 animate-spin text-muted-foreground" />
+      <LoadingCircle size={20} />
     </div>
   );
 
@@ -104,19 +111,25 @@ export function TermInfo() {
           onClick={() => setOpenTerm(false)}
         />
         <CardTitle className="text-2xl">{term?.displayName}</CardTitle>
-        <Button
-          variant="ghost"
-          className="cursor-pointer"
-          size="icon"
-          onClick={handleStarClick}
+        <TooltipWrapper
+          side="bottom"
+          label={saved ? t('termInfo.unsaveLabel') : t('termInfo.saveLabel')}
         >
-          <Star
-            size={16}
-            className={
-              saved ? 'fill-yellow-400 text-yellow-400 transition-colors' : ''
-            }
-          />
-        </Button>
+          <Button
+            variant="ghost"
+            className="cursor-pointer"
+            size="icon"
+            onClick={handleStarClick}
+            disabled={isSaving}
+          >
+            <Star
+              size={16}
+              className={
+                saved ? 'fill-yellow-400 text-yellow-400 transition-colors' : ''
+              }
+            />
+          </Button>
+        </TooltipWrapper>
       </CardHeader>
 
       <CardContent className="flex flex-col gap-6">

@@ -1,9 +1,15 @@
 'use server';
 
 import { getSavedTerm } from '@/shared/lib/db/mutations/saved-term.mutations';
-import { SaveTermInput, SaveTermSchema } from '../schemas/save-term.schema';
+import {
+  createSaveTermSchema,
+  SaveTermInput,
+} from '../schemas/save-term.schema';
+import { getTranslations } from 'next-intl/server';
 
 export async function checkSavedTermAction(data: SaveTermInput) {
+  const t = await getTranslations('search');
+  const SaveTermSchema = createSaveTermSchema(t);
   const parsed = SaveTermSchema.safeParse(data);
   if (!parsed.success) return { success: false, error: parsed.error.message };
   const { userId, termId } = parsed.data;

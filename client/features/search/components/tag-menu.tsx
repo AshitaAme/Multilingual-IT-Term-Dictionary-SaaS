@@ -19,8 +19,11 @@ import { toast } from 'sonner';
 import { Button } from '@/shared/components/ui/button';
 import { useInputStore } from '../stores/search.store';
 import { LoadingCircle } from '@/shared/components/ui/loading-circle';
+import { TooltipWrapper } from '@/shared/components/ui/tooltipWrapper';
+import { useTranslations } from 'next-intl';
 
 export function TagMenu() {
+  const t = useTranslations('search');
   const [input, setInput] = useState('');
   const [tagList, setTagList] = useState<string[]>([]);
   const [showedList, setShowedList] = useState<string[]>([]);
@@ -59,13 +62,15 @@ export function TagMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Plus
-          className={cn(
-            'absolute bottom-1/2 translate-y-1/2',
-            'cursor-pointer hover:scale-110 transition-all duration-150',
-            'right-3 size-4.5',
-          )}
-        />
+        <TooltipWrapper side="bottom" label={t('tagMenu.addTagsLabel')}>
+          <Plus
+            className={cn(
+              'absolute bottom-1/2 translate-y-1/2',
+              'cursor-pointer hover:scale-110 transition-all duration-150',
+              'right-3 size-4.5',
+            )}
+          />
+        </TooltipWrapper>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent

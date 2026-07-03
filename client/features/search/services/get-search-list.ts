@@ -9,6 +9,7 @@ import {
 import { asc, eq, and, inArray, ilike, or, exists, sql } from 'drizzle-orm';
 import { SearchItem } from '../types/search-item';
 import { mapGetOrInsert } from '@/shared/utils/utils';
+import { PAGE_SIZE } from '../constants/search.constants';
 
 export async function getSearchList(
   page: number,
@@ -68,7 +69,7 @@ export async function getSearchList(
       .from(terms)
       .where(searchCondition)
       .orderBy(asc(terms.slug))
-      .limit(101)
+      .limit(PAGE_SIZE + 1)
       .offset((page - 1) * 100);
 
     const termIds = pagedTerms.map((t) => t.id);

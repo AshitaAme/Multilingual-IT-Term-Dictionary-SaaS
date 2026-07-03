@@ -12,6 +12,8 @@ export async function unsaveTerm(userId: string, termId: string) {
       .where(and(eq(savedTerms.userId, userId), eq(savedTerms.termId, termId)));
     await tx
       .delete(reviewCards)
-      .where(and(eq(savedTerms.userId, userId), eq(savedTerms.termId, termId)));
+      .where(
+        and(eq(reviewCards.userId, userId), eq(reviewCards.termId, termId)),
+      );
   });
 }

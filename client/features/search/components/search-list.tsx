@@ -10,22 +10,26 @@ import {
   useOpenTermStore,
   useSearchStore,
 } from '../stores/search.store';
-import { MAX_SEARCH_LIST_QUERY_LENGTH } from '../constants/search.constants';
+import {
+  MAX_SEARCH_LIST_QUERY_LENGTH,
+  PAGE_SIZE,
+} from '../constants/search.constants';
 import { useTheme } from 'next-themes';
 import { cn } from '@/shared/utils/utils';
 import { LoadingCircle } from '@/shared/components/ui/loading-circle';
 
 import { useInfiniteQuery } from '@tanstack/react-query';
+import { useLocale, useTranslations } from 'next-intl';
 
 export function SearchList() {
+  const t = useTranslations('search');
+  const locale = useLocale();
   const query = useSearchStore((state) => state.query);
   const input = useInputStore((state) => state.input);
   const setInput = useInputStore((state) => state.setInput);
   const setOpenTerm = useOpenTermStore((state) => state.setOpenTerm);
   const setTerm = useOpenTermStore((state) => state.setTerm);
   const theme = useTheme();
-
-  const PAGE_SIZE = 100;
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useInfiniteQuery({
@@ -36,11 +40,13 @@ export function SearchList() {
         const res = await getSearchListAction({
           page: pageParam,
           query: query.trim(),
+          locale,
         });
 
         if (!res.success) {
-          toast.error(res.error);
-          throw new Error(res.error);
+          if (res.error === t('searchList.error.queryTooLong'))
+            toast.error(res.error);
+          else toast.error(t('searchList.error.somethingWentWrong'));
         }
 
         return res.data!;
@@ -143,10 +149,12 @@ export function SearchList() {
         })}
 
         {/* loading / end state */}
-        <div className="h-10 pt-10 w-full flex items-center justify-center">
+        <div className="h-10 pt-[12%] w-full flex items-center justify-center">
           {isFetchingNextPage && <LoadingCircle size={20} />}
           {!hasNextPage && !isLoading && (
-            <span className="text-sm text-gray-400">No more...</span>
+            <span className="text-sm text-gray-400">
+              {t('searchList.noMore')}
+            </span>
           )}
         </div>
       </div>

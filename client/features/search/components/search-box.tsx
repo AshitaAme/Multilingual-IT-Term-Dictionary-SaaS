@@ -16,7 +16,7 @@ const SEARCH_PATH = '/search';
 export function SearchBox({
   variant,
 }: Readonly<{ variant?: 'navigation' | 'search' }>) {
-  const t = useTranslations('nav');
+  const t = useTranslations('search');
   const setQuery = useSearchStore((state) => state.setQuery);
   const isSearch = useMemo(() => variant === 'search', [variant]);
   const [navInput, setNavInput] = useState(''); // for navigation mode
@@ -48,7 +48,7 @@ export function SearchBox({
           isSearch ? 'pl-4 pr-9.5 rounded-3xl' : 'pl-3 pr-8 rounded-xl ',
           'focus:',
         )}
-        placeholder={t('search')}
+        placeholder={t('searchBox.inputPlaceholder')}
         value={isSearch ? input : navInput}
         onChange={handleInputChange}
         maxLength={MAX_SEARCH_LIST_QUERY_LENGTH}
@@ -60,10 +60,10 @@ export function SearchBox({
       />
       {isSearch && <TagMenu />}
       {!isSearch && (
-        <TooltipWrapper side="bottom" label="Search">
+        <TooltipWrapper side="bottom" label={t('searchBox.searchLabel')}>
           <Search
             onClick={handleSearch}
-            size={16}
+            size={14}
             className="absolute right-4 bottom-1/2 translate-1/2 cursor-pointer hover:scale-110 transition-all duration-150"
           />
         </TooltipWrapper>

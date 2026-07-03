@@ -1,11 +1,7 @@
+import { DEFAULT_TRANSLATOR, Translator } from '@/shared/types/translator';
 import z from 'zod';
-import type { useTranslations } from 'next-intl';
 
-type Translator =
-  | ReturnType<typeof useTranslations>
-  | ((key: string) => string);
-
-export const createTermFormSchema = (t: Translator = (k: string) => k) => {
+export const createTermFormSchema = (t: Translator = DEFAULT_TRANSLATOR) => {
   const LangInfoSchema = z.object({
     languageCode: z
       .string()
