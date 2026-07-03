@@ -33,7 +33,7 @@ export function SearchList() {
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useInfiniteQuery({
-      queryKey: ['search-list', query],
+      queryKey: ['search-list', query, locale],
       initialPageParam: 1,
 
       queryFn: async ({ pageParam = 1 }) => {
