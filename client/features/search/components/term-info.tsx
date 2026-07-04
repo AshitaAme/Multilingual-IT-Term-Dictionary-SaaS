@@ -32,18 +32,19 @@ export function TermInfo() {
   const session = useSession();
   const userId = session.data?.user.id;
   const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
+  const [isTogglingStar, setIsTogglingStar] = useState(false);
 
+  // Check whether the term is saved
   useEffect(() => {
     const checkSave = async () => {
       setIsLoading(true);
       if (unActivate) return;
       if (!userId) {
-        toast.error('User not found');
+        toast.error(t('termInfo.invalidUserId'));
         return;
       }
       if (!termId) {
-        toast.error('Term not found');
+        toast.error(t('termInfo.invalidTermId'));
         return;
       }
       const res = await checkSavedTermAction({ userId, termId });
@@ -52,7 +53,7 @@ export function TermInfo() {
       setIsLoading(false);
     };
     checkSave();
-  }, [unActivate, termId, userId]);
+  }, [unActivate, termId, userId, t]);
 
   const language = (languageCode: string) => {
     switch (languageCode) {
@@ -65,17 +66,17 @@ export function TermInfo() {
     }
   };
 
+  // Save / unsave term
   const handleStarClick = async () => {
     if (!userId) {
-      toast.error('User not found');
+      toast.error(t('termInfo.invalidUserId'));
       return;
     }
     if (!termId) {
-      toast.error('Term not found');
+      toast.error(t('termInfo.invalidTermId'));
       return;
     }
-
-    setIsSaving(true);
+    setIsTogglingStar(true);
     if (saved) {
       const res = await unsaveTermAction({ userId, termId });
       if (res.success) {
@@ -91,7 +92,7 @@ export function TermInfo() {
         toast.error(res.error);
       }
     }
-    setIsSaving(false);
+    setIsTogglingStar(false);
   };
 
   if (unActivate) return;
@@ -110,7 +111,9 @@ export function TermInfo() {
           className="absolute z-10 right-2.5 top-2.5 cursor-pointer"
           onClick={() => setOpenTerm(false)}
         />
+        {/* Term name */}
         <CardTitle className="text-2xl">{term?.displayName}</CardTitle>
+        {/* Save / unsave */}
         <TooltipWrapper
           side="bottom"
           label={saved ? t('termInfo.unsaveLabel') : t('termInfo.saveLabel')}
@@ -120,7 +123,7 @@ export function TermInfo() {
             className="cursor-pointer"
             size="icon"
             onClick={handleStarClick}
-            disabled={isSaving}
+            disabled={isTogglingStar}
           >
             <Star
               size={16}
@@ -132,6 +135,7 @@ export function TermInfo() {
         </TooltipWrapper>
       </CardHeader>
 
+      {/* Term information */}
       <CardContent className="flex flex-col gap-6">
         {term?.translations.map((t) => (
           <div key={t.languageCode} className="flex flex-col gap-2">

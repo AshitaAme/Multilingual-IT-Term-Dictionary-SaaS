@@ -19,7 +19,7 @@ export function SearchBox({
   const t = useTranslations('search');
   const setQuery = useSearchStore((state) => state.setQuery);
   const isSearch = useMemo(() => variant === 'search', [variant]);
-  const [navInput, setNavInput] = useState(''); // for navigation mode
+  const [navInput, setNavInput] = useState(''); // for the search box in navigation
   const input = useInputStore((state) => state.input); // shared by SearchList
   const setInput = useInputStore((state) => state.setInput);
   const router = useRouter();
@@ -58,6 +58,8 @@ export function SearchBox({
           }
         }}
       />
+
+      {/* Icon at the right end of search box */}
       {isSearch && <TagMenu />}
       {!isSearch && (
         <TooltipWrapper side="bottom" label={t('searchBox.searchLabel')}>

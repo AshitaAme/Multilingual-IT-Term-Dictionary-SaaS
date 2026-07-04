@@ -18,6 +18,7 @@ export async function getSearchList(
 ) {
   return await db.transaction(async (tx) => {
     // 1. Build search condition on query params
+    // 1.1 Filter invalid param
     const queryParams = [
       ...new Set(
         query
@@ -27,6 +28,7 @@ export async function getSearchList(
       ),
     ];
 
+    // 1.2 For each param, check whether there is a term or a tag that is like it
     const searchCondition =
       queryParams.length === 0
         ? undefined
@@ -34,6 +36,7 @@ export async function getSearchList(
             ...queryParams.map((q) =>
               or(
                 exists(
+                  // Term check
                   tx
                     .select({ one: sql`1` })
                     .from(termTranslations)
@@ -45,6 +48,7 @@ export async function getSearchList(
                     ),
                 ),
                 exists(
+                  // Tag check
                   tx
                     .select({ one: sql`1` })
                     .from(termTags)
@@ -70,7 +74,7 @@ export async function getSearchList(
       .where(searchCondition)
       .orderBy(asc(terms.slug))
       .limit(PAGE_SIZE)
-      .offset((page - 1) * 100);
+      .offset((page - 1) * PAGE_SIZE);
 
     const termIds = pagedTerms.map((t) => t.id);
     if (termIds.length === 0) return [];
@@ -120,6 +124,7 @@ export async function getSearchList(
         tags: [],
       });
       searchItem.translations.push({ languageCode, name, definition });
+      // Pick display name for the language user is using
       if (languageCode === userLang) searchItem.displayName = name;
     });
 

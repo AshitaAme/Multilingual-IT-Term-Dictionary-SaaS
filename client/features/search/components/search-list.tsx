@@ -31,6 +31,7 @@ export function SearchList() {
   const setTerm = useOpenTermStore((state) => state.setTerm);
   const theme = useTheme();
 
+  // Used to fetch data for infinite scroll down
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useInfiniteQuery({
       queryKey: ['search-list', query, locale],
@@ -44,6 +45,7 @@ export function SearchList() {
         });
 
         if (!res.success) {
+          // Filter other error messages
           if (res.error === t('searchList.error.queryTooLong'))
             toast.error(res.error);
           else toast.error(t('searchList.error.somethingWentWrong'));
@@ -61,18 +63,20 @@ export function SearchList() {
     return data?.pages.flat() ?? [];
   }, [data]);
 
+  // Open TermInfo
   const handleTermClick = (item: SearchItem) => {
     setTerm(item);
     setOpenTerm(true);
   };
 
+  // Add tag to query
   const handleTagClick = (tagName: string) => {
     const newInput = input + tagName + ' ';
     if (newInput.length <= MAX_SEARCH_LIST_QUERY_LENGTH) setInput(newInput);
   };
 
+  // Observe last node for infinite scroll down
   const observerRef = useRef<IntersectionObserver | null>(null);
-
   const lastItemRef = (node: HTMLDivElement | null) => {
     if (isFetchingNextPage) return;
 
@@ -121,6 +125,7 @@ export function SearchList() {
                   {item.displayName}
                 </div>
 
+                {/* Tags for each term */}
                 <div className="flex flex-wrap gap-2 items-center">
                   {item.tags.map((tag) => (
                     <button
@@ -148,7 +153,7 @@ export function SearchList() {
           );
         })}
 
-        {/* loading / end state */}
+        {/* Loading / No more */}
         <div className="h-10 pt-[12%] w-full flex items-center justify-center">
           {isFetchingNextPage && <LoadingCircle size={20} />}
           {!hasNextPage && !isLoading && (

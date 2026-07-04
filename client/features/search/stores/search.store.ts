@@ -18,16 +18,19 @@ interface OpenTermState {
   setTerm: (term: SearchItem) => void;
 }
 
+// Used by server to fetch data
 export const useSearchStore = create<SearchState>((set) => ({
   query: '',
   setQuery: (query) => set({ query }),
 }));
 
+// Used by SearchBox to display input
 export const useInputStore = create<InputState>((set) => ({
   input: '',
   setInput: (input) => set({ input }),
 }));
 
+// Used by TermInfo to display term info card
 export const useOpenTermStore = create<OpenTermState>((set) => ({
   openTerm: false,
   setOpenTerm: (openTerm) => set({ openTerm }),
