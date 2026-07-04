@@ -61,8 +61,8 @@ export function TagMenu() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <TooltipWrapper side="bottom" label={t('tagMenu.addTagsLabel')}>
+      <TooltipWrapper side="bottom" label={t('tagMenu.addTagsLabel')}>
+        <DropdownMenuTrigger asChild>
           <Plus
             className={cn(
               'absolute bottom-1/2 translate-y-1/2',
@@ -70,8 +70,8 @@ export function TagMenu() {
               'right-3 size-4.5',
             )}
           />
-        </TooltipWrapper>
-      </DropdownMenuTrigger>
+        </DropdownMenuTrigger>
+      </TooltipWrapper>
 
       <DropdownMenuContent
         className={cn('w-80', 'flex flex-col p-0')}
