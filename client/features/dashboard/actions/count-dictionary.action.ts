@@ -1,12 +1,12 @@
 'use server';
 
 import { countTags } from '@/shared/lib/db/mutations/tag.mutations';
-import { countTerms } from '@/shared/lib/db/mutations/term.mutations';
+import { getTermCount } from '@/shared/lib/db/mutations/term.mutations';
 
 export async function countDictionary() {
   try {
     const [termCount, tagCount] = await Promise.all([
-      countTerms(),
+      getTermCount(),
       countTags(),
     ]);
     return {

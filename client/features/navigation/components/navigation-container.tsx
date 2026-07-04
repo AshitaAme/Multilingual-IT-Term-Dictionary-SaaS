@@ -9,7 +9,7 @@ import { LocaleMenu } from './locale-menu';
 import { NavigationContainerProps } from '../types/navigation-container-props';
 
 export function NavigationContainer({
-  searchMenu,
+  searchBox,
 }: Readonly<NavigationContainerProps>) {
   return (
     // Navigation bar on the top of all pages with three sections:
@@ -30,7 +30,7 @@ export function NavigationContainer({
       </div>
 
       {/* Center section: Search */}
-      <div className="flex justify-center w-full">{searchMenu}</div>
+      <div className="flex justify-center w-full">{searchBox}</div>
 
       {/* Right section: Locale, theme, and user nav */}
       <div className="flex pr-2 gap-2 justify-end">

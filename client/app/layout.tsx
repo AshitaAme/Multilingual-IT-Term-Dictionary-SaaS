@@ -5,7 +5,7 @@ import { Toaster } from '@/shared/components/ui/sonner';
 import { getLocale, getMessages, getTranslations } from 'next-intl/server';
 import { AuthContainer } from '@/features/auth';
 import { NavigationContainer } from '@/features/navigation';
-import { SearchMenu } from '@/features/search';
+import { SearchBox } from '@/features/search';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('common');
@@ -32,9 +32,7 @@ export default async function RootLayout({
     >
       <body className="bg-background relative">
         <AppProviders messages={messages} locale={locale}>
-          {/* For all pages, navigation is above the content */}
-          <NavigationContainer searchMenu={<SearchMenu />} />
-          {/* Auth will not show until trigger is clicked in nav */}
+          <NavigationContainer searchBox={<SearchBox />} />
           <AuthContainer />
           {children}
           <Toaster />

@@ -1,1 +1,2 @@
-export { SearchMenu } from './components/search-menu';
+export { SearchBox } from './components/search-box';
+export { SearchContainer } from './components/search-container';

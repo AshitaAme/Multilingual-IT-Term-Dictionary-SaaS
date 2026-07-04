@@ -34,9 +34,8 @@
     "profile": "Profile",
     "settings": "Settings",
     "signOut": "Sign out",
-    "search": "Search...",
-    "theme": "theme",
-    "languages": "languages"
+    "theme": "Theme",
+    "languages": "Languages"
   },
   "tag": {
     "all": "All",
@@ -48,6 +47,31 @@
     "cloudService": "Cloud Service",
     "git": "Git",
     "nextjs": "Next.js"
+  },
+
+  "search": {
+    "searchList": {
+      "noMore": "No more...",
+      "error": {
+        "queryTooLong": "Query is too long",
+        "somethingWentWrong": "Something went wrong"
+      }
+    },
+    "searchBox": {
+      "inputPlaceholder": "Search...",
+      "searchLabel": "Search"
+    },
+    "tagMenu": {
+      "addTagsLabel": "Add tags"
+    },
+    "termInfo": {
+      "saveLabel": "Save",
+      "unsaveLabel": "Unsave",
+      "error": {
+        "invalidUserId": "User not found",
+        "invalidTermId": "Term not found"
+      }
+    }
   },
 
   "dashboard": {

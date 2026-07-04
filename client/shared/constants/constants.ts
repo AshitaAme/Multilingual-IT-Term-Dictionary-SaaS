@@ -12,3 +12,5 @@ export const ROUTES = {
   PROFILE_ALL: '/profile/:path*',
   HOME: '/',
 } as const;
+
+export const LANGUAGE_CODES = ['cn', 'ja', 'en'];
