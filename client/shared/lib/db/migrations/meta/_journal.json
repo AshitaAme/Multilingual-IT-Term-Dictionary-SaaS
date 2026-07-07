@@ -36,6 +36,20 @@
       "when": 1783407346659,
       "tag": "0004_living_deathbird",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1783407913604,
+      "tag": "0005_cold_proudstar",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1783409164432,
+      "tag": "0006_solid_proudstar",
+      "breakpoints": true
     }
   ]
 }

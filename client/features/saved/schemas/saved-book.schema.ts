@@ -3,7 +3,9 @@ import z from 'zod';
 
 export const createSavedBooksSchema = (t: Translator = DEFAULT_TRANSLATOR) => {
   const SavedTermSchema = z.object({
-    id: z.string(),
+    termId: z.string(),
+    displayName: z.string(),
+    text: z.string(),
   });
   return z.object({
     ids: z.array(z.string()),

@@ -143,6 +143,7 @@ export const reviewCards = pgTable(
     savedTermId: text('saved_term_id')
       .notNull()
       .references(() => savedTerms.id, { onDelete: 'cascade' }),
+    reviewText: text('review_text').notNull(),
 
     // --- FSRS core fields ---
     stability: real('stability').default(0).notNull(), // memory stability in days (S)
@@ -198,12 +199,29 @@ export const savedBooks = pgTable(
     id: text('id')
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
-    savedTermId: text('saved_term_id')
-      .notNull()
-      .references(() => savedTerms.id, { onDelete: 'cascade' }),
+    name: text('name').notNull(),
     userId: text('user_id')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
   },
-  (t) => [index('idx_saved_book_user_id').on(t.userId)],
+  (t) => [
+    unique().on(t.name, t.userId),
+    index('idx_saved_book_user_id').on(t.userId),
+  ],
+);
+
+export const savedBookTerms = pgTable(
+  'saved_term_book',
+  {
+    savedBookId: text('saved_book_id')
+      .notNull()
+      .references(() => savedBooks.id, { onDelete: 'cascade' }),
+    savedTermId: text('saved_term_id')
+      .notNull()
+      .references(() => savedTerms.id, { onDelete: 'cascade' }),
+  },
+  (t) => [
+    primaryKey({ columns: [t.savedBookId, t.savedTermId] }),
+    index('idx_saved_book_term_saved_book_id').on(t.savedBookId),
+  ],
 );
