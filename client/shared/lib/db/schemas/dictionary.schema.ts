@@ -140,12 +140,9 @@ export const reviewCards = pgTable(
     id: text('id')
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
-    userId: text('user_id')
+    savedTermId: text('saved_term_id')
       .notNull()
-      .references(() => users.id, { onDelete: 'cascade' }),
-    termId: text('term_id')
-      .notNull()
-      .references(() => terms.id, { onDelete: 'cascade' }),
+      .references(() => savedTerms.id, { onDelete: 'cascade' }),
 
     // --- FSRS core fields ---
     stability: real('stability').default(0).notNull(), // memory stability in days (S)
@@ -162,8 +159,10 @@ export const reviewCards = pgTable(
     createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
   },
   (t) => [
-    unique().on(t.userId, t.termId),
-    index('idx_review_card_user_next_review').on(t.userId, t.nextReviewAt),
+    index('idx_review_card_saved_term_next_review').on(
+      t.savedTermId,
+      t.nextReviewAt,
+    ),
   ],
 );
 
@@ -191,4 +190,20 @@ export const reviewLogs = pgTable(
     index('idx_review_log_card_id').on(t.reviewCardId),
     index('idx_review_log_user_created').on(t.userId, t.createdAt),
   ],
+);
+
+export const savedBooks = pgTable(
+  'saved_book',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    savedTermId: text('saved_term_id')
+      .notNull()
+      .references(() => savedTerms.id, { onDelete: 'cascade' }),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+  },
+  (t) => [index('idx_saved_book_user_id').on(t.userId)],
 );

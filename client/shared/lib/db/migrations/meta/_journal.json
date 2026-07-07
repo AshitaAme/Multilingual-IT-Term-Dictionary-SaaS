@@ -22,6 +22,20 @@
       "when": 1782282579186,
       "tag": "0002_late_shaman",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1783405667877,
+      "tag": "0003_regular_wendell_vaughn",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1783407346659,
+      "tag": "0004_living_deathbird",
+      "breakpoints": true
     }
   ]
 }
