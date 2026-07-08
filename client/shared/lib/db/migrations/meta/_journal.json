@@ -50,6 +50,20 @@
       "when": 1783409164432,
       "tag": "0006_solid_proudstar",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1783498704375,
+      "tag": "0007_omniscient_black_tom",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1783499138082,
+      "tag": "0008_round_harpoon",
+      "breakpoints": true
     }
   ]
 }

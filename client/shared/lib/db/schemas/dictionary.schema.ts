@@ -125,6 +125,8 @@ export const savedTerms = pgTable(
     termId: text('term_id')
       .notNull()
       .references(() => terms.id, { onDelete: 'cascade' }),
+    name: text('name').notNull(),
+    text: text('text').notNull(),
     createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
   },
   (t) => [
@@ -143,7 +145,6 @@ export const reviewCards = pgTable(
     savedTermId: text('saved_term_id')
       .notNull()
       .references(() => savedTerms.id, { onDelete: 'cascade' }),
-    reviewText: text('review_text').notNull(),
 
     // --- FSRS core fields ---
     stability: real('stability').default(0).notNull(), // memory stability in days (S)
@@ -156,7 +157,6 @@ export const reviewCards = pgTable(
       .defaultNow()
       .notNull(),
     lastReviewAt: timestamp('last_review_at', { mode: 'date' }),
-
     createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
   },
   (t) => [
@@ -211,7 +211,7 @@ export const savedBooks = pgTable(
 );
 
 export const savedBookTerms = pgTable(
-  'saved_term_book',
+  'saved_book_term',
   {
     savedBookId: text('saved_book_id')
       .notNull()
