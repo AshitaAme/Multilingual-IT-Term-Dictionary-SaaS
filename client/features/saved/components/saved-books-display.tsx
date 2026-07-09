@@ -1,6 +1,5 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { getSavedBooksAction } from '../actions/get-saved-books.action';
 import { toast } from 'sonner';
@@ -15,8 +14,6 @@ import { LoadingCircle } from '@/shared/components/ui/loading-circle';
 
 export function SavedBooksDisplay() {
   const [savedBooks, setSavedBooks] = useState<SavedBook[]>([]);
-  const session = useSession();
-  const userId = session.data?.user.id;
   const setOpenBook = useBookStore((state) => state.setOpenBook);
   const setBookId = useBookStore((state) => state.setBookId);
   const router = useRouter();
@@ -24,12 +21,12 @@ export function SavedBooksDisplay() {
 
   useEffect(() => {
     const fetchBook = async () => {
-      const res = await getSavedBooksAction(userId!);
+      const res = await getSavedBooksAction();
       if (!res.success) toast.error(res.error);
       else setSavedBooks(res.data!);
     };
     fetchBook();
-  }, [router, userId]);
+  }, [router]);
 
   const handleBookClick = (bookId: string) => {
     setBookId(bookId);
@@ -39,7 +36,7 @@ export function SavedBooksDisplay() {
   const handleAddBook = async () => {
     setIsAddingBook(true);
     const name = '';
-    const res = await addBookAction({ name, userId: userId! });
+    const res = await addBookAction({ name });
     if (!res.success) toast.error(res.error);
     else {
       const id = res.data!;
@@ -63,7 +60,7 @@ export function SavedBooksDisplay() {
         {isAddingBook && <LoadingCircle />}
         {!isAddingBook && (
           <>
-            <span>Add saved books</span>
+            <span>Add book</span>
             <Plus size={8}></Plus>
           </>
         )}

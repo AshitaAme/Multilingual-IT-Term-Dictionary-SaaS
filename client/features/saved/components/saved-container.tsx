@@ -1,7 +1,7 @@
 'use client';
 
 import { useBookStore } from '../stores/saved.store';
-import { SavedBook } from './saved-book';
+import { SavedBookInfo } from './saved-book-info';
 import { SavedBooksDisplay } from './saved-books-display';
 
 export function SavedContainer() {
@@ -9,7 +9,7 @@ export function SavedContainer() {
 
   return (
     <div>
-      {openBook && <SavedBook />}
+      {openBook && <SavedBookInfo />}
       {!openBook && <SavedBooksDisplay />}
     </div>
   );

@@ -3,7 +3,6 @@ import z from 'zod';
 
 export const createAddBookSchema = (t: Translator = DEFAULT_TRANSLATOR) => {
   return z.object({
-    userId: z.string().trim().min(1, 'User not found'),
     name: z.string().max(20, 'Name is too long'),
   });
 };
