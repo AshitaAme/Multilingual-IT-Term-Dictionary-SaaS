@@ -34,7 +34,7 @@ export default function IconNav() {
 
         {/* Saved Words*/}
         <NavigationMenuItem>
-          <NavigationMenuLink href="/">
+          <NavigationMenuLink href="/saved">
             <TooltipWrapper label={t('savedWords')} side="bottom">
               <Button
                 variant="outline"

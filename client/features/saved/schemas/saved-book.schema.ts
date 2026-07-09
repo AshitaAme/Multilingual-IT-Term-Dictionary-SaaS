@@ -1,14 +1,11 @@
 import { DEFAULT_TRANSLATOR, Translator } from '@/shared/types/translator';
 import z from 'zod';
 
-export const createSavedBooksSchema = (t: Translator = DEFAULT_TRANSLATOR) => {
-  const SavedTermSchema = z.object({
-    termId: z.string(),
-    displayName: z.string(),
-    text: z.string(),
-  });
+export const createAddBookSchema = (t: Translator = DEFAULT_TRANSLATOR) => {
   return z.object({
-    ids: z.array(z.string()),
-    savedTerms: z.array(z.string()),
+    userId: z.string().trim().min(1, 'User not found'),
+    name: z.string().max(20, 'Name is too long'),
   });
 };
+
+export type AddBook = z.infer<ReturnType<typeof createAddBookSchema>>;

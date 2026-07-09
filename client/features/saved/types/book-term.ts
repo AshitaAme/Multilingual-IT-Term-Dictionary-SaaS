@@ -1,7 +1,8 @@
 import { ReviewCard } from './review-card';
 
-export type BookTerm = {
+export interface BookTerm {
   name: string;
   text: string;
+  termId: string;
   reviewCard?: ReviewCard | null;
-};
+}

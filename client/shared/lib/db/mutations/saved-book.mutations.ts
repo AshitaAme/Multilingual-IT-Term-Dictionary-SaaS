@@ -1,6 +1,6 @@
 import { db } from '../db';
 import { savedBooks } from '../schemas/dictionary.schema';
-import { count, sql, eq } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 
 export async function getSavedBooks(userId: string) {
   const result = await db
@@ -8,4 +8,12 @@ export async function getSavedBooks(userId: string) {
     .from(savedBooks)
     .where(eq(savedBooks.userId, userId));
   return result;
+}
+
+export async function insertSavedBook(name: string, userId: string) {
+  const [result] = await db
+    .insert(savedBooks)
+    .values({ name, userId })
+    .returning();
+  return result.id;
 }
