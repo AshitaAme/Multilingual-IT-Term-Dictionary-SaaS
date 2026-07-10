@@ -16,7 +16,7 @@ export const tagKeys = [
   'nextjs',
 ] as const;
 
-export function TagCardDisplay() {
+export function TagCardsDisplay() {
   const t = useTranslations('tag');
 
   return (

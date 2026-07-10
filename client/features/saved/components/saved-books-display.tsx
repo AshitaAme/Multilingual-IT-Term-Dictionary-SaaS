@@ -3,39 +3,44 @@
 import { useEffect, useState } from 'react';
 import { getSavedBooksAction } from '../actions/get-saved-books.action';
 import { toast } from 'sonner';
-import { Card } from '@/shared/components/ui/card';
+import { CardTitle } from '@/shared/components/ui/card';
 import { useBookStore } from '../stores/saved.store';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/shared/components/ui/button';
 import { Plus } from 'lucide-react';
 import { SavedBook } from '../types/saved-book';
 import { addBookAction } from '../actions/add-book.action';
 import { LoadingCircle } from '@/shared/components/ui/loading-circle';
+import { ClickCard } from '@/shared/components/ui/click-card';
+import { cn } from '@/shared/utils/utils';
 
 export function SavedBooksDisplay() {
   const [savedBooks, setSavedBooks] = useState<SavedBook[]>([]);
   const setOpenBook = useBookStore((state) => state.setOpenBook);
   const setBookId = useBookStore((state) => state.setBookId);
   const router = useRouter();
+  const [isFetchingBooks, setIsFetchingBooks] = useState(true);
   const [isAddingBook, setIsAddingBook] = useState(false);
+  const [nameInput, setNameInput] = useState('');
+  const [isChangingName, setIsChangingName] = useState(false);
 
   useEffect(() => {
     const fetchBook = async () => {
+      setIsFetchingBooks(true);
       const res = await getSavedBooksAction();
       if (!res.success) toast.error(res.error);
       else setSavedBooks(res.data!);
+      setIsFetchingBooks(false);
     };
     fetchBook();
   }, [router]);
 
-  const handleBookClick = (bookId: string) => {
+  const handleOpenBook = (bookId: string) => {
     setBookId(bookId);
     setOpenBook(true);
   };
 
-  const handleAddBook = async () => {
+  const addBook = async (name: string) => {
     setIsAddingBook(true);
-    const name = '';
     const res = await addBookAction({ name });
     if (!res.success) toast.error(res.error);
     else {
@@ -46,25 +51,54 @@ export function SavedBooksDisplay() {
   };
 
   return (
-    <div>
+    <div className="p-[10%] flex flex-wrap gap-x-4 ">
       {savedBooks.length > 0 &&
-        savedBooks.map((savedBooks) => {
+        savedBooks.map((book) => {
           return (
-            <Card
-              key={savedBooks.id}
-              onClick={() => handleBookClick(savedBooks.id)}
-            ></Card>
+            <ClickCard
+              key={book.id}
+              onClick={() => handleOpenBook(book.id)}
+              className="rounded-sm w-50 h-70"
+            >
+              <CardTitle>
+                <span>{book.name}</span>
+              </CardTitle>
+            </ClickCard>
           );
         })}
-      <Button variant="outline" onClick={handleAddBook} disabled={isAddingBook}>
-        {isAddingBook && <LoadingCircle />}
-        {!isAddingBook && (
-          <>
-            <span>Add book</span>
-            <Plus size={8}></Plus>
-          </>
+      <ClickCard
+        onClick={() => setIsChangingName(true)}
+        className={cn(
+          'rounded-sm w-50 h-70 p-0 pb-2 flex justify-center items-center',
+          'dark:border-dashed bg-foreground/5',
+          isAddingBook || isChangingName
+            ? 'pointer-events-none opacity-70'
+            : 'group',
         )}
-      </Button>
+      >
+        {isAddingBook && <LoadingCircle size={25} />}
+        {!isAddingBook && !isChangingName && (
+          <Plus
+            className="group-hover:scale-110 transition-all duration-150"
+            size={25}
+          />
+        )}
+        {!isAddingBook && isChangingName && (
+          <input
+            autoFocus
+            onBlur={() => setIsChangingName(false)}
+            className="ring-2 border-0 focus:outline-none rounded-sm w-3/5 h-8 p-2 focus:ring-foreground"
+            value={nameInput}
+            onChange={(e) => setNameInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                setIsChangingName(false);
+                addBook(nameInput);
+              }
+            }}
+          />
+        )}
+      </ClickCard>
     </div>
   );
 }

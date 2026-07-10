@@ -7,7 +7,7 @@ import { getBookTermListAction } from '../actions/get-book-term-list.action';
 import { BookTerm } from '../types/book-term';
 import { cn } from '@/shared/utils/utils';
 import { Button } from '@/shared/components/ui/button';
-import { Clock, Diamond, List } from 'lucide-react';
+import { Circle, Clock, Diamond, List } from 'lucide-react';
 
 export function SavedBookInfo() {
   const bookId = useBookStore((state) => state.bookId);
@@ -27,30 +27,35 @@ export function SavedBookInfo() {
   }, [bookId]);
 
   return (
-    <div className={cn('w-full', 'flex flex-col px-[20%] py-[10%]')}>
+    <div className={cn('w-full', 'flex flex-col gap-4 px-[20%] py-[10%]')}>
       <div className="flex justify-end">
-        <Button>
+        <Button variant="outline">
           <List />
           <span>List</span>
         </Button>
-        <Button>
+        <Button variant="outline">
           <Clock />
           <span>Review</span>
         </Button>
-        <Button>
+        <Button variant="outline">
           <Diamond />
           <span>Card</span>
         </Button>
       </div>
       <div
-        className={cn(
-          'min-h-100',
-          'flex flex-col items-center justify-center border-2',
-        )}
+        className={cn('min-h-100', 'flex flex-col items-center justify-center')}
       >
         {bookTermList.length > 0 &&
           bookTermList.map((bookTerm, index) => {
-            return <div key={index + '#' + bookTerm.name}></div>;
+            return (
+              <div key={index + '#' + bookTerm.name} className="flex gap-x-6">
+                <div className="flex gap-x-2">
+                  <Circle />
+                  <span>{index}</span>
+                </div>
+                <span>{bookTerm.name}</span>
+              </div>
+            );
           })}
         {bookTermList.length <= 0 && <span>Still Empty...</span>}
       </div>

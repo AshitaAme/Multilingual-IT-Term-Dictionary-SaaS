@@ -46,7 +46,6 @@ export function SearchBox({
         className={cn(
           'w-full h-full ring-1 ring-foreground/40 focus:ring-foreground border-0',
           isSearch ? 'pl-4 pr-9.5 rounded-3xl' : 'pl-3 pr-8 rounded-xl ',
-          'focus:',
         )}
         placeholder={t('searchBox.inputPlaceholder')}
         value={isSearch ? input : navInput}

@@ -2,13 +2,13 @@ import React from 'react';
 import { Card } from './card';
 import { cn } from '@/shared/utils/utils';
 
+export type ClickCardProps = React.HTMLAttributes<HTMLDivElement>;
+
 export function ClickCard({
   children,
   className,
-}: Readonly<{
-  children: React.ReactNode;
-  className?: string;
-}>) {
+  ...props
+}: Readonly<ClickCardProps>) {
   return (
     <Card
       className={cn(
@@ -17,6 +17,7 @@ export function ClickCard({
         'dark:border dark:border-white/15 dark:hover:border-foreground transition-all duration-100',
         className,
       )}
+      {...props}
     >
       {children}
     </Card>
