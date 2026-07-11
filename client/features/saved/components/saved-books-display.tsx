@@ -51,18 +51,18 @@ export function SavedBooksDisplay() {
   };
 
   return (
-    <div className="p-[10%] flex flex-wrap gap-x-4 ">
+    <div className="p-[10%] flex flex-wrap gap-x-10 ">
       {savedBooks.length > 0 &&
         savedBooks.map((book) => {
           return (
             <ClickCard
               key={book.id}
               onClick={() => handleOpenBook(book.id)}
-              className="rounded-sm w-50 h-70"
+              className="rounded-sm w-50 h-70 flex flex-wrap items-center justify-center p-0 pb-4 group"
             >
-              <CardTitle>
-                <span>{book.name}</span>
-              </CardTitle>
+              <span className="text-xl text-foreground/70 group-hover:text-foreground">
+                {book.name}
+              </span>
             </ClickCard>
           );
         })}
@@ -79,7 +79,7 @@ export function SavedBooksDisplay() {
         {isAddingBook && <LoadingCircle size={25} />}
         {!isAddingBook && !isChangingName && (
           <Plus
-            className="group-hover:scale-110 transition-all duration-150"
+            className="group-hover:scale-110 transition-all duration-150 text-foreground/70 group-hover:text-foreground"
             size={25}
           />
         )}
@@ -89,6 +89,7 @@ export function SavedBooksDisplay() {
             onBlur={() => setIsChangingName(false)}
             className="ring-2 border-0 focus:outline-none rounded-sm w-3/5 h-8 p-2 focus:ring-foreground"
             value={nameInput}
+            maxLength={20}
             onChange={(e) => setNameInput(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {

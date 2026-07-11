@@ -20,6 +20,8 @@ import { LoadingCircle } from '@/shared/components/ui/loading-circle';
 
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useLocale, useTranslations } from 'next-intl';
+import { Star } from 'lucide-react';
+import { Button } from '@/shared/components/ui/button';
 
 export function SearchList() {
   const t = useTranslations('search');
@@ -104,6 +106,7 @@ export function SearchList() {
       <div className="flex w-full flex-col text-sm">
         {searchList.map((item, index) => {
           const isLast = index === searchList.length - 1;
+          const count = index + 1;
 
           return (
             <div
@@ -121,8 +124,11 @@ export function SearchList() {
                     : 'hover:backdrop-brightness-97',
                 )}
               >
-                <div className="flex items-center text-left">
-                  {item.displayName}
+                <div className="flex items-center text-left gap-4 font-semibold">
+                  <span className="font-normal text-foreground/50">
+                    {count < 10 ? `0${count}` : `${count}`}
+                  </span>
+                  <span>{item.displayName}</span>
                 </div>
 
                 {/* Tags for each term */}
@@ -147,6 +153,25 @@ export function SearchList() {
                       {tag.name}
                     </button>
                   ))}
+                </div>
+                <div className="flex flex-2 items-center justify-end ">
+                  <Button
+                    variant="ghost"
+                    className="cursor-pointer"
+                    size="icon"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                  >
+                    <Star
+                      size={16}
+                      className={cn(
+                        item.saved
+                          ? 'fill-yellow-400 text-yellow-400 transition-colors'
+                          : '',
+                      )}
+                    />
+                  </Button>
                 </div>
               </div>
             </div>

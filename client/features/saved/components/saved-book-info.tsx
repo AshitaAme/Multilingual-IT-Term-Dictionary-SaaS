@@ -7,7 +7,7 @@ import { getBookTermListAction } from '../actions/get-book-term-list.action';
 import { BookTerm } from '../types/book-term';
 import { cn } from '@/shared/utils/utils';
 import { Button } from '@/shared/components/ui/button';
-import { Circle, Clock, Diamond, List } from 'lucide-react';
+import { ChevronLeft, Circle, Clock, Diamond, List } from 'lucide-react';
 
 export function SavedBookInfo() {
   const bookId = useBookStore((state) => state.bookId);
@@ -28,19 +28,27 @@ export function SavedBookInfo() {
 
   return (
     <div className={cn('w-full', 'flex flex-col gap-4 px-[20%] py-[10%]')}>
-      <div className="flex justify-end">
-        <Button variant="outline">
-          <List />
-          <span>List</span>
-        </Button>
-        <Button variant="outline">
-          <Clock />
-          <span>Review</span>
-        </Button>
-        <Button variant="outline">
-          <Diamond />
-          <span>Card</span>
-        </Button>
+      <div className="flex justify-between gap-2">
+        <div>
+          <Button variant="ghost">
+            <ChevronLeft />
+            <span>Back</span>
+          </Button>
+        </div>
+        <div className="flex justify-end gap-2">
+          <Button variant="outline">
+            <List />
+            <span>List</span>
+          </Button>
+          <Button variant="outline">
+            <Clock />
+            <span>Review</span>
+          </Button>
+          <Button variant="outline">
+            <Diamond />
+            <span>Card</span>
+          </Button>
+        </div>
       </div>
       <div
         className={cn('min-h-100', 'flex flex-col items-center justify-center')}
@@ -57,7 +65,9 @@ export function SavedBookInfo() {
               </div>
             );
           })}
-        {bookTermList.length <= 0 && <span>Still Empty...</span>}
+        {bookTermList.length <= 0 && (
+          <span className="font-semibold">Still Empty...</span>
+        )}
       </div>
     </div>
   );

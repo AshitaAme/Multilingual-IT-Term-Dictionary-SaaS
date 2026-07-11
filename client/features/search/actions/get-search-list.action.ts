@@ -7,6 +7,7 @@ import {
   SearchListQuery,
 } from '../schemas/search-list-query.schema';
 import { getLanguageCode } from '@/shared/utils/utils';
+import { auth } from '@/shared/lib/auth/auth';
 
 export async function getSearchListAction(data: SearchListQuery) {
   // 1. Get i18n translator
@@ -14,7 +15,7 @@ export async function getSearchListAction(data: SearchListQuery) {
   try {
     t = await getTranslations('search');
   } catch (err) {
-    console.warn('[checkSavedTermAction] Get i18n translator failed: ', err);
+    console.warn('[checkSavedTermAction] Fetch i18n translator failed: ', err);
   }
 
   // 2. Zod validation
@@ -26,9 +27,24 @@ export async function getSearchListAction(data: SearchListQuery) {
   // 3. Get language Code
   const languageCode = getLanguageCode(data.locale);
 
-  // 4. Get search list
+  // 4. Get userId
+  let userId;
   try {
-    const list = await getSearchList(page, languageCode || 'en', query);
+    const session = await auth();
+    userId = session?.user.id;
+  } catch (err) {
+    console.warn('[checkSavedTermAction] Fetch userId failed: ', err);
+  }
+
+  // 4. Get search list
+  const payload = {
+    page,
+    userLang: languageCode || 'en',
+    query,
+    userId: userId || '',
+  };
+  try {
+    const list = await getSearchList(payload);
 
     // 5. Success
     return { success: true, data: list };
