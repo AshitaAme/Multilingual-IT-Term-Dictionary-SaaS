@@ -11,6 +11,7 @@ import { ChevronLeft, Circle, Clock, Diamond, List } from 'lucide-react';
 
 export function SavedBookInfo() {
   const bookId = useBookStore((state) => state.bookId);
+  const setOpenBook = useBookStore((state) => state.setOpenBook);
   const [bookTermList, setBookTermList] = useState<BookTerm[]>([]);
 
   useEffect(() => {
@@ -30,7 +31,7 @@ export function SavedBookInfo() {
     <div className={cn('w-full', 'flex flex-col gap-4 px-[20%] py-[10%]')}>
       <div className="flex justify-between gap-2">
         <div>
-          <Button variant="ghost">
+          <Button variant="ghost" onClick={() => setOpenBook(false)}>
             <ChevronLeft />
             <span>Back</span>
           </Button>

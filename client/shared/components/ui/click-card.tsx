@@ -12,7 +12,7 @@ export function ClickCard({
   return (
     <Card
       className={cn(
-        'ring-0 rounded-b-xl cursor-pointer',
+        'ring-0 rounded-b-xl',
         'bg-background shadow-md hover:shadow-xl ',
         'dark:border dark:border-white/15 dark:hover:border-foreground transition-all duration-100',
         className,
