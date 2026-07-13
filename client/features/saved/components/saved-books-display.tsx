@@ -12,6 +12,7 @@ import { LoadingCircle } from '@/shared/components/ui/loading-circle';
 import { ClickCard } from '@/shared/components/ui/click-card';
 import { cn } from '@/shared/utils/utils';
 import { Button } from '@/shared/components/ui/button';
+import { deleteBookAction } from '../actions/delete-book.action';
 
 export function SavedBooksDisplay() {
   const [savedBooks, setSavedBooks] = useState<SavedBook[]>([]);
@@ -21,7 +22,8 @@ export function SavedBooksDisplay() {
   const [isFetchingBooks, setIsFetchingBooks] = useState(true);
   const [isAddingBook, setIsAddingBook] = useState(false);
   const [nameInput, setNameInput] = useState('');
-  const [isNamingBook, setIsNamingBook] = useState<string>('');
+  const [isNamingBook, setIsNamingBook] = useState(''); // Use book id string to represent the book being named
+  const [isDeletingBook, setIsDeletingBook] = useState('');
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -50,7 +52,13 @@ export function SavedBooksDisplay() {
     setIsAddingBook(false);
   };
 
-  const deleteBook = async (bookId: string, index: number) => {};
+  const deleteBook = async (bookId: string, index: number) => {
+    setIsDeletingBook(bookId);
+    const res = await deleteBookAction(bookId);
+    if (!res.success) toast.error(res.error);
+    else setSavedBooks((prev) => prev.filter((_, i) => i !== index));
+    setIsDeletingBook('');
+  };
 
   const bookNamingBox = (
     <div className="relative h-8 w-3/5">
@@ -95,38 +103,59 @@ export function SavedBooksDisplay() {
     <div className="py-[10%] px-[12%] flex flex-wrap items-center gap-15">
       {savedBooks.length > 0 &&
         savedBooks.map((book, index) => {
+          const bookName = (
+            <Button
+              variant="ghost"
+              className="cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsNamingBook(book.id);
+              }}
+            >
+              <span className="text-lg">{book.name}</span>
+            </Button>
+          );
+
+          const trashButton = (
+            <Button
+              size="icon"
+              variant="destructive"
+              className="absolute bottom-1/9 cursor-pointer opacity-70 hover:opacity-100"
+              onClick={(e) => {
+                e.stopPropagation();
+                deleteBook(book.id, index);
+              }}
+            >
+              <Trash2 />
+            </Button>
+          );
+
+          let content;
+          if (isNamingBook === book.id) {
+            content = (
+              <>
+                {bookNamingBox}
+                {trashButton}
+              </>
+            );
+          } else if (isDeletingBook === book.id) {
+            content = <LoadingCircle size={25} />;
+          } else {
+            content = (
+              <>
+                {bookName}
+                {trashButton}
+              </>
+            );
+          }
+
           return (
             <ClickCard
               key={book.id}
               onClick={() => handleOpenBook(book.id)}
               className="relative rounded-sm w-50 h-65 flex flex-wrap items-center justify-center p-0 pb-4 group"
             >
-              {isNamingBook === book.id ? (
-                bookNamingBox
-              ) : (
-                <Button
-                  variant="ghost"
-                  className="cursor-pointer"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsNamingBook(book.id);
-                  }}
-                >
-                  <span className="text-lg">{book.name}</span>
-                </Button>
-              )}
-
-              <Button
-                size="icon"
-                variant="destructive"
-                className="absolute bottom-1/9 cursor-pointer opacity-70 hover:opacity-100"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  deleteBook(book.id, index);
-                }}
-              >
-                <Trash2 className="" />
-              </Button>
+              {content}
             </ClickCard>
           );
         })}
