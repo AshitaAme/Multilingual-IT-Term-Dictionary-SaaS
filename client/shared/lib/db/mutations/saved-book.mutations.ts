@@ -1,7 +1,15 @@
 import { s } from '@upstash/redis';
 import { db } from '../db';
 import { savedBooks } from '../schemas/dictionary.schema';
-import { eq } from 'drizzle-orm';
+import { and, count, eq } from 'drizzle-orm';
+
+export async function hasSavedBook(name: string, userId: string) {
+  const [result] = await db
+    .select({ total: count() })
+    .from(savedBooks)
+    .where(and(eq(savedBooks.name, name), eq(savedBooks.userId, userId)));
+  return result.total >= 1;
+}
 
 export async function getSavedBooks(userId: string) {
   const result = await db
@@ -11,10 +19,20 @@ export async function getSavedBooks(userId: string) {
   return result;
 }
 
-export async function insertSavedBook(name: string, userId: string) {
+export async function upsertSavedBook(
+  name: string,
+  userId: string,
+  bookId: string,
+) {
   const [result] = await db
     .insert(savedBooks)
-    .values({ name, userId })
+    .values({ id: bookId, name, userId })
+    .onConflictDoUpdate({
+      target: [savedBooks.id],
+      set: {
+        name,
+      },
+    })
     .returning();
   return result.id;
 }
