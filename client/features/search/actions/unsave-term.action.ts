@@ -1,13 +1,13 @@
 'use server';
 
 import { unsaveTerm } from '../services/unsave-term';
-import {
-  createSaveTermSchema,
-  SaveTermInput,
-} from '../schemas/save-term.schema';
 import { getTranslations } from 'next-intl/server';
+import {
+  createQuerySaveSchema,
+  QuerySaveInput,
+} from '../schemas/check-save.schema';
 
-export async function unsaveTermAction(data: SaveTermInput) {
+export async function unsaveTermAction(data: QuerySaveInput) {
   // 1. Get i18n translator
   let t;
   try {
@@ -17,8 +17,8 @@ export async function unsaveTermAction(data: SaveTermInput) {
   }
 
   // 2. Zod validation
-  const SaveTermSchema = createSaveTermSchema(t);
-  const parsed = SaveTermSchema.safeParse(data);
+  const QuerySaveSchema = createQuerySaveSchema(t);
+  const parsed = QuerySaveSchema.safeParse(data);
   if (!parsed.success) return { success: false, error: parsed.error.message };
   const { userId, termId } = parsed.data;
 

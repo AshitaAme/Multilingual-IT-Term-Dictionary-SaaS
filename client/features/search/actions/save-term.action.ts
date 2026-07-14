@@ -2,12 +2,12 @@
 
 import { saveTerm } from '../services/save-term';
 import {
-  createSaveTermSchema,
-  SaveTermInput,
+  createUpsertSaveSchema,
+  UpsertSaveInput,
 } from '../schemas/save-term.schema';
 import { getTranslations } from 'next-intl/server';
 
-export async function saveTermAction(data: SaveTermInput) {
+export async function saveTermAction(data: UpsertSaveInput) {
   // 1. Get i18n translator
   let t;
   try {
@@ -16,14 +16,14 @@ export async function saveTermAction(data: SaveTermInput) {
     console.warn('[checkSavedTermAction] Get i18n translator failed: ', err);
   }
   // 2. Zod validation
-  const SaveTermSchema = createSaveTermSchema(t);
+  const SaveTermSchema = createUpsertSaveSchema(t);
   const parsed = SaveTermSchema.safeParse(data);
   if (!parsed.success) return { success: false, error: parsed.error.message };
-  const { userId, termId } = parsed.data;
+  const { userId, termId, name, text } = parsed.data;
 
   // 3. Save term
   try {
-    await saveTerm(userId, termId, true);
+    await saveTerm(userId, termId, name, text);
 
     // 4. Success
     return { success: true };

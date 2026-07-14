@@ -67,7 +67,7 @@ export function TermInfo() {
   };
 
   // Save / unsave term
-  const handleStarClick = async () => {
+  const handleStarClick = async (name?: string, text?: string) => {
     if (!userId) {
       toast.error(t('termInfo.invalidUserId'));
       return;
@@ -85,7 +85,8 @@ export function TermInfo() {
         toast.error(res.error);
       }
     } else {
-      const res = await saveTermAction({ userId, termId });
+      if (!name || !text) return;
+      const res = await saveTermAction({ userId, termId, name, text });
       if (res.success) {
         setSaved(true);
       } else {

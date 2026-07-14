@@ -7,10 +7,18 @@ import {
 export async function saveTerm(
   userId: string,
   termId: string,
-  enrollReview: boolean,
+  name: string,
+  text: string,
 ) {
   return await db.transaction(async (tx) => {
-    await tx.insert(savedTerms).values({ userId, termId });
-    if (enrollReview) await tx.insert(reviewCards).values({ userId, termId });
+    const [result] = await tx
+      .insert(savedTerms)
+      .values({ userId, termId, name, text })
+      .returning();
+
+    const enrollReview = true;
+    if (enrollReview) {
+      await tx.insert(reviewCards).values({ savedTermId: result.id });
+    }
   });
 }

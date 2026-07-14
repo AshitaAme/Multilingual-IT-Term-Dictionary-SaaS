@@ -124,7 +124,7 @@ export function SearchList() {
                     : 'hover:backdrop-brightness-97',
                 )}
               >
-                <div className="flex items-center text-left gap-4 font-semibold">
+                <div className="flex items-center text-left gap-5 font-semibold">
                   <span className="font-normal text-foreground/50">
                     {count < 10 ? `0${count}` : `${count}`}
                   </span>
