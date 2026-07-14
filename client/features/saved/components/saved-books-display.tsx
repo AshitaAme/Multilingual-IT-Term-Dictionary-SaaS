@@ -13,7 +13,7 @@ import { ClickCard } from '@/shared/components/ui/click-card';
 import { cn } from '@/shared/utils/utils';
 import { Button } from '@/shared/components/ui/button';
 import { deleteBookAction } from '../actions/delete-book.action';
-import { Card } from '@/shared/components/ui/card';
+import { FanOutCards } from './fan-out-cards';
 
 export function SavedBooksDisplay() {
   const [savedBooks, setSavedBooks] = useState<SavedBook[]>([]);
@@ -43,6 +43,7 @@ export function SavedBooksDisplay() {
   };
 
   const upsertBook = async (name: string) => {
+    if (bookBeingNamed.length === 0) return;
     const existent = savedBooks.some((book) => book.name === name);
     if (existent) {
       toast.error('Already exists');
@@ -50,14 +51,20 @@ export function SavedBooksDisplay() {
     }
     setBookBeingUpserted(bookBeingNamed);
     setBookBeingNamed('');
-    if (bookBeingNamed.length === 0) return;
-    const bookId =
-      bookBeingNamed === 'addBook' ? crypto.randomUUID() : bookBeingNamed;
+    const isAdding = bookBeingNamed === 'addBook';
+    const bookId = isAdding ? crypto.randomUUID() : bookBeingNamed;
     const res = await upsertBookAction({ name, bookId });
     if (!res.success) toast.error(res.error);
     else {
       const id = res.data!;
-      setSavedBooks((prev) => [...prev, { id, name }]);
+      const upsertedBook = { id, name };
+      if (isAdding) setSavedBooks((prev) => [...prev, upsertedBook]);
+      else
+        setSavedBooks((prev) =>
+          prev.map((book) =>
+            book.id === bookBeingNamed ? upsertedBook : book,
+          ),
+        );
     }
     setBookBeingUpserted('');
   };
@@ -101,12 +108,12 @@ export function SavedBooksDisplay() {
     </div>
   );
 
-  if (isFetchingBooks)
-    return (
-      <div className="py-[10%] px-[12%] flex justify-center items-center gap-15">
-        <Card></Card>
-      </div>
-    );
+  // if (isFetchingBooks)
+  return (
+    <div className="pb-[15%] w-full h-200 flex justify-center items-center">
+      <FanOutCards />
+    </div>
+  );
 
   return (
     <div className="py-[10%] px-[12%] flex flex-wrap items-center gap-15">

@@ -1,4 +1,3 @@
-import { s } from '@upstash/redis';
 import { db } from '../db';
 import { savedBooks } from '../schemas/dictionary.schema';
 import { and, count, eq } from 'drizzle-orm';
