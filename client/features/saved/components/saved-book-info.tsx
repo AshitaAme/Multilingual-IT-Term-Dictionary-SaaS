@@ -13,6 +13,7 @@ export function SavedBookInfo() {
   const bookId = useBookStore((state) => state.bookId);
   const setOpenBook = useBookStore((state) => state.setOpenBook);
   const [bookTermList, setBookTermList] = useState<BookTerm[]>([]);
+  const [mode, setMode] = useState<'List' | 'Card' | 'Review'>('List');
 
   useEffect(() => {
     const fetchBookTerms = async () => {
@@ -42,19 +43,26 @@ export function SavedBookInfo() {
             <span>List</span>
           </Button>
           <Button variant="outline">
-            <Clock />
-            <span>Review</span>
-          </Button>
-          <Button variant="outline">
             <Diamond />
             <span>Card</span>
+          </Button>
+          <Button variant="outline">
+            <Clock />
+            <span>Review</span>
           </Button>
         </div>
       </div>
       <div
         className={cn('min-h-100', 'flex flex-col items-center justify-center')}
       >
+        {/* Empty */}
+        {bookTermList.length <= 0 && (
+          <span className="font-semibold">Still Empty...</span>
+        )}
+
+        {/* List mode */}
         {bookTermList.length > 0 &&
+          mode === 'List' &&
           bookTermList.map((bookTerm, index) => {
             return (
               <div key={index + '#' + bookTerm.name} className="flex gap-x-6">
@@ -66,9 +74,6 @@ export function SavedBookInfo() {
               </div>
             );
           })}
-        {bookTermList.length <= 0 && (
-          <span className="font-semibold">Still Empty...</span>
-        )}
       </div>
     </div>
   );

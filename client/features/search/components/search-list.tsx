@@ -1,7 +1,7 @@
 'use client';
 
 import { Separator } from '@/shared/components/ui/separator';
-import { useMemo, useRef } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { getSearchListAction } from '../actions/get-search-list.action';
 import { SearchItem } from '../types/search-item';
 import { toast } from 'sonner';
@@ -22,6 +22,9 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { useLocale, useTranslations } from 'next-intl';
 import { Star } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
+import { saveTermAction } from '../actions/save-term.action';
+import { getTextFromTerm } from '../utils/get-text-from-term';
+import { unsaveTermAction } from '../actions/unsave-term.action';
 
 export function SearchList() {
   const t = useTranslations('search');
@@ -32,6 +35,7 @@ export function SearchList() {
   const setOpenTerm = useOpenTermStore((state) => state.setOpenTerm);
   const setTerm = useOpenTermStore((state) => state.setTerm);
   const theme = useTheme();
+  const [isTogglingStar, setIsTogglingStar] = useState<number | null>(null);
 
   // Used to fetch data for infinite scroll down
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
@@ -65,18 +69,6 @@ export function SearchList() {
     return data?.pages.flat() ?? [];
   }, [data]);
 
-  // Open TermInfo
-  const handleTermClick = (item: SearchItem) => {
-    setTerm(item);
-    setOpenTerm(true);
-  };
-
-  // Add tag to query
-  const handleTagClick = (tagName: string) => {
-    const newInput = input + tagName + ' ';
-    if (newInput.length <= MAX_SEARCH_LIST_QUERY_LENGTH) setInput(newInput);
-  };
-
   // Observe last node for infinite scroll down
   const observerRef = useRef<IntersectionObserver | null>(null);
   const lastItemRef = (node: HTMLDivElement | null) => {
@@ -93,6 +85,46 @@ export function SearchList() {
     if (node) observerRef.current.observe(node);
   };
 
+  // Open TermInfo
+  const handleTermClick = (item: SearchItem) => {
+    setTerm(item);
+    setOpenTerm(true);
+  };
+
+  // Add tag to query
+  const handleTagClick = (tagName: string) => {
+    const newInput = input + tagName + ' ';
+    if (newInput.length <= MAX_SEARCH_LIST_QUERY_LENGTH) setInput(newInput);
+  };
+
+  // Save the term
+  const handleSaveClick = async (item: SearchItem, index: number) => {
+    setIsTogglingStar(index);
+    const { termId, displayName, saved } = item;
+    if (item.saved) {
+      const res = await unsaveTermAction(termId);
+      if (!res.success) toast.error(res.error);
+      else
+        searchList.forEach((item, i) => {
+          if (i === index) item.saved = !saved;
+        });
+    } else {
+      const res = await saveTermAction({
+        termId,
+        name: displayName,
+        text: getTextFromTerm(item),
+      });
+      if (!res.success) toast.error(res.error);
+      else
+        searchList.forEach((item, i) => {
+          if (i === index) item.saved = !saved;
+        });
+    }
+
+    setIsTogglingStar(null);
+  };
+
+  // Loading while fetching data
   if (isLoading) {
     return (
       <div className="flex w-full items-center justify-center py-20">
@@ -101,6 +133,7 @@ export function SearchList() {
     );
   }
 
+  // Content
   return (
     <div className="flex flex-col gap-8 w-full">
       <div className="flex w-full flex-col text-sm">
@@ -115,10 +148,11 @@ export function SearchList() {
             >
               {index !== 0 && <Separator />}
 
+              {/* Term name */}
               <div
                 onClick={() => handleTermClick(item)}
                 className={cn(
-                  'w-full rounded-sm px-4 flex gap-8 py-3 cursor-pointer',
+                  'w-full rounded-sm px-4 flex gap-8 py-3 ',
                   theme.theme === 'dark'
                     ? 'hover:backdrop-brightness-125'
                     : 'hover:backdrop-brightness-97',
@@ -136,7 +170,7 @@ export function SearchList() {
                   {item.tags.map((tag) => (
                     <button
                       key={tag.name}
-                      className="rounded-4xl px-2 py-0.5 text-sm font-medium cursor-pointer transition-colors hover:opacity-80"
+                      className="rounded-4xl px-2 py-0.5 text-sm font-medium  transition-colors hover:opacity-80"
                       style={{
                         backgroundColor: tag.color
                           ? `color-mix(in srgb, ${tag.color} 16%, white)`
@@ -154,14 +188,17 @@ export function SearchList() {
                     </button>
                   ))}
                 </div>
+
+                {/* Save */}
                 <div className="flex flex-2 items-center justify-end ">
                   <Button
                     variant="ghost"
-                    className="cursor-pointer"
                     size="icon"
                     onClick={(e) => {
                       e.stopPropagation();
+                      handleSaveClick(item, index);
                     }}
+                    disabled={isTogglingStar === index}
                   >
                     <Star
                       size={16}

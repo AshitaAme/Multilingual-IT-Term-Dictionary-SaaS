@@ -108,12 +108,12 @@ export function SavedBooksDisplay() {
     </div>
   );
 
-  // if (isFetchingBooks)
-  return (
-    <div className="pb-[15%] w-full h-200 flex justify-center items-center">
-      <FanOutCards />
-    </div>
-  );
+  if (isFetchingBooks)
+    return (
+      <div className="pb-[15%] w-full h-200 flex justify-center items-center">
+        <FanOutCards />
+      </div>
+    );
 
   return (
     <div className="py-[10%] px-[12%] flex flex-wrap items-center gap-15">

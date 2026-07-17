@@ -22,6 +22,17 @@ export function getLanguageCode(locale: string | undefined) {
   return LANGUAGE_CODES.find((t) => locale.startsWith(t)) || 'en';
 }
 
+export function getLanguage(languageCode: string) {
+  switch (languageCode) {
+    case 'zh':
+      return '中文（简）';
+    case 'ja':
+      return '日本語';
+    default:
+      return 'English';
+  }
+}
+
 export function isFormedBy(str: string, element: string) {
   if (!str || !element) return false;
   if (str.length === 0 || element.length === 0) return false;

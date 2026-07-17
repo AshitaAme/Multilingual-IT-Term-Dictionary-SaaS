@@ -79,7 +79,10 @@ export async function getSearchList({
   const pagedTerms = await db
     .select({ id: terms.id, savedTerm: savedTerms })
     .from(terms)
-    .leftJoin(savedTerms, and(searchCondition, eq(savedTerms.userId, userId)))
+    .leftJoin(
+      savedTerms,
+      and(eq(savedTerms.termId, terms.id), eq(savedTerms.userId, userId)),
+    )
     .where(searchCondition)
     .orderBy(asc(terms.slug))
     .limit(PAGE_SIZE)

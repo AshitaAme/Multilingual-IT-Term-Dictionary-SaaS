@@ -29,7 +29,7 @@ export async function checkSavedTermAction(termId: string) {
     const res = await getSavedTerm(userId, termId);
 
     // 4. Success
-    return { success: true, data: res };
+    return { success: true, data: !!res };
   } catch (err) {
     console.error('[checkSaveAction] Check saved term failed: ', err);
     return { success: false, error: 'Check saved term failed failed' };
