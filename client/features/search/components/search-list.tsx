@@ -28,7 +28,6 @@ import { produce } from 'immer';
 
 export function SearchList() {
   const t = useTranslations('search');
-  // const [searchList, updateSearchList] = useImmer<SearchItem>([])
   const locale = useLocale();
   const query = useSearchStore((state) => state.query);
   const input = useInputStore((state) => state.input);
@@ -230,7 +229,7 @@ export function SearchList() {
         )}
 
         {/* Loading / No more */}
-        <div className="h-10 pt-[14%] w-full flex items-center justify-center">
+        <div className="h-10 pt-[13%] w-full flex items-center justify-center">
           {isFetchingNextPage && <LoadingCircle size={20} />}
           {!hasNextPage && !isLoading && (
             <span className="text-sm text-gray-400">

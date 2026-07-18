@@ -41,11 +41,7 @@ export default function UserMenu() {
     // As signed in, display a button to trigger the credentials form
     return (
       <TooltipWrapper label={t('signInUp')} side="bottom" rightBorder={true}>
-        <Button
-          onClick={onOpen}
-          size="icon"
-          className="cursor-pointer group/login"
-        >
+        <Button onClick={onOpen} size="icon" className="group/login">
           <LogIn className="group-hover/login:translate-x-0.5 transition-all duration-300" />
         </Button>
       </TooltipWrapper>
@@ -60,11 +56,11 @@ export default function UserMenu() {
           variant="ghost"
           size="icon"
           className={cn(
-            'cursor-pointer rounded-full border-0! bg-transparent! focus-visible:ring-0 focus-visible:ring-border',
+            'rounded-full border-0! bg-transparent! focus-visible:ring-0 focus-visible:ring-border',
             !session.user.image && 'ring-1! ring-border',
           )}
         >
-          <Avatar className="after:hidden h-8 w-8 cursor-pointer ring-1 ring-border">
+          <Avatar className="after:hidden h-8 w-8 ring-1 ring-border">
             <AvatarImage
               src={session.user.image ?? ''}
               alt={session.user.name ?? ''}
@@ -108,7 +104,7 @@ export default function UserMenu() {
               <DropdownMenuSeparator className="mx-2 my-2" />
               <DropdownMenuItem
                 onClick={() => router.push('/dashboard')}
-                className="cursor-pointer hover:bg-muted! px-2 py-1.5"
+                className="hover:bg-muted! px-2 py-1.5"
               >
                 <LayoutDashboard />
                 {t('dashboard')}
@@ -119,13 +115,13 @@ export default function UserMenu() {
           {/* Profile */}
           <DropdownMenuItem
             onClick={() => router.push('/profile')}
-            className="cursor-pointer hover:bg-muted! px-2 py-1.5"
+            className="hover:bg-muted! px-2 py-1.5"
           >
             <CreditCardIcon />
             {t('profile')}
           </DropdownMenuItem>
           {/* Settings */}
-          <DropdownMenuItem className="cursor-pointer hover:bg-muted! px-2 py-1.5">
+          <DropdownMenuItem className="hover:bg-muted! px-2 py-1.5">
             <SettingsIcon />
             {t('settings')}
           </DropdownMenuItem>
@@ -135,7 +131,7 @@ export default function UserMenu() {
 
           <DropdownMenuItem
             onClick={() => signOut()}
-            className="cursor-pointer hover:bg-muted! px-2 py-1.5"
+            className="hover:bg-muted! px-2 py-1.5"
           >
             <LogOut />
             {t('signOut')}

@@ -40,7 +40,7 @@ export function LocaleMenu() {
           <Button
             size="icon"
             variant={'outline'}
-            className="hover:bg-muted cursor-pointer group/locale relative focus-visible:ring-0"
+            className="hover:bg-muted  group/locale relative focus-visible:ring-0"
             disabled={isPending}
           >
             <LanguagesIcon className="group-hover/locale:scale-110 transition-all duration-300" />
@@ -56,7 +56,7 @@ export function LocaleMenu() {
               onClick={() => switchLocale(lang.code)}
               className={cn(
                 locale === lang.code ? 'bg-accent font-medium' : '',
-                'cursor-pointer',
+                '',
               )}
             >
               <span className="mr-2">{lang.flag}</span>

@@ -19,7 +19,7 @@ export function ThemeToggle() {
         variant="outline"
         size="icon"
         onClick={toggleTheme}
-        className="hover:bg-muted cursor-pointer relative group"
+        className="hover:bg-muted relative group"
       >
         <div className="relative flex items-center justify-center">
           <Sun className="absolute scale-100 group-hover:scale-110 rotate-0 transition-all duration-300  dark:scale-0 dark:-rotate-90" />
