@@ -10,21 +10,18 @@ import {
 } from '@/shared/components/ui/dropdown-menu';
 import {
   Book,
-  BoxSelectIcon,
+  Bookmark,
   Check,
   Columns2,
-  Layout,
-  List,
   Menu,
-  MousePointer2,
-  SquareDashed,
   SquareDashedText,
   SquareMousePointer,
+  WalletCards,
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { useSearchOptionsState, useSearchStore } from '../stores/search.store';
+import { useSearchOptionsState } from '../stores/search.store';
 
 import { TooltipWrapper } from '@/shared/components/ui/tooltipWrapper';
 
@@ -39,6 +36,8 @@ export function SearchOptions() {
   const setLayout = useSearchOptionsState((state) => state.setLayout);
   const selectMode = useSearchOptionsState((state) => state.selectMode);
   const setSelectMode = useSearchOptionsState((state) => state.setSelectMode);
+  const setSave = useSearchOptionsState((state) => state.setSave);
+  const setSelectAll = useSearchOptionsState((state) => state.setSelectAll);
 
   useEffect(() => {
     const fetchSavedBooks = async () => {
@@ -64,16 +63,14 @@ export function SearchOptions() {
       {/* Book to save */}
       {userId && (
         <DropdownMenu>
-          <TooltipWrapper label="Book to save" side="bottom">
+          <TooltipWrapper label={toSaveBook.name} side="bottom">
             <DropdownMenuTrigger asChild>
               <Button
-                className=""
+                variant="ghost"
                 disabled={isFetchingBooks || savedBooks.length === 0}
               >
                 <Book />
-                <span className="w-12 truncate inline-block text-left">
-                  {toSaveBook.name}
-                </span>
+                <span className="truncate inline-block text-left">Book</span>
               </Button>
             </DropdownMenuTrigger>
           </TooltipWrapper>
@@ -83,6 +80,18 @@ export function SearchOptions() {
             onCloseAutoFocus={(e) => e.preventDefault()}
             className="min-w-0 w-30 py-2"
           >
+            {/* Default */}
+            {savedBooks.length === 0 && (
+              <DropdownMenuItem disabled={true}>
+                <span>Default</span>
+                <Check
+                  color="#22c55e"
+                  style={{ color: '#22c55e', stroke: '#22c55e' }}
+                  className="absolute right-1 bottom-1/2 translate-y-1/2"
+                />
+              </DropdownMenuItem>
+            )}
+            {/* Saved books */}
             {savedBooks.map((book) => (
               <DropdownMenuItem
                 key={book.id}
@@ -104,8 +113,9 @@ export function SearchOptions() {
       )}
 
       {/* Layout */}
-      <TooltipWrapper label={layout} side="bottom">
+      <TooltipWrapper label={layout + ' layout'} side="bottom">
         <Button
+          variant="ghost"
           onClick={() => setLayout(layout === 'Scroll' ? 'Page' : 'Scroll')}
         >
           {layout === 'Scroll' ? <Menu /> : <Columns2 />}
@@ -114,8 +124,12 @@ export function SearchOptions() {
       </TooltipWrapper>
 
       {/* Select */}
-      <TooltipWrapper label={'Select ' + selectMode} side="bottom">
+      <TooltipWrapper
+        label={'Select ' + selectMode.toLocaleLowerCase()}
+        side="bottom"
+      >
         <Button
+          variant="ghost"
           onClick={() =>
             setSelectMode(selectMode === 'Single' ? 'Multiple' : 'Single')
           }
@@ -126,6 +140,30 @@ export function SearchOptions() {
             <SquareDashedText />
           )}
           <span>Select</span>
+        </Button>
+      </TooltipWrapper>
+
+      <TooltipWrapper label="Save" side="bottom">
+        <Button
+          disabled={selectMode === 'Single'}
+          variant="ghost"
+          onClick={() => setSave(true)}
+        >
+          <Bookmark />
+          <span>Save</span>
+        </Button>
+      </TooltipWrapper>
+
+      <TooltipWrapper label="Select All" side="bottom">
+        <Button
+          variant="ghost"
+          onClick={() => {
+            setSelectMode('Multiple');
+            setSelectAll(true);
+          }}
+        >
+          <WalletCards />
+          <span>Select all</span>
         </Button>
       </TooltipWrapper>
     </div>

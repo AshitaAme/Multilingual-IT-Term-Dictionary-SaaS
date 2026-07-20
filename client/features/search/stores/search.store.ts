@@ -26,6 +26,10 @@ interface SearchOptionsState {
   setLayout: (layout: 'Scroll' | 'Page') => void;
   selectMode: 'Single' | 'Multiple';
   setSelectMode: (selectMode: 'Single' | 'Multiple') => void;
+  save: boolean;
+  setSave: (save: boolean) => void;
+  selectAll: boolean;
+  setSelectAll: (selectAll: boolean) => void;
 }
 
 // Used by server to fetch data
@@ -55,4 +59,8 @@ export const useSearchOptionsState = create<SearchOptionsState>((set) => ({
   setLayout: (layout) => set({ layout: layout }),
   selectMode: 'Single',
   setSelectMode: (selectMode) => set({ selectMode }),
+  save: false,
+  setSave: (save) => set({ save }),
+  selectAll: false,
+  setSelectAll: (selectAll) => set({ selectAll }),
 }));
