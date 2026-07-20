@@ -1,13 +1,14 @@
 'use client';
 
 import { Separator } from '@/shared/components/ui/separator';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getSearchListAction } from '../actions/get-search-list.action';
 import { SearchItem } from '../types/search-item';
 import { toast } from 'sonner';
 import {
   useInputStore,
   useOpenTermStore,
+  useSearchOptionsStore,
   useSearchStore,
 } from '../stores/search.store';
 import {
@@ -25,6 +26,7 @@ import { saveTermAction } from '../actions/save-term.action';
 import { getTextFromTerm } from '../utils/get-text-from-term';
 import { unsaveTermAction } from '../actions/unsave-term.action';
 import { produce } from 'immer';
+import { Items } from 'openai/resources/conversations/items.mjs';
 
 export function SearchList() {
   const t = useTranslations('search');
@@ -38,6 +40,15 @@ export function SearchList() {
   const [itemBeingSaved, setItemBeingSaved] = useState<[number, number]>([
     -1, -1,
   ]); // use index to indicate
+
+  const toSaveBook = useSearchOptionsStore((state) => state.toSaveBook);
+  const selectMode = useSearchOptionsStore((state) => state.selectMode);
+  const save = useSearchOptionsStore((state) => state.save);
+  const setSave = useSearchOptionsStore((state) => state.setSave);
+  const selectAll = useSearchOptionsStore((state) => state.selectAll);
+  const setSelectAll = useSearchOptionsStore((state) => state.setSelectAll);
+  const [selected, setSelected] = useState<string[]>([]); // pageIndex#itemIndex
+  const [isSavingSelected, setIsSavingSelected] = useState(false);
 
   // Used to fetch data for infinite scroll down
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
@@ -94,6 +105,39 @@ export function SearchList() {
     if (node) observerRef.current.observe(node);
   };
 
+  if (selectAll) {
+    if (!data) return;
+    const selectedIndices = data.pages.flatMap((page, pageIndex) =>
+      page.map((_, itemIndex) => `${pageIndex}#${itemIndex}`),
+    );
+    setSelectAll(false);
+    setSelected(selectedIndices);
+  }
+
+  if (save) {
+    if (!data) return;
+    const doSave = async () => {
+      setIsSavingSelected(true);
+      const payload = selected.map((s) => {
+        const tuple = s.split('#');
+        const term = data.pages[Number(tuple[0])][Number(tuple[1])];
+        return {
+          name: term.displayName,
+          termId: term.termId,
+          text: getTextFromTerm(term),
+        };
+      });
+      if (payload && payload.length > 0) {
+        const res = await saveTermAction(payload);
+        if (!res.success) toast.error(res.error);
+        else setSelected([]);
+      }
+      setSave(false);
+      setIsSavingSelected(false);
+    };
+    doSave();
+  }
+
   // Open TermInfo
   const handleTermClick = (item: SearchItem) => {
     setTerm(item);
@@ -120,11 +164,13 @@ export function SearchList() {
       if (!res.success) toast.error(res.error);
       else updateSave(pageIndex, itemIndex, saved);
     } else {
-      const res = await saveTermAction({
-        termId,
-        name: displayName,
-        text: getTextFromTerm(item),
-      });
+      const res = await saveTermAction([
+        {
+          termId,
+          name: displayName,
+          text: getTextFromTerm(item),
+        },
+      ]);
       if (!res.success) toast.error(res.error);
       else updateSave(pageIndex, itemIndex, saved);
     }

@@ -1,6 +1,6 @@
 'use server';
 
-import { saveTerm } from '../services/save-term';
+import { saveTerms as saveTerm } from '../services/save-term';
 import {
   createSaveTermSchema,
   SaveTermInput,
@@ -31,11 +31,11 @@ export async function saveTermAction(data: SaveTermInput) {
   const SaveTermSchema = createSaveTermSchema(t);
   const parsed = SaveTermSchema.safeParse(data);
   if (!parsed.success) return { success: false, error: parsed.error.message };
-  const { termId, name, text } = parsed.data;
+  const payload = parsed.data.map((t) => ({ ...t, userId }));
 
   // 4. Save term
   try {
-    await saveTerm(userId, termId, name, text);
+    await saveTerm(payload);
 
     // 4. Success
     return { success: true };

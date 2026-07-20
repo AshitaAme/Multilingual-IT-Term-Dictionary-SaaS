@@ -21,7 +21,7 @@ import {
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { useSearchOptionsState } from '../stores/search.store';
+import { useSearchOptionsStore } from '../stores/search.store';
 
 import { TooltipWrapper } from '@/shared/components/ui/tooltipWrapper';
 
@@ -30,14 +30,14 @@ export function SearchOptions() {
   const [isFetchingBooks, setIsFetchingBooks] = useState(true);
   const session = useSession();
   const userId = session.data?.user.id;
-  const toSaveBook = useSearchOptionsState((state) => state.toSaveBook);
-  const setToSaveBook = useSearchOptionsState((state) => state.setToSaveBook);
-  const layout = useSearchOptionsState((state) => state.layout);
-  const setLayout = useSearchOptionsState((state) => state.setLayout);
-  const selectMode = useSearchOptionsState((state) => state.selectMode);
-  const setSelectMode = useSearchOptionsState((state) => state.setSelectMode);
-  const setSave = useSearchOptionsState((state) => state.setSave);
-  const setSelectAll = useSearchOptionsState((state) => state.setSelectAll);
+  const toSaveBook = useSearchOptionsStore((state) => state.toSaveBook);
+  const setToSaveBook = useSearchOptionsStore((state) => state.setToSaveBook);
+  const layout = useSearchOptionsStore((state) => state.layout);
+  const setLayout = useSearchOptionsStore((state) => state.setLayout);
+  const selectMode = useSearchOptionsStore((state) => state.selectMode);
+  const setSelectMode = useSearchOptionsStore((state) => state.setSelectMode);
+  const setSave = useSearchOptionsStore((state) => state.setSave);
+  const setSelectAll = useSearchOptionsStore((state) => state.setSelectAll);
 
   useEffect(() => {
     const fetchSavedBooks = async () => {

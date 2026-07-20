@@ -4,17 +4,11 @@ import {
   savedTerms,
 } from '@/shared/lib/db/schemas/dictionary.schema';
 
-export async function saveTerm(
-  userId: string,
-  termId: string,
-  name: string,
-  text: string,
-) {
+type InsertSavedTerm = typeof savedTerms.$inferInsert;
+
+export async function saveTerms(data: InsertSavedTerm[]) {
   return await db.transaction(async (tx) => {
-    const [result] = await tx
-      .insert(savedTerms)
-      .values({ userId, termId, name, text })
-      .returning();
+    const [result] = await tx.insert(savedTerms).values(data).returning();
 
     const enrollReview = true;
     if (enrollReview) {

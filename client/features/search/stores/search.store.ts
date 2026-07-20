@@ -52,7 +52,7 @@ export const useOpenTermStore = create<OpenTermState>((set) => ({
   setTerm: (term: SearchItem) => set({ term }),
 }));
 
-export const useSearchOptionsState = create<SearchOptionsState>((set) => ({
+export const useSearchOptionsStore = create<SearchOptionsState>((set) => ({
   toSaveBook: { id: '', name: 'Default' },
   setToSaveBook: (toSaveBook) => set({ toSaveBook: toSaveBook }),
   layout: 'Scroll',
