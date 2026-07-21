@@ -26,8 +26,8 @@ interface SearchOptionsState {
   setLayout: (layout: 'Scroll' | 'Page') => void;
   selectMode: 'Single' | 'Multiple';
   setSelectMode: (selectMode: 'Single' | 'Multiple') => void;
-  save: boolean;
-  setSave: (save: boolean) => void;
+  doSave: boolean;
+  setDoSave: (save: boolean) => void;
   selectAll: boolean;
   setSelectAll: (selectAll: boolean) => void;
 }
@@ -59,8 +59,8 @@ export const useSearchOptionsStore = create<SearchOptionsState>((set) => ({
   setLayout: (layout) => set({ layout: layout }),
   selectMode: 'Single',
   setSelectMode: (selectMode) => set({ selectMode }),
-  save: false,
-  setSave: (save) => set({ save }),
+  doSave: false,
+  setDoSave: (save) => set({ doSave: save }),
   selectAll: false,
   setSelectAll: (selectAll) => set({ selectAll }),
 }));

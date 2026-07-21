@@ -24,6 +24,7 @@ import { toast } from 'sonner';
 import { useSearchOptionsStore } from '../stores/search.store';
 
 import { TooltipWrapper } from '@/shared/components/ui/tooltipWrapper';
+import { LoadingCircle } from '@/shared/components/ui/loading-circle';
 
 export function SearchOptions() {
   const [savedBooks, setSavedBooks] = useState<SavedBook[]>([]);
@@ -36,7 +37,8 @@ export function SearchOptions() {
   const setLayout = useSearchOptionsStore((state) => state.setLayout);
   const selectMode = useSearchOptionsStore((state) => state.selectMode);
   const setSelectMode = useSearchOptionsStore((state) => state.setSelectMode);
-  const setSave = useSearchOptionsStore((state) => state.setSave);
+  const doSave = useSearchOptionsStore((state) => state.doSave);
+  const setDoSave = useSearchOptionsStore((state) => state.setDoSave);
   const setSelectAll = useSearchOptionsStore((state) => state.setSelectAll);
 
   useEffect(() => {
@@ -143,6 +145,7 @@ export function SearchOptions() {
         </Button>
       </TooltipWrapper>
 
+      {/* Select all */}
       <TooltipWrapper label="Select All" side="bottom">
         <Button
           variant="ghost"
@@ -156,13 +159,14 @@ export function SearchOptions() {
         </Button>
       </TooltipWrapper>
 
+      {/* Save */}
       <TooltipWrapper label="Save" side="bottom">
         <Button
-          disabled={selectMode === 'Single'}
+          disabled={selectMode === 'Single' || doSave}
           variant="ghost"
-          onClick={() => setSave(true)}
+          onClick={() => setDoSave(true)}
         >
-          <Bookmark />
+          {doSave ? <LoadingCircle /> : <Bookmark />}
           <span>Save</span>
         </Button>
       </TooltipWrapper>

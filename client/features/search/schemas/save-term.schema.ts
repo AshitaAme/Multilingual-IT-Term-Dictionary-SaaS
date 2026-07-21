@@ -5,6 +5,7 @@ export const createSaveTermSchema = (t: Translator = DEFAULT_TRANSLATOR) =>
   z
     .array(
       z.object({
+        savedBookId: z.string(),
         termId: z.string({ required_error: t('termInfo.error.invalidTermId') }),
         name: z.string(),
         text: z.string(),

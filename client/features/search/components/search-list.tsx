@@ -49,11 +49,10 @@ export function SearchList() {
   // For search list options
   const toSaveBook = useSearchOptionsStore((state) => state.toSaveBook);
   const selectMode = useSearchOptionsStore((state) => state.selectMode);
-  const save = useSearchOptionsStore((state) => state.save);
-  const setSave = useSearchOptionsStore((state) => state.setSave);
+  const doSave = useSearchOptionsStore((state) => state.doSave);
+  const setDoSave = useSearchOptionsStore((state) => state.setDoSave);
   const selectAll = useSearchOptionsStore((state) => state.selectAll);
   const setSelectAll = useSearchOptionsStore((state) => state.setSelectAll);
-  const [isSavingMultiple, setIsSavingMultiple] = useState(false);
 
   // Used to fetch data for infinite scroll down
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
@@ -128,14 +127,14 @@ export function SearchList() {
   // For using save button in search options
   useEffect(() => {
     if (!data) return;
-    if (!save) return;
-    const doSave = async () => {
-      setIsSavingMultiple(true);
+    if (!doSave) return;
+    const startSave = async () => {
       const payload: SaveTermInput = [];
       selected.forEach((s) => {
         const tuple = s.split('#');
         const term = data.pages[Number(tuple[0])][Number(tuple[1])];
         payload.push({
+          savedBookId: toSaveBook.id || 'Default',
           name: term.displayName,
           termId: term.termId,
           text: getTextFromTerm(term),
@@ -150,11 +149,10 @@ export function SearchList() {
             draft.clear();
           });
       }
-      setSave(false);
-      setIsSavingMultiple(false);
+      setDoSave(false);
     };
-    doSave();
-  }, [data, save, selected, setSave, updateSelected]);
+    startSave();
+  }, [data, doSave, selected, setDoSave, toSaveBook.id, updateSelected]);
 
   // Open TermInfo
   const handleTermClick = (item: SearchItem) => {
@@ -187,6 +185,7 @@ export function SearchList() {
     } else {
       const res = await saveTermAction([
         {
+          savedBookId: toSaveBook.id || 'Default',
           termId,
           name: displayName,
           text: getTextFromTerm(item),
