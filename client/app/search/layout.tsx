@@ -9,5 +9,6 @@ export default async function SearchLayout({
 }>) {
   const session = await auth();
   if (!session) redirect(`/?error=${AUTH_ERRORS.AUTH_REQUIRED}`);
+
   return <>{children}</>;
 }

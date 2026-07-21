@@ -143,17 +143,6 @@ export function SearchOptions() {
         </Button>
       </TooltipWrapper>
 
-      <TooltipWrapper label="Save" side="bottom">
-        <Button
-          disabled={selectMode === 'Single'}
-          variant="ghost"
-          onClick={() => setSave(true)}
-        >
-          <Bookmark />
-          <span>Save</span>
-        </Button>
-      </TooltipWrapper>
-
       <TooltipWrapper label="Select All" side="bottom">
         <Button
           variant="ghost"
@@ -164,6 +153,17 @@ export function SearchOptions() {
         >
           <WalletCards />
           <span>Select all</span>
+        </Button>
+      </TooltipWrapper>
+
+      <TooltipWrapper label="Save" side="bottom">
+        <Button
+          disabled={selectMode === 'Single'}
+          variant="ghost"
+          onClick={() => setSave(true)}
+        >
+          <Bookmark />
+          <span>Save</span>
         </Button>
       </TooltipWrapper>
     </div>
