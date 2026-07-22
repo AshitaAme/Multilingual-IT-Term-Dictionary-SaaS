@@ -6,7 +6,6 @@ import {
 } from '@/shared/lib/db/schemas/dictionary.schema';
 
 export interface SaveTerm {
-  savedTermId: string;
   userId: string;
   savedBookId: string;
   termId: string;
@@ -18,40 +17,37 @@ export async function saveTerms(data: SaveTerm[]) {
   if (data.length === 0) return;
 
   return await db.transaction(async (tx) => {
-    const savedTermsData = data.map(
-      ({ savedTermId, userId, termId, name, text }) => ({
-        id: savedTermId,
-        userId,
-        termId,
-        name,
-        text,
-      }),
-    );
-
-    const insertSavedTerms = tx.insert(savedTerms).values(savedTermsData);
-    const savedBookTermsData = data.map(({ savedBookId, savedTermId }) => ({
-      savedBookId,
-      savedTermId,
+    // 1. Insert saved terms
+    const savedTermsData = data.map(({ userId, termId, name, text }) => ({
+      userId,
+      termId,
+      name,
+      text,
     }));
+    const savedTermList = await tx
+      .insert(savedTerms)
+      .values(savedTermsData)
+      .returning();
 
+    // 2. Relate saved terms and saved book
+    const savedBookId = data[0].savedBookId;
+    const savedBookTermsData = savedTermList.map((t) => ({
+      savedBookId,
+      savedTermId: t.id,
+    }));
     const insertSavedBookTerms = tx
       .insert(savedBookTerms)
       .values(savedBookTermsData);
 
+    // 3. Enroll Review
     const enrollReview = false;
     const reviewCardsData = enrollReview
-      ? data.map(({ savedTermId }) => ({
-          savedTermId,
-        }))
+      ? savedTermList.map((t) => ({ savedTermId: t.id }))
       : [];
     const insertReviewCards = enrollReview
       ? tx.insert(reviewCards).values(reviewCardsData).onConflictDoNothing()
       : Promise.resolve(null);
 
-    await Promise.all([
-      insertSavedTerms,
-      insertSavedBookTerms,
-      insertReviewCards,
-    ]);
+    await Promise.all([insertSavedBookTerms, insertReviewCards]);
   });
 }

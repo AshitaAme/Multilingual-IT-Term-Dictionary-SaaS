@@ -34,7 +34,6 @@ export async function saveTermAction(data: SaveTermInput) {
   const payload = parsed.data.map((t) => ({
     ...t,
     userId,
-    savedTermId: crypto.randomUUID(),
   }));
 
   // 4. Save term

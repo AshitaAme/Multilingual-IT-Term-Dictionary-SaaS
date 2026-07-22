@@ -41,6 +41,7 @@ export function SearchOptions() {
   const setDoSave = useSearchOptionsStore((state) => state.setDoSave);
   const setSelectAll = useSearchOptionsStore((state) => state.setSelectAll);
 
+  // Fetch saved books
   useEffect(() => {
     const fetchSavedBooks = async () => {
       if (!userId) return;
