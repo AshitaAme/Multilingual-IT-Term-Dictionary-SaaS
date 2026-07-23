@@ -23,7 +23,7 @@ export async function upsertSavedBook(
   userId: string,
   bookId: string,
 ) {
-  const [result] = await db
+  await db
     .insert(savedBooks)
     .values({ id: bookId, name, userId })
     .onConflictDoUpdate({
@@ -31,9 +31,7 @@ export async function upsertSavedBook(
       set: {
         name,
       },
-    })
-    .returning();
-  return result.id;
+    });
 }
 
 export async function deleteSavedBook(bookId: string) {

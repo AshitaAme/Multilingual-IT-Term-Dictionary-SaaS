@@ -21,7 +21,7 @@ export function SavedBooksDisplay() {
   const setBookId = useBookStore((state) => state.setBookId);
   const router = useRouter();
   const [isFetchingBooks, setIsFetchingBooks] = useState(true);
-  const [nameInput, setNameInput] = useState('');
+  const [newBookName, setNewBookName] = useState('');
   const [bookBeingNamed, setBookBeingNamed] = useState(''); // Use book id string to represent the book being named
   const [bookBeingDeleted, setBookBeingDeleted] = useState('');
   const [bookBeingUpserted, setBookBeingUpserted] = useState('');
@@ -42,7 +42,7 @@ export function SavedBooksDisplay() {
     setOpenBook(true);
   };
 
-  const upsertBook = async (name: string) => {
+  const handleUpsertBook = async (name: string) => {
     if (bookBeingNamed.length === 0) return;
     const existent = savedBooks.some((book) => book.name === name);
     if (existent) {
@@ -56,8 +56,7 @@ export function SavedBooksDisplay() {
     const res = await upsertBookAction({ name, bookId });
     if (!res.success) toast.error(res.error);
     else {
-      const id = res.data!;
-      const upsertedBook = { id, name };
+      const upsertedBook = { id: bookId, name };
       if (isAdding) setSavedBooks((prev) => [...prev, upsertedBook]);
       else
         setSavedBooks((prev) =>
@@ -83,10 +82,10 @@ export function SavedBooksDisplay() {
         autoFocus
         onBlur={() => setBookBeingNamed('')}
         className="ring-2 border-0 focus:outline-none relative h-full w-full rounded-sm p-2 focus:ring-foreground"
-        value={nameInput}
+        value={newBookName}
         maxLength={20}
-        onChange={(e) => setNameInput(e.target.value)}
-        onKeyDown={(e) => e.key === 'Enter' && upsertBook(nameInput)}
+        onChange={(e) => setNewBookName(e.target.value)}
+        onKeyDown={(e) => e.key === 'Enter' && handleUpsertBook(newBookName)}
       />
 
       <Button
@@ -98,7 +97,7 @@ export function SavedBooksDisplay() {
         )}
       >
         <Check
-          onClick={() => upsertBook(nameInput)}
+          onClick={() => handleUpsertBook(newBookName)}
           size={18}
           className={cn(
             'text-green-500 opacity-70 group-hover/check:opacity-100 group-hover/check:scale-110 transition-all duration-100',

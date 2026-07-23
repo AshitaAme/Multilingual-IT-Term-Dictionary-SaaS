@@ -46,8 +46,8 @@ export async function upsertBookAction(data: UpsertBook) {
   }
 
   try {
-    const savedBookId = await upsertSavedBook(name, userId, bookId);
-    return { success: true, data: savedBookId };
+    await upsertSavedBook(name, userId, bookId);
+    return { success: true };
   } catch (err) {
     console.error('[upsertSavedBookAction] Upsert saved book failed: ', err);
     return { success: false, error: 'Upsert saved book failed' };
