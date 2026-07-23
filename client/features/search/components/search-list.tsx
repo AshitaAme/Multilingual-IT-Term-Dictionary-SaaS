@@ -13,6 +13,7 @@ import {
 } from '../stores/search.store';
 import {
   MAX_SEARCH_LIST_QUERY_LENGTH,
+  MAX_SELECT_SIZE,
   PAGE_SIZE,
 } from '../constants/search.constants';
 import { useTheme } from 'next-themes';
@@ -117,20 +118,27 @@ export function SearchList() {
   useEffect(() => {
     if (!data) return;
     if (!selectAll) return;
-    const indexKeys = data.pages.flatMap((page, pageIndex) =>
-      page.map((_, itemIndex) => `${pageIndex}#${itemIndex}`),
-    );
-    if (indexKeys.length > 150) {
-      toast.error('Please select not over 150');
+    const selectedIndexKeys =
+      layout === 'Scroll'
+        ? data.pages.flatMap((page, pageIndex) =>
+            page.map((item, itemIndex) =>
+              item.saved ? undefined : `${pageIndex}#${itemIndex}`,
+            ),
+          )
+        : data.pages[curPageIndex].map((item, itemIndex) =>
+            item.saved ? undefined : `${curPageIndex}#${itemIndex}`,
+          );
+    if (selectedIndexKeys.length > MAX_SELECT_SIZE) {
+      toast.error('Please select not over ' + MAX_SELECT_SIZE);
       return;
     }
 
     updateSelected((draft) => {
       draft.clear();
-      indexKeys.forEach((key) => draft.add(key));
+      selectedIndexKeys.forEach((key) => key && draft.add(key));
     });
     setSelectAll(false);
-  }, [data, selectAll, setSelectAll, updateSelected]);
+  }, [curPageIndex, data, layout, selectAll, setSelectAll, updateSelected]);
 
   // Save selected terms
   useEffect(() => {
@@ -357,7 +365,10 @@ export function SearchList() {
               {curPageIndex + 1}
             </span>
             <Button
-              disabled={!hasNextPage || isFetchingNextPage}
+              disabled={
+                (curPageIndex === data!.pages.length - 1 && !hasNextPage) ||
+                isFetchingNextPage
+              }
               variant="ghost"
               className="flex items-center justify-center gap-2"
               onClick={async () => {
