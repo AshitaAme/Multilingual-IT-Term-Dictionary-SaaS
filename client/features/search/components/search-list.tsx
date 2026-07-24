@@ -1,7 +1,7 @@
 'use client';
 
 import { Separator } from '@/shared/components/ui/separator';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { getSearchListAction } from '../actions/get-search-list.action';
 import { SearchItem } from '../types/search-item';
 import { toast } from 'sonner';
@@ -29,6 +29,7 @@ import { unsaveTermAction } from '../actions/unsave-term.action';
 import { produce, enableMapSet } from 'immer';
 import { useImmer } from 'use-immer';
 import { SaveTermInput } from '../schemas/save-term.schema';
+import { savedTerms } from '@/shared/lib/db/schemas/dictionary.schema';
 
 export function SearchList() {
   const t = useTranslations('search');
@@ -90,14 +91,18 @@ export function SearchList() {
       },
     });
 
-  const updateSave = (pageIndex: number, itemIndex: number, saved: boolean) => {
-    queryClient.setQueryData(queryKey, (oldData: typeof data) => {
-      if (!oldData) return undefined;
-      return produce(oldData, (draft: typeof data) => {
-        draft!.pages[pageIndex][itemIndex].saved = !saved;
+  const toggleSave = useCallback(
+    (pageIndex: number, itemIndex: number) => {
+      queryClient.setQueryData(queryKey, (oldData: typeof data) => {
+        if (!oldData) return undefined;
+        return produce(oldData, (draft: typeof data) => {
+          const isSaved = draft!.pages[pageIndex][itemIndex].saved;
+          draft!.pages[pageIndex][itemIndex].saved = !isSaved;
+        });
       });
-    });
-  };
+    },
+    [queryClient, queryKey],
+  );
 
   // Observe last node for infinite scroll down
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -137,8 +142,17 @@ export function SearchList() {
       draft.clear();
       selectedIndexKeys.forEach((key) => key && draft.add(key));
     });
+    console.log('selected: ', selected);
     setSelectAll(false);
-  }, [curPageIndex, data, layout, selectAll, setSelectAll, updateSelected]);
+  }, [
+    curPageIndex,
+    data,
+    layout,
+    selectAll,
+    selected,
+    setSelectAll,
+    updateSelected,
+  ]);
 
   // Save selected terms
   useEffect(() => {
@@ -146,9 +160,13 @@ export function SearchList() {
     if (!doSave) return;
     const startSave = async () => {
       const payload: SaveTermInput = [];
+
       selected.forEach((s) => {
-        const tuple = s.split('#');
-        const term = data.pages[Number(tuple[0])][Number(tuple[1])];
+        const [pageIndex, itemIndex] = s.split('#');
+        const term = data.pages[Number(pageIndex)][Number(itemIndex)];
+        updateIsSaving((draft) => {
+          draft.add(s);
+        });
         payload.push({
           savedBookId: toSaveBook.id || 'Default',
           name: term.displayName,
@@ -160,15 +178,33 @@ export function SearchList() {
       if (payload && payload.length > 0) {
         const res = await saveTermAction(payload);
         if (!res.success) toast.error(res.error);
-        else
+        else {
+          selected.forEach((s) => {
+            const [pageIndex, itemIndex] = s.split('#');
+            toggleSave(Number(pageIndex), Number(itemIndex));
+          });
           updateSelected((draft) => {
             draft.clear();
           });
+        }
+        updateIsSaving((draft) => {
+          draft.clear();
+        });
       }
+
       setDoSave(false);
     };
     startSave();
-  }, [data, doSave, selected, setDoSave, toSaveBook.id, updateSelected]);
+  }, [
+    data,
+    doSave,
+    selected,
+    setDoSave,
+    toSaveBook.id,
+    toggleSave,
+    updateIsSaving,
+    updateSelected,
+  ]);
 
   // Open TermInfo
   const handleTermClick = (item: SearchItem) => {
@@ -192,12 +228,12 @@ export function SearchList() {
     updateIsSaving((draft) => {
       draft.add(indexKey);
     });
-    const { termId, displayName, saved } = item;
+    const { termId, displayName } = item;
 
     if (item.saved) {
       const res = await unsaveTermAction(termId);
       if (!res.success) toast.error(res.error);
-      else updateSave(pageIndex, itemIndex, saved);
+      else toggleSave(pageIndex, itemIndex);
     } else {
       const res = await saveTermAction([
         {
@@ -208,7 +244,7 @@ export function SearchList() {
         },
       ]);
       if (!res.success) toast.error(res.error);
-      else updateSave(pageIndex, itemIndex, saved);
+      else toggleSave(pageIndex, itemIndex);
     }
 
     updateIsSaving((draft) => {

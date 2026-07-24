@@ -115,7 +115,7 @@ export function SavedBooksDisplay() {
     );
 
   return (
-    <div className="py-[10%] px-[12%] flex flex-wrap items-center gap-15">
+    <div className="py-[10%] px-[12%] flex flex-wrap items-center gap-14">
       {savedBooks.length > 0 &&
         savedBooks.map((book, index) => {
           const bookName = (
