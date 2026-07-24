@@ -7,9 +7,23 @@ interface BookState {
   setBookId: (bookId: string) => void;
 }
 
+interface ReviewState {
+  openReview: boolean;
+  setOpenReview: (openReview: boolean) => void;
+  savedTermId: string;
+  setSavedTermId: (savedTermId: string) => void;
+}
+
 export const useBookStore = create<BookState>((set) => ({
   openBook: false,
   setOpenBook: (openBook) => set({ openBook }),
   bookId: '',
   setBookId: (bookId) => set({ bookId }),
+}));
+
+export const useReviewStore = create<ReviewState>((set) => ({
+  openReview: false,
+  setOpenReview: (openReview) => set({ openReview }),
+  savedTermId: '',
+  setSavedTermId: (savedTermId) => set({ savedTermId }),
 }));
