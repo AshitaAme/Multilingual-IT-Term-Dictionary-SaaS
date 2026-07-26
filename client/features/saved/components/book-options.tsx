@@ -14,18 +14,28 @@ import {
   FolderPlus,
   Trash2,
 } from 'lucide-react';
+import { useBookOptionStore, useBookStore } from '../stores/saved.store';
 
 export function BookOptions() {
-  const selected = new Set();
+  const setOpenBook = useBookStore((state) => state.setOpenBook);
+  const isSelecting = useBookStore((state) => state.isSelecting);
+
+  const setAll = useBookOptionStore((state) => state.setAll);
+  const setClear = useBookOptionStore((state) => state.setClear);
+  const setReview = useBookOptionStore((state) => state.setReview);
+  const setDeReview = useBookOptionStore((state) => state.setDeReview);
+  const setMode = useBookOptionStore((state) => state.setMode);
+  const setMoveTo = useBookOptionStore((state) => state.setMoveTo);
+  const setRemove = useBookOptionStore((state) => state.setRemove);
 
   return (
     <div
       className={cn(
         'flex gap-2',
-        //   selected.size === 0 ? 'justify-between' : 'justify-center',
+        !isSelecting ? 'justify-between' : 'justify-center',
       )}
     >
-      {selected.size === 0 && (
+      {!isSelecting && (
         <div>
           <Button variant="ghost" onClick={() => setOpenBook(false)}>
             <ChevronLeft />
@@ -34,7 +44,7 @@ export function BookOptions() {
         </div>
       )}
       <div className="flex gap-2">
-        {selected.size === 0 && (
+        {!isSelecting && (
           <>
             <Button variant="ghost" onClick={() => setMode('List')}>
               <List />
@@ -50,31 +60,31 @@ export function BookOptions() {
             </Button>
           </>
         )}
-        {selected.size !== 0 && (
+        {isSelecting && (
           <>
-            <Button variant="ghost" onClick={handleAllClick}>
+            <Button variant="ghost" onClick={() => setAll(true)}>
               <WalletCards />
               <span>All</span>
             </Button>
-            <Button variant="ghost">
+            <Button variant="ghost" onClick={() => setClear(true)}>
               <Eraser />
               <span>Clear</span>
             </Button>
-            <Button variant="ghost">
+            <Button variant="ghost" onClick={() => setReview(true)}>
               <ClockPlus />
               <span>Review</span>
             </Button>
-            <Button variant="ghost">
+            <Button variant="ghost" onClick={() => setDeReview(true)}>
               <ClockFading />
               <span>De-review</span>
             </Button>
-            <Button variant="ghost">
-              <FolderPlus />
-              <span>Move</span>
-            </Button>
-            <Button variant="ghost">
+            <Button variant="ghost" onClick={() => setRemove(true)}>
               <Trash2 />
-              <span>Delete</span>
+              <span>Remove</span>
+            </Button>
+            <Button variant="ghost" onClick={() => setMoveTo('')}>
+              <FolderPlus />
+              <span>Move to</span>
             </Button>
           </>
         )}

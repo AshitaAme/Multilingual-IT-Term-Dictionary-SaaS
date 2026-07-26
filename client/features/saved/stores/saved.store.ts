@@ -1,22 +1,29 @@
 import { create } from 'zustand';
 
 interface BookState {
-  openBook: boolean;
+  openBook: boolean; // bookId
   setOpenBook: (openBook: boolean) => void;
   bookId: string;
   setBookId: (bookId: string) => void;
-}
-
-interface ReviewState {
-  openReview: boolean;
-  setOpenReview: (openReview: boolean) => void;
-  savedTermId: string;
-  setSavedTermId: (savedTermId: string) => void;
+  isSelecting: boolean;
+  setIsSelecting: (isSelecting: boolean) => void;
 }
 
 interface OptionState {
   mode: 'List' | 'Card' | 'Review';
   setMode: (mode: 'List' | 'Card' | 'Review') => void;
+  all: boolean;
+  setAll: (all: boolean) => void;
+  clear: boolean;
+  setClear: (clear: boolean) => void;
+  review: boolean;
+  setReview: (addReview: boolean) => void;
+  deReview: boolean;
+  setDeReview: (deReview: boolean) => void;
+  moveTo: string; // bookId;
+  setMoveTo: (move: string) => void;
+  remove: boolean;
+  setRemove: (remove: boolean) => void;
 }
 
 export const useBookStore = create<BookState>((set) => ({
@@ -24,11 +31,24 @@ export const useBookStore = create<BookState>((set) => ({
   setOpenBook: (openBook) => set({ openBook }),
   bookId: '',
   setBookId: (bookId) => set({ bookId }),
+  isSelecting: false,
+  setIsSelecting: (isSelecting) => set({ isSelecting }),
 }));
 
-export const useReviewStore = create<ReviewState>((set) => ({
-  openReview: false,
-  setOpenReview: (openReview) => set({ openReview }),
-  savedTermId: '',
-  setSavedTermId: (savedTermId) => set({ savedTermId }),
+export const useBookOptionStore = create<OptionState>((set) => ({
+  mode: 'List',
+  setMode: (mode) => set({ mode }),
+
+  all: false,
+  setAll: (all) => set({ all }),
+  clear: false,
+  setClear: (clear) => set({ clear }),
+  review: false,
+  setReview: (review) => set({ review }),
+  deReview: false,
+  setDeReview: (deReview) => set({ deReview }),
+  moveTo: '',
+  setMoveTo: (moveTo) => set({ moveTo }),
+  remove: false,
+  setRemove: (remove) => set({ remove }),
 }));

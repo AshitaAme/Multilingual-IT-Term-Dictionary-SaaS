@@ -90,13 +90,14 @@ export function SearchList() {
       },
     });
 
-  const toggleSave = useCallback(
-    (pageIndex: number, itemIndex: number) => {
+  // Give value to "saved" key in term, or toggle the original
+  const updateSave = useCallback(
+    (pageIndex: number, itemIndex: number, save?: boolean) => {
       queryClient.setQueryData(queryKey, (oldData: typeof data) => {
         if (!oldData) return undefined;
         return produce(oldData, (draft: typeof data) => {
-          const isSaved = draft!.pages[pageIndex][itemIndex].saved;
-          draft!.pages[pageIndex][itemIndex].saved = !isSaved;
+          const update = save ?? draft!.pages[pageIndex][itemIndex].saved;
+          draft!.pages[pageIndex][itemIndex].saved = update;
         });
       });
     },
@@ -180,7 +181,7 @@ export function SearchList() {
         else {
           selected.forEach((s) => {
             const [pageIndex, itemIndex] = s.split('#');
-            toggleSave(Number(pageIndex), Number(itemIndex));
+            updateSave(Number(pageIndex), Number(itemIndex), true);
           });
           updateSelected((draft) => {
             draft.clear();
@@ -200,7 +201,7 @@ export function SearchList() {
     selected,
     setDoSave,
     toSaveBook.id,
-    toggleSave,
+    updateSave,
     updateIsSaving,
     updateSelected,
   ]);
@@ -232,7 +233,7 @@ export function SearchList() {
     if (item.saved) {
       const res = await unsaveTermAction(termId);
       if (!res.success) toast.error(res.error);
-      else toggleSave(pageIndex, itemIndex);
+      else updateSave(pageIndex, itemIndex);
     } else {
       const res = await saveTermAction([
         {
@@ -243,7 +244,7 @@ export function SearchList() {
         },
       ]);
       if (!res.success) toast.error(res.error);
-      else toggleSave(pageIndex, itemIndex);
+      else updateSave(pageIndex, itemIndex);
     }
 
     updateIsSaving((draft) => {
