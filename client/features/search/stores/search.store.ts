@@ -19,7 +19,7 @@ interface OpenTermState {
   setTerm: (term: SearchItem) => void;
 }
 
-interface SearchOptionsState {
+interface SearchOptionState {
   toSaveBook: SavedBook;
   setToSaveBook: (toSaveBook: SavedBook) => void;
   layout: 'Scroll' | 'Page';
@@ -52,7 +52,7 @@ export const useOpenTermStore = create<OpenTermState>((set) => ({
   setTerm: (term: SearchItem) => set({ term }),
 }));
 
-export const useSearchOptionsStore = create<SearchOptionsState>((set) => ({
+export const useSearchOptionStore = create<SearchOptionState>((set) => ({
   toSaveBook: { id: '', name: 'Default' },
   setToSaveBook: (toSaveBook) => set({ toSaveBook: toSaveBook }),
   layout: 'Scroll',

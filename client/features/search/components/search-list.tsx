@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import {
   useInputStore,
   useOpenTermStore,
-  useSearchOptionsStore,
+  useSearchOptionStore,
   useSearchStore,
 } from '../stores/search.store';
 import {
@@ -29,7 +29,6 @@ import { unsaveTermAction } from '../actions/unsave-term.action';
 import { produce, enableMapSet } from 'immer';
 import { useImmer } from 'use-immer';
 import { SaveTermInput } from '../schemas/save-term.schema';
-import { savedTerms } from '@/shared/lib/db/schemas/dictionary.schema';
 
 export function SearchList() {
   const t = useTranslations('search');
@@ -50,13 +49,13 @@ export function SearchList() {
   const setTerm = useOpenTermStore((state) => state.setTerm);
 
   // For search list options
-  const toSaveBook = useSearchOptionsStore((state) => state.toSaveBook);
-  const layout = useSearchOptionsStore((state) => state.layout);
-  const selectMode = useSearchOptionsStore((state) => state.selectMode);
-  const doSave = useSearchOptionsStore((state) => state.doSave);
-  const setDoSave = useSearchOptionsStore((state) => state.setDoSave);
-  const selectAll = useSearchOptionsStore((state) => state.selectAll);
-  const setSelectAll = useSearchOptionsStore((state) => state.setSelectAll);
+  const toSaveBook = useSearchOptionStore((state) => state.toSaveBook);
+  const layout = useSearchOptionStore((state) => state.layout);
+  const selectMode = useSearchOptionStore((state) => state.selectMode);
+  const doSave = useSearchOptionStore((state) => state.doSave);
+  const setDoSave = useSearchOptionStore((state) => state.setDoSave);
+  const selectAll = useSearchOptionStore((state) => state.selectAll);
+  const setSelectAll = useSearchOptionStore((state) => state.setSelectAll);
 
   // Used to fetch data for infinite scroll down
   const queryClient = useQueryClient();

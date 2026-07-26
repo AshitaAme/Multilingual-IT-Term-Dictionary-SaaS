@@ -4,9 +4,13 @@ import {
   savedBookTerms,
   savedTerms,
 } from '@/shared/lib/db/schemas/dictionary.schema';
-import { eq } from 'drizzle-orm';
+import { eq, asc, desc, ilike, and } from 'drizzle-orm';
+import { BookTermListInput } from '../schemas/book-term-list.schema';
+import { PAGE_SIZE } from '@/features/search/constants/search.constants';
 
-export async function getBookTermList(bookId: string) {
+export async function getBookTermList(data: BookTermListInput) {
+  const { bookId, query, page } = data;
+
   const result = await db
     .select({
       name: savedTerms.name,
@@ -24,7 +28,15 @@ export async function getBookTermList(bookId: string) {
     .from(savedBookTerms)
     .innerJoin(savedTerms, eq(savedBookTerms.savedTermId, savedTerms.id))
     .leftJoin(reviewCards, eq(reviewCards.savedTermId, savedTerms.id))
-    .where(eq(savedBookTerms.savedBookId, bookId));
+    .where(
+      and(
+        eq(savedBookTerms.savedBookId, bookId),
+        query ? ilike(savedTerms.name, query) : undefined,
+      ),
+    )
+    .offset((page - 1) * PAGE_SIZE)
+    .limit(PAGE_SIZE)
+    .orderBy(desc(savedTerms.createdAt));
 
   return result;
 }

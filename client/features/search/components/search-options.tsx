@@ -28,7 +28,7 @@ import {
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { useSearchOptionsStore } from '../stores/search.store';
+import { useSearchOptionStore } from '../stores/search.store';
 
 import { TooltipWrapper } from '@/shared/components/ui/tooltipWrapper';
 import { LoadingCircle } from '@/shared/components/ui/loading-circle';
@@ -45,15 +45,15 @@ export function SearchOptions() {
   const [newBookName, setNewBookName] = useState('');
   const [isAddingBook, setIsAddingBook] = useState(false);
 
-  const toSaveBook = useSearchOptionsStore((state) => state.toSaveBook);
-  const setToSaveBook = useSearchOptionsStore((state) => state.setToSaveBook);
-  const layout = useSearchOptionsStore((state) => state.layout);
-  const setLayout = useSearchOptionsStore((state) => state.setLayout);
-  const selectMode = useSearchOptionsStore((state) => state.selectMode);
-  const setSelectMode = useSearchOptionsStore((state) => state.setSelectMode);
-  const doSave = useSearchOptionsStore((state) => state.doSave);
-  const setDoSave = useSearchOptionsStore((state) => state.setDoSave);
-  const setSelectAll = useSearchOptionsStore((state) => state.setSelectAll);
+  const toSaveBook = useSearchOptionStore((state) => state.toSaveBook);
+  const setToSaveBook = useSearchOptionStore((state) => state.setToSaveBook);
+  const layout = useSearchOptionStore((state) => state.layout);
+  const setLayout = useSearchOptionStore((state) => state.setLayout);
+  const selectMode = useSearchOptionStore((state) => state.selectMode);
+  const setSelectMode = useSearchOptionStore((state) => state.setSelectMode);
+  const doSave = useSearchOptionStore((state) => state.doSave);
+  const setDoSave = useSearchOptionStore((state) => state.setDoSave);
+  const setSelectAll = useSearchOptionStore((state) => state.setSelectAll);
 
   // Fetch saved books
   useEffect(() => {
@@ -244,7 +244,7 @@ export function SearchOptions() {
           }}
         >
           <WalletCards />
-          <span>Select all</span>
+          <span>All</span>
         </Button>
       </TooltipWrapper>
 

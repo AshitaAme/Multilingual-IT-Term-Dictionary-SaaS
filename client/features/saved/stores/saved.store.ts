@@ -14,6 +14,11 @@ interface ReviewState {
   setSavedTermId: (savedTermId: string) => void;
 }
 
+interface OptionState {
+  mode: 'List' | 'Card' | 'Review';
+  setMode: (mode: 'List' | 'Card' | 'Review') => void;
+}
+
 export const useBookStore = create<BookState>((set) => ({
   openBook: false,
   setOpenBook: (openBook) => set({ openBook }),
