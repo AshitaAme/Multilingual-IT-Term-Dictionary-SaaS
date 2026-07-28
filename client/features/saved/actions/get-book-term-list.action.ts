@@ -1,18 +1,10 @@
 'use server';
 
-import {
-  BookTermListInput,
-  createBookTermListSchema,
-} from '../schemas/book-term-list.schema';
 import { getBookTermList } from '../services/get-book-term-list';
 
-export async function getBookTermListAction(data: BookTermListInput) {
-  const BookTermListSchema = createBookTermListSchema();
-  const parsed = BookTermListSchema.safeParse(data);
-  if (!parsed.success) return { success: false, error: parsed.error.message };
-
+export async function getBookTermListAction(bookId: string) {
   try {
-    const res = await getBookTermList(parsed.data);
+    const res = await getBookTermList(bookId);
 
     return { success: true, data: res };
   } catch (err) {

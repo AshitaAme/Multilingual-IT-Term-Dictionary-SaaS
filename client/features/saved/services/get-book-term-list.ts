@@ -4,18 +4,14 @@ import {
   savedBookTerms,
   savedTerms,
 } from '@/shared/lib/db/schemas/dictionary.schema';
-import { eq, asc, desc, ilike, and } from 'drizzle-orm';
-import { BookTermListInput } from '../schemas/book-term-list.schema';
-import { PAGE_SIZE } from '@/features/search/constants/search.constants';
+import { eq, desc } from 'drizzle-orm';
 
-export async function getBookTermList(data: BookTermListInput) {
-  const { bookId, query, page } = data;
-
+export async function getBookTermList(bookId: string) {
   const result = await db
     .select({
       name: savedTerms.name,
       text: savedTerms.text,
-      termId: savedTerms.termId,
+      savedTermId: savedTerms.termId,
       reviewCard: {
         stability: reviewCards.stability,
         difficulty: reviewCards.difficulty,
@@ -28,14 +24,7 @@ export async function getBookTermList(data: BookTermListInput) {
     .from(savedBookTerms)
     .innerJoin(savedTerms, eq(savedBookTerms.savedTermId, savedTerms.id))
     .leftJoin(reviewCards, eq(reviewCards.savedTermId, savedTerms.id))
-    .where(
-      and(
-        eq(savedBookTerms.savedBookId, bookId),
-        query ? ilike(savedTerms.name, query) : undefined,
-      ),
-    )
-    .offset((page - 1) * PAGE_SIZE)
-    .limit(PAGE_SIZE)
+    .where(eq(savedBookTerms.savedBookId, bookId))
     .orderBy(desc(savedTerms.createdAt));
 
   return result;
