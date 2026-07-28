@@ -1,7 +1,12 @@
+import { inArray } from 'drizzle-orm';
 import { db } from '../db';
 import { reviewCards } from '../schemas/dictionary.schema';
 
 export async function addReview(savedTermIds: string[]) {
   const payload = savedTermIds.map((id) => ({ savedTermId: id }));
-  await db.insert(reviewCards).values(payload);
+  await db.insert(reviewCards).values(payload).onConflictDoNothing();
+}
+
+export async function deleteReview(savedTermIds: string[]) {
+  db.delete(reviewCards).where(inArray(reviewCards.id, savedTermIds));
 }

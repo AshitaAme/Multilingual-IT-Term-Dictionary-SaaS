@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm';
+import { and, eq, inArray } from 'drizzle-orm';
 import { db } from '../db';
 import { savedTerms } from '../schemas/dictionary.schema';
 
@@ -14,4 +14,8 @@ export async function deleteSavedTerm(userId: string, termId: string) {
   await db
     .delete(savedTerms)
     .where(and(eq(savedTerms.userId, userId), eq(savedTerms.termId, termId)));
+}
+
+export async function deleteSavedTermById(savedTermIds: string[]) {
+  await db.delete(savedTerms).where(inArray(savedTerms.id, savedTermIds));
 }

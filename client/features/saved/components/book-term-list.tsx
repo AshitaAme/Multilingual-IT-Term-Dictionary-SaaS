@@ -18,14 +18,17 @@ import {
 } from '@/shared/components/ui/context-menu';
 import { enableMapSet } from 'immer';
 import { addReviewAction } from '../actions/add-review.action';
+import { deleteReviewAction } from '../actions/delete-review.action';
+import { removeSaveAction } from '../actions/remove-save.action';
 
 export function BookTermList() {
   enableMapSet();
   const [bookTermList, setBookTermList] = useState<BookTerm[]>([]);
-  const [selected, updateSelected] = useImmer<Set<number>>(new Set()); // pageIndex#itemIndex
+  const [selected, updateSelected] = useImmer<Set<string>>(new Set()); // savedTermId
   const [isLoading, setIsLoading] = useState(true);
 
   const bookId = useBookStore((state) => state.bookId);
+  const isSelecting = useBookStore((state) => state.isSelecting);
   const setIsSelecting = useBookStore((state) => state.setIsSelecting);
 
   const query = useBookOptionStore((state) => state.query);
@@ -58,7 +61,7 @@ export function BookTermList() {
   useEffect(() => {
     if (!all) return;
     updateSelected((draft) => {
-      bookTermList.forEach((_, i) => draft.add(i));
+      bookTermList.forEach((t) => !t.reviewCard && draft.add(t.savedTermId));
     });
     setAll(false);
   }, [all, bookTermList, setAll, updateSelected]);
@@ -73,21 +76,46 @@ export function BookTermList() {
 
   useEffect(() => {
     if (!review) return;
+    if (!isSelecting) return;
     const addReview = async () => {
-      const ids = bookTermList.flatMap((t, i) =>
-        selected.has(i) ? [t.savedTermId] : [],
-      );
+      const ids = [...selected];
       const res = await addReviewAction(ids);
+      if (!res.success) toast.error(res?.error);
+      setReview(false);
     };
-  }, [bookTermList, review, selected]);
+    addReview();
+  }, [bookTermList, isSelecting, review, selected, setReview]);
 
   useEffect(() => {
     if (!deReview) return;
-  }, [deReview]);
+    if (!isSelecting) return;
+    const deleteReview = async () => {
+      const ids = [...selected];
+      const res = await deleteReviewAction(ids);
+      if (!res.success) toast.error(res.error);
+      setDeReview(false);
+    };
+    deleteReview();
+  }, [bookTermList, deReview, isSelecting, selected, setDeReview]);
 
   useEffect(() => {
     if (!remove) return;
-  }, [remove]);
+    if (!isSelecting) return;
+    const removeSave = async () => {
+      const ids = [...selected];
+      const res = await removeSaveAction(ids);
+      if (!res.success) toast.error(res.error);
+      const newList = bookTermList.flatMap((t) =>
+        selected.has(t.savedTermId) ? [] : [t],
+      );
+      setBookTermList(newList);
+      updateSelected((draft) => {
+        draft.clear();
+      });
+      setRemove(false);
+    };
+    removeSave();
+  }, [bookTermList, isSelecting, remove, selected, setRemove, updateSelected]);
 
   useEffect(() => {
     if (!moveTo) return;
@@ -115,17 +143,18 @@ export function BookTermList() {
           <div className="w-140 flex flex-col justify-center gap-3 ring-1 rounded-md p-6">
             {bookTermList.map((item, index) => {
               const count = index + 1;
+              const savedTermId = item.savedTermId;
               return (
-                <ContextMenu key={item.termId}>
+                <ContextMenu key={savedTermId}>
                   <ContextMenuTrigger>
                     <Button
                       onClick={() => {
                         updateSelected((draft) => {
-                          if (draft.has(index)) {
-                            draft.delete(index);
+                          if (draft.has(savedTermId)) {
+                            draft.delete(savedTermId);
                             if (draft.size === 0) setIsSelecting(false);
                           } else {
-                            draft.add(index);
+                            draft.add(savedTermId);
                             if (draft.size === 1) setIsSelecting(true);
                           }
                         });
@@ -143,7 +172,7 @@ export function BookTermList() {
                       {selected.size !== 0 && (
                         <Circle
                           className={cn(
-                            selected.has(index)
+                            selected.has(savedTermId)
                               ? 'fill-foreground'
                               : 'text-background',
                             'ring-1 rounded-full ring-foreground',

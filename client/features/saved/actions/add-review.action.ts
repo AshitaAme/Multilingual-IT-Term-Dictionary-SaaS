@@ -9,8 +9,9 @@ export async function addReviewAction(savedTermIds: string[]) {
 
   try {
     await addReview(parsed.data);
+    return { success: true };
   } catch (error) {
     console.error('[addReviewAction] Add review failed: ', error);
-    return { success: false, error: '[addReviewAction] Add review failed' };
+    return { success: false, error: 'Add review failed' };
   }
 }
