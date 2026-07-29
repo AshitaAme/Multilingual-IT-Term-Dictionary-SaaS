@@ -38,7 +38,6 @@ export const useBookStore = create<BookState>((set) => ({
 export const useBookOptionStore = create<OptionState>((set) => ({
   mode: 'List',
   setMode: (mode) => set({ mode }),
-
   all: false,
   setAll: (all) => set({ all }),
   clear: false,

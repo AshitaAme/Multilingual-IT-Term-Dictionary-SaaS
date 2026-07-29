@@ -20,6 +20,7 @@ import { enableMapSet } from 'immer';
 import { addReviewAction } from '../actions/add-review.action';
 import { deleteReviewAction } from '../actions/delete-review.action';
 import { removeSaveAction } from '../actions/remove-save.action';
+import { moveSaveAction } from '../actions/move-save.action';
 
 export function BookTermList() {
   enableMapSet();
@@ -58,6 +59,7 @@ export function BookTermList() {
     fetchPage();
   }, [bookId]);
 
+  // All
   useEffect(() => {
     if (!all) return;
     updateSelected((draft) => {
@@ -66,6 +68,7 @@ export function BookTermList() {
     setAll(false);
   }, [all, bookTermList, setAll, updateSelected]);
 
+  // Clear
   useEffect(() => {
     if (!clear) return;
     updateSelected((draft) => {
@@ -74,6 +77,7 @@ export function BookTermList() {
     setClear(false);
   }, [clear, setClear, updateSelected]);
 
+  // Review
   useEffect(() => {
     if (!review) return;
     if (!isSelecting) return;
@@ -86,6 +90,7 @@ export function BookTermList() {
     addReview();
   }, [bookTermList, isSelecting, review, selected, setReview]);
 
+  // De-review
   useEffect(() => {
     if (!deReview) return;
     if (!isSelecting) return;
@@ -98,6 +103,7 @@ export function BookTermList() {
     deleteReview();
   }, [bookTermList, deReview, isSelecting, selected, setDeReview]);
 
+  // Remove
   useEffect(() => {
     if (!remove) return;
     if (!isSelecting) return;
@@ -117,10 +123,35 @@ export function BookTermList() {
     removeSave();
   }, [bookTermList, isSelecting, remove, selected, setRemove, updateSelected]);
 
+  // Move to
   useEffect(() => {
     if (!moveTo) return;
-  }, [moveTo]);
+    if (!isSelecting) return;
+    const moveSave = async () => {
+      const ids = [...selected];
+      const res = await moveSaveAction({ bookId, moveTo, ids });
+      if (!res.success) toast.error(res.error);
+      const newList = bookTermList.flatMap((t) =>
+        selected.has(t.savedTermId) ? [] : [t],
+      );
+      setBookTermList(newList);
+      updateSelected((draft) => {
+        draft.clear();
+      });
+      setMoveTo('');
+    };
+    moveSave();
+  }, [
+    bookId,
+    bookTermList,
+    isSelecting,
+    moveTo,
+    selected,
+    setMoveTo,
+    updateSelected,
+  ]);
 
+  // Whether list is empty
   const isEmpty = useMemo(
     () => bookTermList.length === 0,
     [bookTermList.length],
@@ -148,6 +179,9 @@ export function BookTermList() {
                 <ContextMenu key={savedTermId}>
                   <ContextMenuTrigger>
                     <Button
+                      key={savedTermId}
+                      variant="ghost"
+                      className="w-full flex flex-row items-center justify-between gap-x-10"
                       onClick={() => {
                         updateSelected((draft) => {
                           if (draft.has(savedTermId)) {
@@ -159,9 +193,6 @@ export function BookTermList() {
                           }
                         });
                       }}
-                      variant="ghost"
-                      key={index + '#' + item.name}
-                      className="w-full flex flex-row items-center justify-between gap-x-10"
                     >
                       <div className="flex gap-x-4">
                         <span>

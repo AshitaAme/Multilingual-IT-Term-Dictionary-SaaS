@@ -15,18 +15,23 @@ import {
   Trash2,
 } from 'lucide-react';
 import { useBookOptionStore, useBookStore } from '../stores/saved.store';
+import { LoadingCircle } from '@/shared/components/ui/loading-circle';
 
 export function BookOptions() {
   const setOpenBook = useBookStore((state) => state.setOpenBook);
   const isSelecting = useBookStore((state) => state.isSelecting);
 
+  const review = useBookOptionStore((state) => state.review);
+  const deReview = useBookOptionStore((state) => state.deReview);
+  const remove = useBookOptionStore((state) => state.remove);
+  const moveTo = useBookOptionStore((state) => state.moveTo);
   const setAll = useBookOptionStore((state) => state.setAll);
   const setClear = useBookOptionStore((state) => state.setClear);
   const setReview = useBookOptionStore((state) => state.setReview);
   const setDeReview = useBookOptionStore((state) => state.setDeReview);
-  const setMode = useBookOptionStore((state) => state.setMode);
-  const setMoveTo = useBookOptionStore((state) => state.setMoveTo);
   const setRemove = useBookOptionStore((state) => state.setRemove);
+  const setMoveTo = useBookOptionStore((state) => state.setMoveTo);
+  const setMode = useBookOptionStore((state) => state.setMode);
 
   return (
     <div
@@ -62,29 +67,80 @@ export function BookOptions() {
         )}
         {isSelecting && (
           <>
+            {/* All */}
             <Button variant="ghost" onClick={() => setAll(true)}>
               <WalletCards />
               <span>All</span>
             </Button>
+
+            {/* Clear */}
             <Button variant="ghost" onClick={() => setClear(true)}>
               <Eraser />
               <span>Clear</span>
             </Button>
-            <Button variant="ghost" onClick={() => setReview(true)}>
-              <ClockPlus />
-              <span>Review</span>
+
+            {/* Review */}
+            <Button
+              disabled={review}
+              variant="ghost"
+              onClick={() => setReview(true)}
+            >
+              {review ? (
+                <>
+                  <ClockPlus />
+                  <span>Review</span>
+                </>
+              ) : (
+                <LoadingCircle />
+              )}
             </Button>
-            <Button variant="ghost" onClick={() => setDeReview(true)}>
-              <ClockFading />
-              <span>De-review</span>
+
+            {/* De-review */}
+            <Button
+              disabled={deReview}
+              variant="ghost"
+              onClick={() => setDeReview(true)}
+            >
+              {deReview ? (
+                <>
+                  <ClockFading />
+                  <span>De-review</span>
+                </>
+              ) : (
+                <LoadingCircle />
+              )}
             </Button>
-            <Button variant="ghost" onClick={() => setRemove(true)}>
-              <Trash2 />
-              <span>Remove</span>
+
+            {/* Remove */}
+            <Button
+              disabled={remove}
+              variant="ghost"
+              onClick={() => setRemove(true)}
+            >
+              {remove ? (
+                <>
+                  <Trash2 />
+                  <span>Remove</span>
+                </>
+              ) : (
+                <LoadingCircle />
+              )}
             </Button>
-            <Button variant="ghost" onClick={() => setMoveTo('')}>
-              <FolderPlus />
-              <span>Move to</span>
+
+            {/* Move to */}
+            <Button
+              disabled={moveTo !== ''}
+              variant="ghost"
+              onClick={() => setMoveTo('')}
+            >
+              {moveTo !== '' ? (
+                <>
+                  <FolderPlus />
+                  <span>Move to</span>
+                </>
+              ) : (
+                <LoadingCircle />
+              )}
             </Button>
           </>
         )}

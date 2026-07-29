@@ -1,9 +1,6 @@
 'use server';
 
-import {
-  deleteSavedTerm,
-  deleteSavedTermById,
-} from '@/shared/lib/db/mutations/saved-term.mutations';
+import { deleteSavedTermById } from '@/shared/lib/db/mutations/saved-term.mutations';
 import { StringArraySchema } from '../schemas/string-array.schema';
 
 export async function removeSaveAction(savedTermIds: string[]) {
