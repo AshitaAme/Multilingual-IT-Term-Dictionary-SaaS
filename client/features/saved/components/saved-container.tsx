@@ -1,6 +1,8 @@
 'use client';
 
+import { cn } from '@/shared/utils/utils';
 import { useBookStore } from '../stores/saved.store';
+import { BookOptions } from './book-options';
 import { BookTermList } from './book-term-list';
 import { SavedBooksDisplay } from './saved-books-display';
 
@@ -9,7 +11,12 @@ export function SavedContainer() {
 
   return (
     <div>
-      {openBook && <BookTermList />}
+      {openBook && (
+        <div className={cn('w-full', 'flex flex-col gap-10 px-[20%] py-[10%]')}>
+          <BookOptions />
+          <BookTermList />
+        </div>
+      )}
       {!openBook && <SavedBooksDisplay />}
     </div>
   );

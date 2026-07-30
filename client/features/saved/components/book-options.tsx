@@ -85,14 +85,9 @@ export function BookOptions() {
               variant="ghost"
               onClick={() => setReview(true)}
             >
-              {review ? (
-                <>
-                  <ClockPlus />
-                  <span>Review</span>
-                </>
-              ) : (
-                <LoadingCircle />
-              )}
+              <ClockPlus />
+
+              <span>Review</span>
             </Button>
 
             {/* De-review */}
@@ -101,14 +96,9 @@ export function BookOptions() {
               variant="ghost"
               onClick={() => setDeReview(true)}
             >
-              {deReview ? (
-                <>
-                  <ClockFading />
-                  <span>De-review</span>
-                </>
-              ) : (
-                <LoadingCircle />
-              )}
+              <ClockFading />
+
+              <span>De-review</span>
             </Button>
 
             {/* Remove */}
@@ -117,14 +107,8 @@ export function BookOptions() {
               variant="ghost"
               onClick={() => setRemove(true)}
             >
-              {remove ? (
-                <>
-                  <Trash2 />
-                  <span>Remove</span>
-                </>
-              ) : (
-                <LoadingCircle />
-              )}
+              <Trash2 />
+              <span>Remove</span>
             </Button>
 
             {/* Move to */}
@@ -133,14 +117,8 @@ export function BookOptions() {
               variant="ghost"
               onClick={() => setMoveTo('')}
             >
-              {moveTo !== '' ? (
-                <>
-                  <FolderPlus />
-                  <span>Move to</span>
-                </>
-              ) : (
-                <LoadingCircle />
-              )}
+              <FolderPlus />
+              <span>Move to</span>
             </Button>
           </>
         )}

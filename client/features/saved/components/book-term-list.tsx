@@ -7,7 +7,7 @@ import { getBookTermListAction } from '../actions/get-book-term-list.action';
 import { BookTerm } from '../types/book-term';
 import { cn } from '@/shared/utils/utils';
 import { Button } from '@/shared/components/ui/button';
-import { Circle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Circle } from 'lucide-react';
 import { useImmer } from 'use-immer';
 import { LoadingCircle } from '@/shared/components/ui/loading-circle';
 import {
@@ -21,18 +21,25 @@ import { addReviewAction } from '../actions/add-review.action';
 import { deleteReviewAction } from '../actions/delete-review.action';
 import { removeSaveAction } from '../actions/remove-save.action';
 import { moveSaveAction } from '../actions/move-save.action';
+import { PAGE_SIZE } from '@/features/search/constants/search.constants';
 
 export function BookTermList() {
   enableMapSet();
   const [bookTermList, setBookTermList] = useState<BookTerm[]>([]);
   const [selected, updateSelected] = useImmer<Set<string>>(new Set()); // savedTermId
   const [isLoading, setIsLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const finalPage = useMemo(
+    () => Math.ceil(bookTermList.length / PAGE_SIZE),
+    [bookTermList.length],
+  );
+  const [enterPage, setEnterPage] = useState(false);
 
   const bookId = useBookStore((state) => state.bookId);
   const isSelecting = useBookStore((state) => state.isSelecting);
   const setIsSelecting = useBookStore((state) => state.setIsSelecting);
 
-  const query = useBookOptionStore((state) => state.query);
+  // const query = useBookOptionStore((state) => state.query);
   const mode = useBookOptionStore((state) => state.mode);
   const all = useBookOptionStore((state) => state.all);
   const clear = useBookOptionStore((state) => state.clear);
@@ -48,6 +55,7 @@ export function BookTermList() {
   const setDeReview = useBookOptionStore((state) => state.setDeReview);
   const setMoveTo = useBookOptionStore((state) => state.setMoveTo);
 
+  // Fetch book term list
   useEffect(() => {
     const fetchPage = async () => {
       setIsLoading(true);
@@ -111,13 +119,16 @@ export function BookTermList() {
       const ids = [...selected];
       const res = await removeSaveAction(ids);
       if (!res.success) toast.error(res.error);
-      const newList = bookTermList.flatMap((t) =>
-        selected.has(t.savedTermId) ? [] : [t],
-      );
-      setBookTermList(newList);
-      updateSelected((draft) => {
-        draft.clear();
-      });
+      else {
+        const newList = bookTermList.flatMap((t) =>
+          selected.has(t.savedTermId) ? [] : [t],
+        );
+        setBookTermList(newList);
+        updateSelected((draft) => {
+          draft.clear();
+        });
+      }
+
       setRemove(false);
     };
     removeSave();
@@ -129,15 +140,18 @@ export function BookTermList() {
     if (!isSelecting) return;
     const moveSave = async () => {
       const ids = [...selected];
-      const res = await moveSaveAction({ bookId, moveTo, ids });
+      const res = await moveSaveAction({ moveTo, ids });
       if (!res.success) toast.error(res.error);
-      const newList = bookTermList.flatMap((t) =>
-        selected.has(t.savedTermId) ? [] : [t],
-      );
-      setBookTermList(newList);
-      updateSelected((draft) => {
-        draft.clear();
-      });
+      else {
+        const newList = bookTermList.flatMap((t) =>
+          selected.has(t.savedTermId) ? [] : [t],
+        );
+        setBookTermList(newList);
+        updateSelected((draft) => {
+          draft.clear();
+        });
+      }
+
       setMoveTo('');
     };
     moveSave();
@@ -158,74 +172,103 @@ export function BookTermList() {
   );
 
   return (
-    <div className={cn('w-full', 'flex flex-col gap-10 px-[20%] py-[10%]')}>
-      <div className={cn('min-h-100', 'flex items-center justify-center')}>
-        {/* Loading */}
+    <div className={cn('min-h-100', 'flex items-center justify-center')}>
+      {/* Loading */}
 
-        {isLoading && <LoadingCircle />}
+      {isLoading && <LoadingCircle />}
 
-        {/* Empty */}
-        {!isLoading && isEmpty && (
-          <span className="font-semibold">Still Empty...</span>
-        )}
+      {/* Empty */}
+      {!isLoading && isEmpty && (
+        <span className="font-semibold">Still Empty...</span>
+      )}
 
-        {/* List mode */}
-        {!isLoading && isEmpty && mode === 'List' && (
-          <div className="w-140 flex flex-col justify-center gap-3 ring-1 rounded-md p-6">
-            {bookTermList.map((item, index) => {
-              const count = index + 1;
-              const savedTermId = item.savedTermId;
-              return (
-                <ContextMenu key={savedTermId}>
-                  <ContextMenuTrigger>
-                    <Button
-                      key={savedTermId}
-                      variant="ghost"
-                      className="w-full flex flex-row items-center justify-between gap-x-10"
-                      onClick={() => {
+      {/* List mode */}
+      {!isLoading && !isEmpty && mode === 'List' && (
+        <div className="w-140 flex flex-col justify-center gap-3 ring-1 rounded-md p-6">
+          {bookTermList.map((item, index) => {
+            const count = index + 1;
+            const inPage =
+              count > (page - 1) * PAGE_SIZE && count <= page * PAGE_SIZE;
+            console.log('page:', page);
+            if (!inPage) return;
+            const savedTermId = item.savedTermId;
+            return (
+              <ContextMenu key={savedTermId}>
+                <ContextMenuTrigger>
+                  <Button
+                    variant="ghost"
+                    className="w-full flex flex-row items-center justify-between gap-x-10"
+                    onClick={() => {
+                      if (selected.has(savedTermId)) {
+                        if (selected.size === 1) setIsSelecting(false);
                         updateSelected((draft) => {
-                          if (draft.has(savedTermId)) {
-                            draft.delete(savedTermId);
-                            if (draft.size === 0) setIsSelecting(false);
-                          } else {
-                            draft.add(savedTermId);
-                            if (draft.size === 1) setIsSelecting(true);
-                          }
+                          draft.delete(savedTermId);
                         });
-                      }}
-                    >
-                      <div className="flex gap-x-4">
-                        <span>
-                          {count < 10 ? '0' + count : count.toString()}
-                        </span>
-                        <span>{item.name}</span>
-                      </div>
-                      {selected.size !== 0 && (
-                        <Circle
-                          className={cn(
-                            selected.has(savedTermId)
-                              ? 'fill-foreground'
-                              : 'text-background',
-                            'ring-1 rounded-full ring-foreground',
-                          )}
-                        />
-                      )}
-                    </Button>
-                  </ContextMenuTrigger>
-                  <ContextMenuContent className="p-2 flex flex-col gap-1">
-                    <ContextMenuItem>Delete</ContextMenuItem>
-                    <ContextMenuItem>
-                      {item.reviewCard ? 'Add review' : 'Cancel Review'}
-                    </ContextMenuItem>
-                    <ContextMenuItem>Move to</ContextMenuItem>
-                    <ContextMenuItem>Modify</ContextMenuItem>
-                  </ContextMenuContent>
-                </ContextMenu>
-              );
-            })}
+                      } else {
+                        if (selected.size === 0) setIsSelecting(true);
+                        updateSelected((draft) => {
+                          draft.add(savedTermId);
+                        });
+                      }
+                    }}
+                  >
+                    <div className="flex gap-x-4">
+                      <span>{count < 10 ? '0' + count : count.toString()}</span>
+                      <span>{item.name}</span>
+                    </div>
+                    {selected.size !== 0 && (
+                      <Circle
+                        className={cn(
+                          selected.has(savedTermId)
+                            ? 'fill-foreground'
+                            : 'text-background',
+                          'ring-1 rounded-full ring-foreground',
+                        )}
+                      />
+                    )}
+                  </Button>
+                </ContextMenuTrigger>
+                <ContextMenuContent className="p-2 flex flex-col gap-1">
+                  <ContextMenuItem>Delete</ContextMenuItem>
+                  <ContextMenuItem>
+                    {item.reviewCard ? 'Add review' : 'Cancel Review'}
+                  </ContextMenuItem>
+                  <ContextMenuItem>Move to</ContextMenuItem>
+                  <ContextMenuItem>Modify</ContextMenuItem>
+                </ContextMenuContent>
+              </ContextMenu>
+            );
+          })}
+          <div className="flex gap-4 items-center justify-center pt-4">
+            <Button
+              disabled={page === 1}
+              variant="ghost"
+              onClick={() => setPage((prev) => prev - 1)}
+            >
+              <ChevronLeft />
+              <span>Last Page</span>
+            </Button>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="rounded-md underline underline-offset-3"
+              onClick={() => setEnterPage(true)}
+            >
+              {enterPage && <input></input>}
+              {!enterPage && page}
+            </Button>
+
+            <Button
+              disabled={page === finalPage}
+              variant="ghost"
+              onClick={() => setPage((prev) => prev + 1)}
+            >
+              <span>Next Page</span>
+              <ChevronRight />
+            </Button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
