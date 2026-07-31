@@ -29,11 +29,13 @@ export function BookTermList() {
   const [selected, updateSelected] = useImmer<Set<string>>(new Set()); // savedTermId
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const finalPage = useMemo(
-    () => Math.ceil(bookTermList.length / PAGE_SIZE),
-    [bookTermList.length],
-  );
+  // const finalPage = useMemo(
+  //   () => Math.ceil(bookTermList.length / PAGE_SIZE),
+  //   [bookTermList.length],
+  // );
+  const finalPage = 100;
   const [enterPage, setEnterPage] = useState(false);
+  const [pageInput, setPageInput] = useState('');
 
   const bookId = useBookStore((state) => state.bookId);
   const isSelecting = useBookStore((state) => state.isSelecting);
@@ -239,7 +241,7 @@ export function BookTermList() {
               </ContextMenu>
             );
           })}
-          <div className="flex gap-4 items-center justify-center pt-4">
+          <div className="w-full flex gap-6 items-center justify-center pt-4">
             <Button
               disabled={page === 1}
               variant="ghost"
@@ -248,15 +250,48 @@ export function BookTermList() {
               <ChevronLeft />
               <span>Last Page</span>
             </Button>
-            <Button
-              size="icon"
-              variant="ghost"
-              className="rounded-md underline underline-offset-3"
-              onClick={() => setEnterPage(true)}
-            >
-              {enterPage && <input></input>}
-              {!enterPage && page}
-            </Button>
+
+            <div>
+              {enterPage && (
+                <input
+                  onBlur={() => setEnterPage(false)}
+                  onChange={(e) => setPageInput(e.target.value)}
+                  value={pageInput}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && Number.isInteger(pageInput))
+                      setPage(Number(pageInput));
+                    setPageInput('');
+                    setEnterPage(false);
+                  }}
+                  className="w-full h-full"
+                />
+              )}
+              {!enterPage && (
+                <div className="flex items-center">
+                  {[...new Array(finalPage).keys()].map((i) => {
+                    const pageNum = i + 1;
+                    const totalLeft =
+                      pageNum === 1 || pageNum === finalPage ? 5 : 4;
+                    const lastLeft = Math.min(page - 1, 2);
+                    const nextLeft = totalLeft - lastLeft;
+                    let content: 'ellipsis' | 'number' | null = 'number';
+                    if (pageNum !== 1 && pageNum !== finalPage) {
+                      if (page - pageNum === lastLeft + 1) content = 'ellipsis';
+                      if (page - pageNum > lastLeft + 1) content = null;
+                      if (pageNum - page === nextLeft + 1) content = 'ellipsis';
+                      if (pageNum - page > nextLeft + 1) content = null;
+                    }
+                    if (content === null) return;
+                    return (
+                      <Button size="icon" variant="ghost" key={pageNum}>
+                        {content === 'ellipsis' && <>...</>}
+                        {content === 'number' && <>{pageNum}</>}
+                      </Button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
 
             <Button
               disabled={page === finalPage}

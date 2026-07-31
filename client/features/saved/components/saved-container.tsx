@@ -12,7 +12,7 @@ export function SavedContainer() {
   return (
     <div>
       {openBook && (
-        <div className={cn('w-full', 'flex flex-col gap-10 px-[20%] py-[10%]')}>
+        <div className={cn('w-full px-[20%] py-[10%] flex flex-col gap-10')}>
           <BookOptions />
           <BookTermList />
         </div>
