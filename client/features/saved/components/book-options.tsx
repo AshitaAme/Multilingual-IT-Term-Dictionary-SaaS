@@ -15,19 +15,18 @@ import {
   Trash2,
 } from 'lucide-react';
 import { useBookOptionStore, useBookStore } from '../stores/saved.store';
-import { LoadingCircle } from '@/shared/components/ui/loading-circle';
 
 export function BookOptions() {
   const setOpenBook = useBookStore((state) => state.setOpenBook);
   const isSelecting = useBookStore((state) => state.isSelecting);
 
-  const review = useBookOptionStore((state) => state.review);
+  const doReview = useBookOptionStore((state) => state.doReview);
   const deReview = useBookOptionStore((state) => state.deReview);
   const remove = useBookOptionStore((state) => state.remove);
   const moveTo = useBookOptionStore((state) => state.moveTo);
   const setAll = useBookOptionStore((state) => state.setAll);
   const setClear = useBookOptionStore((state) => state.setClear);
-  const setReview = useBookOptionStore((state) => state.setReview);
+  const setDoReview = useBookOptionStore((state) => state.setDoReview);
   const setDeReview = useBookOptionStore((state) => state.setDeReview);
   const setRemove = useBookOptionStore((state) => state.setRemove);
   const setMoveTo = useBookOptionStore((state) => state.setMoveTo);
@@ -36,7 +35,7 @@ export function BookOptions() {
   return (
     <div
       className={cn(
-        'flex gap-2',
+        'flex gap-2 w-140',
         !isSelecting ? 'justify-between' : 'justify-center',
       )}
     >
@@ -81,13 +80,13 @@ export function BookOptions() {
 
             {/* Review */}
             <Button
-              disabled={review}
+              disabled={doReview}
               variant="ghost"
-              onClick={() => setReview(true)}
+              onClick={() => setDoReview(true)}
             >
               <ClockPlus />
 
-              <span>Review</span>
+              <span>Do-review</span>
             </Button>
 
             {/* De-review */}

@@ -16,8 +16,8 @@ interface OptionState {
   setAll: (all: boolean) => void;
   clear: boolean;
   setClear: (clear: boolean) => void;
-  review: boolean;
-  setReview: (addReview: boolean) => void;
+  doReview: boolean;
+  setDoReview: (doReview: boolean) => void;
   deReview: boolean;
   setDeReview: (deReview: boolean) => void;
   moveTo: string; // bookId;
@@ -42,8 +42,8 @@ export const useBookOptionStore = create<OptionState>((set) => ({
   setAll: (all) => set({ all }),
   clear: false,
   setClear: (clear) => set({ clear }),
-  review: false,
-  setReview: (review) => set({ review }),
+  doReview: false,
+  setDoReview: (doReview) => set({ doReview: doReview }),
   deReview: false,
   setDeReview: (deReview) => set({ deReview }),
   moveTo: '',
