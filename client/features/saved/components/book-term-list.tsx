@@ -22,25 +22,31 @@ import { deleteReviewAction } from '../actions/delete-review.action';
 import { removeSaveAction } from '../actions/remove-save.action';
 import { moveSaveAction } from '../actions/move-save.action';
 import { PAGE_SIZE } from '@/features/search/constants/search.constants';
+import { reviewCards } from '@/shared/lib/db/schemas/dictionary.schema';
 
 export function BookTermList() {
   enableMapSet();
-  const [bookTermList, setBookTermList] = useState<BookTerm[]>([]);
-  const [selected, updateSelected] = useImmer<Set<string>>(new Set()); // savedTermId
-  const [isLoading, setIsLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const finalPage = 100;
-  // useMemo(
-  //   () => Math.ceil(bookTermList.length / PAGE_SIZE),
-  //   [bookTermList.length],
-  // );
-  const [enterPage, setEnterPage] = useState(false);
-  const [pageInput, setPageInput] = useState('');
-
+  // Book status
   const bookId = useBookStore((state) => state.bookId);
+  const [bookTermList, updateBookTermList] = useImmer<BookTerm[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const isSelecting = useBookStore((state) => state.isSelecting);
   const setIsSelecting = useBookStore((state) => state.setIsSelecting);
 
+  // Pagination
+  const [page, setPage] = useState(1);
+  const finalPage = useMemo(
+    () => Math.ceil(bookTermList.length / PAGE_SIZE),
+    [bookTermList.length],
+  );
+  const [enterPage, setEnterPage] = useState(false);
+  const [pageInput, setPageInput] = useState('');
+
+  // Context menu operations
+  const [isOperating, setIsOperating] = useState('');
+
+  // Book term operation options
+  const [selected, updateSelected] = useImmer<Set<string>>(new Set()); // savedTermId
   // const query = useBookOptionStore((state) => state.query);
   const mode = useBookOptionStore((state) => state.mode);
   const all = useBookOptionStore((state) => state.all);
@@ -49,7 +55,6 @@ export function BookTermList() {
   const deReview = useBookOptionStore((state) => state.deReview);
   const moveTo = useBookOptionStore((state) => state.moveTo);
   const remove = useBookOptionStore((state) => state.remove);
-
   const setAll = useBookOptionStore((state) => state.setAll);
   const setClear = useBookOptionStore((state) => state.setClear);
   const setRemove = useBookOptionStore((state) => state.setRemove);
@@ -63,11 +68,11 @@ export function BookTermList() {
       setIsLoading(true);
       const res = await getBookTermListAction(bookId);
       if (!res.success) toast.error(res.error);
-      else setBookTermList(res.data!);
+      else updateBookTermList(() => res.data!);
       setIsLoading(false);
     };
     fetchPage();
-  }, [bookId]);
+  }, [bookId, updateBookTermList]);
 
   // All
   useEffect(() => {
@@ -88,7 +93,7 @@ export function BookTermList() {
     setIsSelecting(false);
   }, [clear, setClear, setIsSelecting, updateSelected]);
 
-  // Review
+  // Do-review
   useEffect(() => {
     if (!doReview) return;
     if (!isSelecting) return;
@@ -96,6 +101,16 @@ export function BookTermList() {
       const ids = [...selected];
       const res = await addReviewAction(ids);
       if (!res.success) toast.error(res?.error);
+      else {
+        updateBookTermList((draft) =>
+          draft.map((t) =>
+            selected.has(t.savedTermId)
+              ? { ...t, reviewCards: res.data!.get(t.savedTermId) }
+              : t,
+          ),
+        );
+      }
+
       setDoReview(false);
       setIsSelecting(false);
     };
@@ -107,6 +122,7 @@ export function BookTermList() {
     selected,
     setDoReview,
     setIsSelecting,
+    updateBookTermList,
   ]);
 
   // De-review
@@ -117,6 +133,13 @@ export function BookTermList() {
       const ids = [...selected];
       const res = await deleteReviewAction(ids);
       if (!res.success) toast.error(res.error);
+      else {
+        updateBookTermList((draft) =>
+          draft.map((t) =>
+            selected.has(t.savedTermId) ? { ...t, reviewCards: null } : t,
+          ),
+        );
+      }
       setDeReview(false);
       setIsSelecting(false);
     };
@@ -128,6 +151,7 @@ export function BookTermList() {
     selected,
     setDeReview,
     setIsSelecting,
+    updateBookTermList,
   ]);
 
   // Remove
@@ -139,10 +163,10 @@ export function BookTermList() {
       const res = await removeSaveAction(ids);
       if (!res.success) toast.error(res.error);
       else {
-        const newList = bookTermList.flatMap((t) =>
-          selected.has(t.savedTermId) ? [] : [t],
+        updateBookTermList((draft) =>
+          draft.filter((t) => !selected.has(t.savedTermId)),
         );
-        setBookTermList(newList);
+
         updateSelected((draft) => {
           draft.clear();
         });
@@ -158,6 +182,7 @@ export function BookTermList() {
     selected,
     setIsSelecting,
     setRemove,
+    updateBookTermList,
     updateSelected,
   ]);
 
@@ -170,10 +195,10 @@ export function BookTermList() {
       const res = await moveSaveAction({ moveTo, ids });
       if (!res.success) toast.error(res.error);
       else {
-        const newList = bookTermList.flatMap((t) =>
-          selected.has(t.savedTermId) ? [] : [t],
+        updateBookTermList((draft) =>
+          draft.filter((t) => !selected.has(t.savedTermId)),
         );
-        setBookTermList(newList);
+
         updateSelected((draft) => {
           draft.clear();
         });
@@ -190,6 +215,7 @@ export function BookTermList() {
     selected,
     setIsSelecting,
     setMoveTo,
+    updateBookTermList,
     updateSelected,
   ]);
 
@@ -202,7 +228,6 @@ export function BookTermList() {
   return (
     <div className={cn('min-h-100', 'flex items-center justify-center')}>
       {/* Loading */}
-
       {isLoading && <LoadingCircle />}
 
       {/* Empty */}
@@ -225,6 +250,10 @@ export function BookTermList() {
               <ContextMenu key={savedTermId}>
                 <ContextMenuTrigger>
                   <Button
+                    disabled={
+                      selected.has(savedTermId) &&
+                      (remove || doReview || deReview || !!moveTo)
+                    }
                     variant="ghost"
                     className="w-full flex flex-row items-center justify-between gap-x-10"
                     onClick={() => {
@@ -259,9 +288,53 @@ export function BookTermList() {
                   </Button>
                 </ContextMenuTrigger>
                 <ContextMenuContent className="p-2 flex flex-col gap-1">
-                  <ContextMenuItem>Delete</ContextMenuItem>
-                  <ContextMenuItem>
-                    {item.reviewCard ? 'Add review' : 'Cancel Review'}
+                  <ContextMenuItem
+                    onClick={async () => {
+                      setIsOperating(savedTermId);
+                      const res = await removeSaveAction([savedTermId]);
+                      if (!res.success) toast.error(res.error);
+                      else
+                        updateBookTermList((draft) =>
+                          draft.filter((t) => t.savedTermId !== savedTermId),
+                        );
+                      setIsOperating('');
+                    }}
+                  >
+                    Remove
+                  </ContextMenuItem>
+                  <ContextMenuItem
+                    onClick={async () => {
+                      setIsOperating(savedTermId);
+                      if (item.reviewCard) {
+                        const res = await addReviewAction([savedTermId]);
+                        if (!res.success) toast.error(res.error);
+                        else
+                          updateBookTermList((draft) =>
+                            draft.map((t) =>
+                              t.savedTermId !== savedTermId
+                                ? t
+                                : {
+                                    ...t,
+                                    reviewCards: res.data!.get(savedTermId),
+                                  },
+                            ),
+                          );
+                      } else {
+                        const res = await deleteReviewAction([savedTermId]);
+                        if (!res.success) toast.error(res.error);
+                        else
+                          updateBookTermList((draft) =>
+                            draft.map((t) =>
+                              t.savedTermId !== savedTermId
+                                ? t
+                                : { ...t, reviewCards: null },
+                            ),
+                          );
+                      }
+                      setIsOperating('');
+                    }}
+                  >
+                    {item.reviewCard ? 'Do-review' : 'De-review'}
                   </ContextMenuItem>
                   <ContextMenuItem>Move to</ContextMenuItem>
                   <ContextMenuItem>Modify</ContextMenuItem>

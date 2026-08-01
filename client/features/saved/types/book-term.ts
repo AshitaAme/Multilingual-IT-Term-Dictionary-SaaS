@@ -4,5 +4,5 @@ export interface BookTerm {
   name: string;
   text: string;
   savedTermId: string;
-  reviewCard?: ReviewCard | null;
+  reviewCard: ReviewCard | null;
 }

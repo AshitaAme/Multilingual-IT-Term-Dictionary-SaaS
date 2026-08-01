@@ -4,7 +4,12 @@ import { reviewCards } from '../schemas/dictionary.schema';
 
 export async function addReview(savedTermIds: string[]) {
   const payload = savedTermIds.map((id) => ({ savedTermId: id }));
-  await db.insert(reviewCards).values(payload).onConflictDoNothing();
+  const result = await db
+    .insert(reviewCards)
+    .values(payload)
+    .onConflictDoNothing()
+    .returning();
+  return result;
 }
 
 export async function deleteReview(savedTermIds: string[]) {
