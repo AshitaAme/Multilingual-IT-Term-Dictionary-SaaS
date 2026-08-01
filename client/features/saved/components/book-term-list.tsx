@@ -239,21 +239,22 @@ export function BookTermList() {
       {!isLoading && !isEmpty && mode === 'List' && (
         <div className="w-140 flex flex-col justify-center gap-3 ring-1 rounded-md p-6">
           {bookTermList.map((item, index) => {
+            const savedTermId = item.savedTermId;
             const count = index + 1;
             const inPage =
               count > (page - 1) * PAGE_SIZE && count <= page * PAGE_SIZE;
             console.log('page:', page);
             if (!inPage) return;
             const inReview = !!item.reviewCard;
-            const savedTermId = item.savedTermId;
+            const inOperation =
+              isOperating === savedTermId ||
+              (selected.has(savedTermId) &&
+                (remove || doReview || deReview || !!moveTo));
             return (
               <ContextMenu key={savedTermId}>
                 <ContextMenuTrigger>
                   <Button
-                    disabled={
-                      selected.has(savedTermId) &&
-                      (remove || doReview || deReview || !!moveTo)
-                    }
+                    disabled={inOperation}
                     variant="ghost"
                     className="w-full flex flex-row items-center justify-between gap-x-10"
                     onClick={() => {
@@ -336,22 +337,42 @@ export function BookTermList() {
                   >
                     {item.reviewCard ? 'Do-review' : 'De-review'}
                   </ContextMenuItem>
-                  <ContextMenuItem>Move to</ContextMenuItem>
+                  <ContextMenuItem
+                    onClick={async () => {
+                      setIsOperating(savedTermId);
+                      const res = await moveSaveAction({
+                        moveTo,
+                        ids: [savedTermId],
+                      });
+                      if (!res.success) toast.error(res.error);
+                      else
+                        updateBookTermList((draft) =>
+                          draft.filter((t) => t.savedTermId !== savedTermId),
+                        );
+                      setIsOperating('');
+                    }}
+                  >
+                    Move to
+                  </ContextMenuItem>
                   <ContextMenuItem>Modify</ContextMenuItem>
                 </ContextMenuContent>
               </ContextMenu>
             );
           })}
+
+          {/* Turning page */}
           <div className="w-full flex gap-6 items-center justify-center pt-4">
+            {/* Last page */}
             <Button
               disabled={page === 1}
               variant="ghost"
               onClick={() => setPage((prev) => prev - 1)}
             >
               <ChevronLeft />
-              <span>Last Page</span>
+              <span>Last page</span>
             </Button>
 
+            {/* Number of page */}
             <div className="flex items-center">
               {[...new Array(finalPage).keys()].map((i) => {
                 const pageNum = i + 1;
@@ -410,6 +431,7 @@ export function BookTermList() {
               })}
             </div>
 
+            {/* Next page */}
             <Button
               disabled={page === finalPage}
               variant="ghost"
