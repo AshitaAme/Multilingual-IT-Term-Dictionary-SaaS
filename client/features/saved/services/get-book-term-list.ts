@@ -11,7 +11,7 @@ export async function getBookTermList(bookId: string) {
     .select({
       name: savedTerms.name,
       text: savedTerms.text,
-      savedTermId: savedTerms.termId,
+      savedTermId: savedTerms.id,
       reviewCard: {
         stability: reviewCards.stability,
         difficulty: reviewCards.difficulty,

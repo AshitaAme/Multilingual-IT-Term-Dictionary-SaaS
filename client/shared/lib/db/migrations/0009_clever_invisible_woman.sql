@@ -1,0 +1,1 @@
+ALTER TABLE "review_card" ADD CONSTRAINT "uq_review_card_saved_term_id" UNIQUE("saved_term_id");

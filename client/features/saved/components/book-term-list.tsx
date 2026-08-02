@@ -22,7 +22,6 @@ import { deleteReviewAction } from '../actions/delete-review.action';
 import { removeSaveAction } from '../actions/remove-save.action';
 import { moveSaveAction } from '../actions/move-save.action';
 import { PAGE_SIZE } from '@/features/search/constants/search.constants';
-import { reviewCards } from '@/shared/lib/db/schemas/dictionary.schema';
 
 export function BookTermList() {
   enableMapSet();
@@ -219,7 +218,7 @@ export function BookTermList() {
     updateSelected,
   ]);
 
-  // Whether list is empty
+  // Check emptiness of list
   const isEmpty = useMemo(
     () => bookTermList.length === 0,
     [bookTermList.length],
@@ -245,7 +244,7 @@ export function BookTermList() {
               count > (page - 1) * PAGE_SIZE && count <= page * PAGE_SIZE;
             console.log('page:', page);
             if (!inPage) return;
-            const inReview = !!item.reviewCard;
+            const inReview = item.reviewCard !== null;
             const inOperation =
               isOperating === savedTermId ||
               (selected.has(savedTermId) &&
@@ -306,7 +305,7 @@ export function BookTermList() {
                   <ContextMenuItem
                     onClick={async () => {
                       setIsOperating(savedTermId);
-                      if (item.reviewCard) {
+                      if (!inReview) {
                         const res = await addReviewAction([savedTermId]);
                         if (!res.success) toast.error(res.error);
                         else
@@ -335,7 +334,7 @@ export function BookTermList() {
                       setIsOperating('');
                     }}
                   >
-                    {item.reviewCard ? 'Do-review' : 'De-review'}
+                    {!inReview ? 'Do-review' : 'De-review'}
                   </ContextMenuItem>
                   <ContextMenuItem
                     onClick={async () => {

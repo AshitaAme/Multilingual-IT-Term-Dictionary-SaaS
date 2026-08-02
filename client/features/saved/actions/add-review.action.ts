@@ -11,9 +11,7 @@ export async function addReviewAction(savedTermIds: string[]) {
   try {
     const res = await addReview(parsed.data);
     const map = new Map();
-    res.forEach((card) =>
-      map.getOrInsert(card.savedTermId, toReviewCard(card)),
-    );
+    res.forEach((card) => map.set(card.savedTermId, toReviewCard(card)));
     return { success: true, data: map };
   } catch (error) {
     console.error('[addReviewAction] Add review failed: ', error);

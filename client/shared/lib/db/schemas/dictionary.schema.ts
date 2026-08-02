@@ -164,6 +164,7 @@ export const reviewCards = pgTable(
       t.savedTermId,
       t.nextReviewAt,
     ),
+    unique('uq_review_card_saved_term_id').on(t.savedTermId),
   ],
 );
 

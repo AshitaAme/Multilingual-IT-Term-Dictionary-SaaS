@@ -68,7 +68,7 @@ export function SavedBooksDisplay() {
     setBookBeingUpserted('');
   };
 
-  const deleteBook = async (bookId: string, index: number) => {
+  const handleDeleteBook = async (bookId: string, index: number) => {
     setBookBeingDeleted(bookId);
     const res = await deleteBookAction(bookId);
     if (!res.success) toast.error(res.error);
@@ -138,7 +138,7 @@ export function SavedBooksDisplay() {
               className="absolute bottom-1/9 cursor-pointer opacity-70 hover:opacity-100"
               onClick={(e) => {
                 e.stopPropagation();
-                deleteBook(book.id, index);
+                handleDeleteBook(book.id, index);
               }}
             >
               <Trash2 />
