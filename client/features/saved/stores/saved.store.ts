@@ -12,6 +12,8 @@ interface BookState {
 interface OptionState {
   mode: 'List' | 'Card' | 'Review';
   setMode: (mode: 'List' | 'Card' | 'Review') => void;
+  query: string;
+  setQuery: (query: string) => void;
   all: boolean;
   setAll: (all: boolean) => void;
   clear: boolean;
@@ -38,6 +40,8 @@ export const useBookStore = create<BookState>((set) => ({
 export const useBookOptionStore = create<OptionState>((set) => ({
   mode: 'List',
   setMode: (mode) => set({ mode }),
+  query: '',
+  setQuery: (query) => set({ query }),
   all: false,
   setAll: (all) => set({ all }),
   clear: false,

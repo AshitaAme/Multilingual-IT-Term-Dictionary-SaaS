@@ -46,7 +46,7 @@ export function BookTermList() {
 
   // Book term operation options
   const [selected, updateSelected] = useImmer<Set<string>>(new Set()); // savedTermId
-  // const query = useBookOptionStore((state) => state.query);
+  const query = useBookOptionStore((state) => state.query);
   const mode = useBookOptionStore((state) => state.mode);
   const all = useBookOptionStore((state) => state.all);
   const clear = useBookOptionStore((state) => state.clear);
@@ -102,12 +102,15 @@ export function BookTermList() {
       if (!res.success) toast.error(res?.error);
       else {
         updateBookTermList((draft) =>
-          draft.map((t) =>
-            selected.has(t.savedTermId)
-              ? { ...t, reviewCards: res.data!.get(t.savedTermId) }
-              : t,
-          ),
+          draft.forEach((t) => {
+            if (selected.has(t.savedTermId)) {
+              t.reviewCard = res.data!.get(t.savedTermId);
+            }
+          }),
         );
+        updateSelected((draft) => {
+          draft.clear();
+        });
       }
 
       setDoReview(false);
@@ -122,6 +125,7 @@ export function BookTermList() {
     setDoReview,
     setIsSelecting,
     updateBookTermList,
+    updateSelected,
   ]);
 
   // De-review
@@ -134,10 +138,15 @@ export function BookTermList() {
       if (!res.success) toast.error(res.error);
       else {
         updateBookTermList((draft) =>
-          draft.map((t) =>
-            selected.has(t.savedTermId) ? { ...t, reviewCards: null } : t,
-          ),
+          draft.forEach((t) => {
+            if (selected.has(t.savedTermId)) {
+              t.reviewCard = null;
+            }
+          }),
         );
+        updateSelected((draft) => {
+          draft.clear();
+        });
       }
       setDeReview(false);
       setIsSelecting(false);
@@ -151,6 +160,7 @@ export function BookTermList() {
     setDeReview,
     setIsSelecting,
     updateBookTermList,
+    updateSelected,
   ]);
 
   // Remove

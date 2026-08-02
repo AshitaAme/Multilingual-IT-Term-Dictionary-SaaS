@@ -13,5 +13,7 @@ export async function addReview(savedTermIds: string[]) {
 }
 
 export async function deleteReview(savedTermIds: string[]) {
-  db.delete(reviewCards).where(inArray(reviewCards.id, savedTermIds));
+  await db
+    .delete(reviewCards)
+    .where(inArray(reviewCards.savedTermId, savedTermIds));
 }
