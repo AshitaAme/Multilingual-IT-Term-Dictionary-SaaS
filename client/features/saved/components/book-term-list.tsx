@@ -73,11 +73,16 @@ export function BookTermList() {
     fetchPage();
   }, [bookId, updateBookTermList]);
 
+  // Filter result by query
+  useEffect(() => {
+    updateBookTermList((draft) => draft.filter((t) => t.name.includes(query)));
+  }, [query, updateBookTermList]);
+
   // All
   useEffect(() => {
     if (!all) return;
     updateSelected((draft) => {
-      bookTermList.forEach((t) => !t.reviewCard && draft.add(t.savedTermId));
+      bookTermList.forEach((t) => draft.add(t.savedTermId));
     });
     setAll(false);
   }, [all, bookTermList, setAll, updateSelected]);
@@ -248,25 +253,32 @@ export function BookTermList() {
       {!isLoading && !isEmpty && mode === 'List' && (
         <div className="w-140 flex flex-col justify-center gap-3 ring-1 rounded-md p-6">
           {bookTermList.map((item, index) => {
-            const savedTermId = item.savedTermId;
+            // 1. Filter by page
             const count = index + 1;
             const inPage =
               count > (page - 1) * PAGE_SIZE && count <= page * PAGE_SIZE;
             console.log('page:', page);
             if (!inPage) return;
+
+            // 2. Status of the item
             const inReview = item.reviewCard !== null;
+            const savedTermId = item.savedTermId;
             const inOperation =
               isOperating === savedTermId ||
               (selected.has(savedTermId) &&
                 (remove || doReview || deReview || !!moveTo));
+
             return (
+              // Use context menu to operate each item separately
               <ContextMenu key={savedTermId}>
                 <ContextMenuTrigger>
+                  {/* Item button */}
                   <Button
                     disabled={inOperation}
                     variant="ghost"
                     className="w-full flex flex-row items-center justify-between gap-x-10"
                     onClick={() => {
+                      // Select the item
                       if (selected.has(savedTermId)) {
                         if (selected.size === 1) setIsSelecting(false);
                         updateSelected((draft) => {
@@ -280,11 +292,14 @@ export function BookTermList() {
                       }
                     }}
                   >
+                    {/* Item basic info */}
                     <div className="flex gap-x-4">
                       <span>{count < 10 ? '0' + count : count.toString()}</span>
                       <span>{item.name}</span>
                       {inReview && <ClockPlus />}
                     </div>
+
+                    {/* Mark for selected status */}
                     {selected.size !== 0 && (
                       <Circle
                         className={cn(
@@ -297,7 +312,10 @@ export function BookTermList() {
                     )}
                   </Button>
                 </ContextMenuTrigger>
+
+                {/* Operations */}
                 <ContextMenuContent className="p-2 flex flex-col gap-1">
+                  {/* Remove */}
                   <ContextMenuItem
                     onClick={async () => {
                       setIsOperating(savedTermId);
@@ -312,6 +330,8 @@ export function BookTermList() {
                   >
                     Remove
                   </ContextMenuItem>
+
+                  {/* Add/Delete review */}
                   <ContextMenuItem
                     onClick={async () => {
                       setIsOperating(savedTermId);
@@ -346,6 +366,8 @@ export function BookTermList() {
                   >
                     {!inReview ? 'Do-review' : 'De-review'}
                   </ContextMenuItem>
+
+                  {/* Move to */}
                   <ContextMenuItem
                     onClick={async () => {
                       setIsOperating(savedTermId);
@@ -381,7 +403,7 @@ export function BookTermList() {
               <span>Last page</span>
             </Button>
 
-            {/* Number of page */}
+            {/* Page number */}
             <div className="flex items-center">
               {[...new Array(finalPage).keys()].map((i) => {
                 const pageNum = i + 1;
