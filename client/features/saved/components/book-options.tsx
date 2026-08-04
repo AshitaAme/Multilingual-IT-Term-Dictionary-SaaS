@@ -17,13 +17,25 @@ import {
 } from 'lucide-react';
 import { useBookOptionStore, useBookStore } from '../stores/saved.store';
 import { Input } from '@/shared/components/ui/input';
-import { TooltipWrapper } from '@/shared/components/ui/tooltipWrapper';
 import { MAX_SEARCH_LIST_QUERY_LENGTH } from '@/features/search/constants/search.constants';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/shared/components/ui/dropdown-menu';
+import { useEffect, useState } from 'react';
+import { getSavedBooksAction } from '../actions/get-saved-books.action';
+import { toast } from 'sonner';
+import { SavedBook } from '../types/saved-book';
 
 export function BookOptions() {
+  const bookId = useBookStore((state) => state.bookId);
   const setOpenBook = useBookStore((state) => state.setOpenBook);
   const isSelecting = useBookStore((state) => state.isSelecting);
 
+  const query = useBookOptionStore((state) => state.query);
   const doReview = useBookOptionStore((state) => state.doReview);
   const deReview = useBookOptionStore((state) => state.deReview);
   const remove = useBookOptionStore((state) => state.remove);
@@ -36,6 +48,20 @@ export function BookOptions() {
   const setDeReview = useBookOptionStore((state) => state.setDeReview);
   const setRemove = useBookOptionStore((state) => state.setRemove);
   const setMoveTo = useBookOptionStore((state) => state.setMoveTo);
+
+  // Fetch books for moveTo menu
+  const [isFetchingBooks, setIsFetchingBooks] = useState(true);
+  const [savedBooks, setSavedBooks] = useState<SavedBook[]>([]);
+  useEffect(() => {
+    const fetchBooks = async () => {
+      setIsFetchingBooks(true);
+      const res = await getSavedBooksAction();
+      if (!res.success) toast.error(res.error);
+      else setSavedBooks(res.data!.filter((book) => book.id !== bookId));
+      setIsFetchingBooks(false);
+    };
+    fetchBooks();
+  }, [bookId]);
 
   return (
     <div
@@ -60,6 +86,7 @@ export function BookOptions() {
             maxLength={MAX_SEARCH_LIST_QUERY_LENGTH}
             className="bg-muted-foreground/10! focus:bg-muted-foreground/20! w-full border-0 pl-3 pr-8 rounded-md"
             onChange={(e) => setQuery(e.target.value)}
+            value={query}
           />
         </div>
       )}
@@ -128,14 +155,38 @@ export function BookOptions() {
             </Button>
 
             {/* Move to */}
-            <Button
-              disabled={moveTo !== ''}
-              variant="ghost"
-              onClick={() => setMoveTo('')}
-            >
-              <FolderPlus />
-              <span>Move to</span>
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  disabled={isFetchingBooks || savedBooks.length === 0}
+                  variant="ghost"
+                  onClick={() => setMoveTo('')}
+                >
+                  <FolderPlus />
+                  <span>Move to</span>
+                </Button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent align="center" sideOffset={5}>
+                {savedBooks.map((book, index) => {
+                  return (
+                    <div key={book.id}>
+                      {index !== 0 && (
+                        <DropdownMenuSeparator className="mx-2 mt-1" />
+                      )}
+                      <DropdownMenuItem
+                        className="flex items-center pl-3 hover:bg-muted-foreground/20!"
+                        onClick={() => setMoveTo(book.id)}
+                      >
+                        <span className={cn('w-20 inline-block truncate')}>
+                          {book.name}
+                        </span>
+                      </DropdownMenuItem>
+                    </div>
+                  );
+                })}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </>
         )}
       </div>

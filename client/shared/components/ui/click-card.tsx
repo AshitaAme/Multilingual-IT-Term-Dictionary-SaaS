@@ -13,8 +13,9 @@ export function ClickCard({
     <Card
       className={cn(
         'ring-0 rounded-b-xl',
-        'bg-background shadow-md hover:shadow-xl ',
-        'dark:border dark:border-white/15 dark:hover:border-foreground transition-all duration-100',
+        'bg-background shadow-md hover:shadow-xl duration-100',
+        'dark:bg-muted-foreground/10! dark:hover:bg-muted-foreground/20!',
+        'bg-muted-foreground/2 hover:bg-muted-foreground/8',
         className,
       )}
       {...props}

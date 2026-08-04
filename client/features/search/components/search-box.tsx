@@ -65,7 +65,7 @@ export function SearchBox({
           <Search
             onClick={handleSearch}
             size={15}
-            className="absolute right-2.5 bottom-1/2 translate-y-1/2 cursor-pointer hover:scale-110 transition-all duration-150"
+            className="absolute right-2.5 bottom-1/2 translate-y-1/2 cursor-pointer duration-150"
           />
         </TooltipWrapper>
       )}

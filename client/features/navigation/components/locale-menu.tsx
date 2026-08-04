@@ -40,10 +40,10 @@ export function LocaleMenu() {
           <Button
             size="icon"
             variant={'outline'}
-            className="hover:bg-muted  group/locale relative focus-visible:ring-0"
+            className="group/locale relative focus-visible:ring-0 border-0! bg-muted-foreground/10! hover:bg-muted-foreground/20!"
             disabled={isPending}
           >
-            <LanguagesIcon className="group-hover/locale:scale-110 transition-all duration-300" />
+            <LanguagesIcon className="" />
           </Button>
         </DropdownMenuTrigger>
       </TooltipWrapper>

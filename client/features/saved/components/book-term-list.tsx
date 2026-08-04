@@ -32,15 +32,6 @@ export function BookTermList() {
   const isSelecting = useBookStore((state) => state.isSelecting);
   const setIsSelecting = useBookStore((state) => state.setIsSelecting);
 
-  // Pagination
-  const [page, setPage] = useState(1);
-  const finalPage = useMemo(
-    () => Math.ceil(bookTermList.length / PAGE_SIZE),
-    [bookTermList.length],
-  );
-  const [enterPage, setEnterPage] = useState(false);
-  const [pageInput, setPageInput] = useState('');
-
   // Context menu operations
   const [isOperating, setIsOperating] = useState('');
 
@@ -74,9 +65,19 @@ export function BookTermList() {
   }, [bookId, updateBookTermList]);
 
   // Filter result by query
-  useEffect(() => {
-    updateBookTermList((draft) => draft.filter((t) => t.name.includes(query)));
-  }, [query, updateBookTermList]);
+  const filteredList = useMemo(
+    () => bookTermList.filter((t) => t.name.includes(query)),
+    [bookTermList, query],
+  );
+
+  // Pagination
+  const [page, setPage] = useState(1);
+  const finalPage = useMemo(
+    () => Math.ceil(filteredList.length / PAGE_SIZE),
+    [filteredList.length],
+  );
+  const [enterPage, setEnterPage] = useState(false);
+  const [pageInput, setPageInput] = useState('');
 
   // All
   useEffect(() => {
@@ -252,7 +253,7 @@ export function BookTermList() {
       {/* List mode */}
       {!isLoading && !isEmpty && mode === 'List' && (
         <div className="w-140 flex flex-col justify-center gap-3 ring-1 rounded-md p-6">
-          {bookTermList.map((item, index) => {
+          {filteredList.map((item, index) => {
             // 1. Filter by page
             const count = index + 1;
             const inPage =
