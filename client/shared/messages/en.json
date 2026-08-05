@@ -162,7 +162,11 @@
   "saved": {
     "errors": {
       "invalidInput": "Invalid input",
-      "addReviewFailed": "Add review failed"
+      "addReviewFailed": "Add review failed",
+      "deleteBookFailed": "Delete book failed",
+      "deleteReviewFailed": "Delete review failed",
+      "getSavedBooksFailed": "Get saved books failed",
+      "userNotFound": "User not found"
     }
   }
 }
