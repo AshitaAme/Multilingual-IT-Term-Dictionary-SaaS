@@ -158,5 +158,11 @@
         "languageCodeDuplicate": "Language codes must be unique"
       }
     }
+  },
+  "saved": {
+    "errors": {
+      "invalidInput": "Invalid input",
+      "addReviewFailed": "Add review failed"
+    }
   }
 }
