@@ -162,11 +162,20 @@
   "saved": {
     "errors": {
       "invalidInput": "Invalid input",
+      "invalidBook": "Invalid book",
+      "bookExists": "Book already Exists",
+      "checkBookFailed": "Check saved book existence failed",
+      "upsertBookFailed": "Upsert saved book failed",
+      "selectEmpty": "Must select over 1 item",
       "addReviewFailed": "Add review failed",
       "deleteBookFailed": "Delete book failed",
       "deleteReviewFailed": "Delete review failed",
       "getSavedBooksFailed": "Get saved books failed",
-      "userNotFound": "User not found"
+      "userNotFound": "User not found",
+      "moveSaveFailed": "Move saved term failed",
+      "removeSaveFailed": "Remove saved term failed",
+      "sameBookMoveForbidden": "Cannot move to the same book",
+      "bookNameOverLength": "Book name is over length (20)"
     }
   }
 }

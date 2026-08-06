@@ -1,10 +1,14 @@
-import { DEFAULT_TRANSLATOR, Translator } from '@/shared/types/translator';
+import { ServerTranslator } from '@/shared/utils/action-wrappers';
 import z from 'zod';
 
-export const createMoveSaveSchema = (t: Translator = DEFAULT_TRANSLATOR) => {
+export const createMoveSaveSchema = (t: ServerTranslator) => {
   return z.object({
-    moveTo: z.string().min(1, { message: 'Invalid move-to book id' }),
-    ids: z.array(z.string()).min(1, { message: 'Must be over 1 item' }),
+    moveTo: z
+      .string()
+      .min(1, { message: t ? t('invalidBook') : 'Invalid book' }),
+    ids: z
+      .array(z.string())
+      .min(1, { message: t ? t('selectEmpty') : 'Must select over 1 item' }),
   });
 };
 

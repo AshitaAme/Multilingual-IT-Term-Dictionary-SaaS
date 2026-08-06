@@ -1,9 +1,12 @@
 'use server';
 
 import { deleteSavedBook } from '@/shared/lib/db/mutations/saved-book.mutations';
-import { Translator, withTranslations } from '@/shared/utils/action-wrappers';
+import {
+  ServerTranslator,
+  withTranslations,
+} from '@/shared/utils/action-wrappers';
 
-async function deleteBookActionRaw(t: Translator, bookId: string) {
+async function deleteBookActionRaw(t: ServerTranslator, bookId: string) {
   // 1. Param validation
   if (!bookId || typeof bookId !== 'string')
     return { success: false, error: t ? t('invalidInput') : 'Invalid input' };

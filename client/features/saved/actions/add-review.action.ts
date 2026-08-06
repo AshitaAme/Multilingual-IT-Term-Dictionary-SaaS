@@ -3,10 +3,13 @@
 import { addReview } from '@/shared/lib/db/mutations/review-card.mutations';
 import { StringArraySchema } from '../schemas/string-array.schema';
 import { toReviewCard } from '../types/review-card';
-import { Translator, withTranslations } from '@/shared/utils/action-wrappers';
+import {
+  ServerTranslator,
+  withTranslations,
+} from '@/shared/utils/action-wrappers';
 
 export async function addReviewActionRaw(
-  t: Translator,
+  t: ServerTranslator,
   savedTermIds: string[],
 ) {
   // 1. Zod validation

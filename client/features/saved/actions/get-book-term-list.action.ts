@@ -1,9 +1,15 @@
 'use server';
 
-import { Translator, withTranslations } from '@/shared/utils/action-wrappers';
+import {
+  ServerTranslator,
+  withTranslations,
+} from '@/shared/utils/action-wrappers';
 import { getBookTermList } from '../services/get-book-term-list';
 
-export async function getBookTermListActionRaw(t: Translator, bookId: string) {
+export async function getBookTermListActionRaw(
+  t: ServerTranslator,
+  bookId: string,
+) {
   // 1. Param validation
   if (!bookId || typeof bookId !== 'string')
     return { success: false, error: t ? t('invalidInput') : 'Invalid input' };

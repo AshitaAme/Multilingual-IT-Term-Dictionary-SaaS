@@ -1,10 +1,12 @@
-import { DEFAULT_TRANSLATOR, Translator } from '@/shared/types/translator';
+import { ServerTranslator } from '@/shared/utils/action-wrappers';
 import z from 'zod';
 
-export const createUpsertBookSchema = (t: Translator = DEFAULT_TRANSLATOR) => {
+export const createUpsertBookSchema = (t: ServerTranslator) => {
   return z.object({
-    name: z.string().max(20, 'Name is too long'),
-    bookId: z.string().min(1),
+    name: z
+      .string()
+      .max(20, t ? t('bookNameOverLength') : 'Book name is over length (20)'),
+    bookId: z.string().min(1, t ? t('invalidBook') : 'Invalid book'),
   });
 };
 

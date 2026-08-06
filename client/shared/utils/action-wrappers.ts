@@ -2,16 +2,16 @@ import { getTranslations } from 'next-intl/server';
 import { auth } from '../lib/auth/auth';
 import { Session } from 'next-auth';
 
-export type Translator =
+export type ServerTranslator =
   | Awaited<ReturnType<typeof getTranslations>>
   | undefined;
 
 export function withTranslations<TInput extends unknown[], TOutput>(
   namespace: string,
-  action: (t: Translator, ...args: TInput) => Promise<TOutput>,
+  action: (t: ServerTranslator, ...args: TInput) => Promise<TOutput>,
 ) {
   return async (...args: TInput): Promise<TOutput> => {
-    let t: Translator;
+    let t: ServerTranslator;
 
     try {
       t = await getTranslations(namespace);
@@ -44,13 +44,13 @@ export function withAuthAndTranslations<TInput extends unknown[], TOutput>(
   namespace: string,
   action: (
     session: Session | null,
-    t: Translator,
+    t: ServerTranslator,
     ...args: TInput
   ) => Promise<TOutput>,
 ) {
   return async (...args: TInput): Promise<TOutput> => {
     let session: Session | null = null;
-    let t: Translator;
+    let t: ServerTranslator;
     try {
       session = await auth();
     } catch (err) {
