@@ -29,17 +29,21 @@ import { useEffect, useState } from 'react';
 import { getSavedBooksAction } from '../actions/get-saved-books.action';
 import { toast } from 'sonner';
 import { SavedBook } from '../types/saved-book';
+import { useTranslations } from 'next-intl';
 
 export function BookOptions() {
+  const t = useTranslations('saved.bookOptions');
+
+  // Book status
   const bookId = useBookStore((state) => state.bookId);
   const setOpenBook = useBookStore((state) => state.setOpenBook);
   const isSelecting = useBookStore((state) => state.isSelecting);
 
+  // Operation options based on select
   const query = useBookOptionStore((state) => state.query);
   const doReview = useBookOptionStore((state) => state.doReview);
   const deReview = useBookOptionStore((state) => state.deReview);
   const remove = useBookOptionStore((state) => state.remove);
-  const moveTo = useBookOptionStore((state) => state.moveTo);
   const setMode = useBookOptionStore((state) => state.setMode);
   const setQuery = useBookOptionStore((state) => state.setQuery);
   const setAll = useBookOptionStore((state) => state.setAll);
@@ -49,7 +53,7 @@ export function BookOptions() {
   const setRemove = useBookOptionStore((state) => state.setRemove);
   const setMoveTo = useBookOptionStore((state) => state.setMoveTo);
 
-  // Fetch books for moveTo menu
+  // Fetch books for move-to menu
   const [isFetchingBooks, setIsFetchingBooks] = useState(true);
   const [savedBooks, setSavedBooks] = useState<SavedBook[]>([]);
   useEffect(() => {
@@ -57,7 +61,7 @@ export function BookOptions() {
       setIsFetchingBooks(true);
       const res = await getSavedBooksAction();
       if (!res.success) toast.error(res.error);
-      else setSavedBooks(res.data!.filter((book) => book.id !== bookId));
+      else setSavedBooks(res.data!.filter((book) => book.id !== bookId)); // Filter out the current book
       setIsFetchingBooks(false);
     };
     fetchBooks();
@@ -70,12 +74,15 @@ export function BookOptions() {
         !isSelecting ? 'justify-between' : 'justify-center',
       )}
     >
+      {/* Back */}
       {!isSelecting && (
         <Button variant="ghost" onClick={() => setOpenBook(false)}>
           <ChevronLeft />
-          <span>Back</span>
+          <span>{t('back')}</span>
         </Button>
       )}
+
+      {/* Query filter */}
       {!isSelecting && (
         <div className="w-40 relative">
           <Search
@@ -91,35 +98,38 @@ export function BookOptions() {
         </div>
       )}
 
+      {/* Display mode */}
       <div className="flex gap-2">
         {!isSelecting && (
           <>
             <Button variant="ghost" onClick={() => setMode('List')}>
               <List />
-              <span>List</span>
+              <span>{t('list')}</span>
             </Button>
             <Button variant="ghost" onClick={() => setMode('Card')}>
               <Diamond />
-              <span>Card</span>
+              <span>{t('card')}</span>
             </Button>
             <Button variant="ghost" onClick={() => setMode('Review')}>
               <Clock />
-              <span>Review</span>
+              <span>{t('review')}</span>
             </Button>
           </>
         )}
+
+        {/* Operation options */}
         {isSelecting && (
           <>
             {/* All */}
             <Button variant="ghost" onClick={() => setAll(true)}>
               <WalletCards />
-              <span>All</span>
+              <span>{t('all')}</span>
             </Button>
 
             {/* Clear */}
             <Button variant="ghost" onClick={() => setClear(true)}>
               <Eraser />
-              <span>Clear</span>
+              <span>{t('clear')}</span>
             </Button>
 
             {/* Review */}
@@ -130,7 +140,7 @@ export function BookOptions() {
             >
               <ClockPlus />
 
-              <span>Do-review</span>
+              <span>{t('doReview')}</span>
             </Button>
 
             {/* De-review */}
@@ -141,7 +151,7 @@ export function BookOptions() {
             >
               <ClockFading />
 
-              <span>De-review</span>
+              <span>{t('deReview')}</span>
             </Button>
 
             {/* Remove */}
@@ -151,7 +161,7 @@ export function BookOptions() {
               onClick={() => setRemove(true)}
             >
               <Trash2 />
-              <span>Remove</span>
+              <span>{t('remove')}</span>
             </Button>
 
             {/* Move to */}
@@ -160,13 +170,13 @@ export function BookOptions() {
                 <Button
                   disabled={isFetchingBooks || savedBooks.length === 0}
                   variant="ghost"
-                  onClick={() => setMoveTo('')}
                 >
                   <FolderPlus />
-                  <span>Move to</span>
+                  <span>{t('moveTo')}</span>
                 </Button>
               </DropdownMenuTrigger>
 
+              {/* Move-to menu */}
               <DropdownMenuContent align="center" sideOffset={5}>
                 {savedBooks.map((book, index) => {
                   return (

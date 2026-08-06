@@ -22,9 +22,12 @@ import { deleteReviewAction } from '../actions/delete-review.action';
 import { removeSaveAction } from '../actions/remove-save.action';
 import { moveSaveAction } from '../actions/move-save.action';
 import { PAGE_SIZE } from '@/features/search/constants/search.constants';
+import { useTranslations } from 'next-intl';
 
 export function BookTermList() {
+  const t = useTranslations('saved.bookTermList');
   enableMapSet();
+
   // Book status
   const bookId = useBookStore((state) => state.bookId);
   const [bookTermList, updateBookTermList] = useImmer<BookTerm[]>([]);
@@ -247,7 +250,7 @@ export function BookTermList() {
 
       {/* Empty */}
       {!isLoading && isEmpty && (
-        <span className="font-semibold">Still Empty...</span>
+        <span className="font-semibold">{t('stillEmpty')}</span>
       )}
 
       {/* List mode */}
@@ -329,7 +332,7 @@ export function BookTermList() {
                       setIsOperating('');
                     }}
                   >
-                    Remove
+                    {t('remove')}
                   </ContextMenuItem>
 
                   {/* Add/Delete review */}
@@ -365,7 +368,7 @@ export function BookTermList() {
                       setIsOperating('');
                     }}
                   >
-                    {!inReview ? 'Do-review' : 'De-review'}
+                    {!inReview ? t('doReview') : t('deReview')}
                   </ContextMenuItem>
 
                   {/* Move to */}
@@ -384,9 +387,9 @@ export function BookTermList() {
                       setIsOperating('');
                     }}
                   >
-                    Move to
+                    {t('moveTo')}
                   </ContextMenuItem>
-                  <ContextMenuItem>Modify</ContextMenuItem>
+                  <ContextMenuItem>{t('modify')}</ContextMenuItem>
                 </ContextMenuContent>
               </ContextMenu>
             );
@@ -394,14 +397,14 @@ export function BookTermList() {
 
           {/* Turning page */}
           <div className="w-full flex gap-6 items-center justify-center pt-4">
-            {/* Last page */}
+            {/* Prev */}
             <Button
               disabled={page === 1}
               variant="ghost"
               onClick={() => setPage((prev) => prev - 1)}
             >
               <ChevronLeft />
-              <span>Last page</span>
+              <span>{t('prev')}</span>
             </Button>
 
             {/* Page number */}
@@ -469,7 +472,7 @@ export function BookTermList() {
               variant="ghost"
               onClick={() => setPage((prev) => prev + 1)}
             >
-              <span>Next Page</span>
+              <span>{t('next')}</span>
               <ChevronRight />
             </Button>
           </div>

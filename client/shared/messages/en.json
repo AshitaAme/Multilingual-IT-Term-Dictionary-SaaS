@@ -176,6 +176,27 @@
       "removeSaveFailed": "Remove saved term failed",
       "sameBookMoveForbidden": "Cannot move to the same book",
       "bookNameOverLength": "Book name is over length (20)"
+    },
+    "bookOptions": {
+      "back": "Back",
+      "list": "List",
+      "card": "Card",
+      "review": "Review",
+      "all": "All",
+      "clear": "Clear",
+      "doReview": "Do-review",
+      "deReview": "De-review",
+      "moveTo": "Move to"
+    },
+    "bookTermList": {
+      "stillEmpty": "Still empty...",
+      "remove": "Remove",
+      "doReview": "Do-review",
+      "deReview": "De-review",
+      "moveTo": "Move to",
+      "modify": "Modify",
+      "prev": "Prev",
+      "next": "Next"
     }
   }
 }
