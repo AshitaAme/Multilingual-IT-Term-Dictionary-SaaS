@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { SavedBook } from '../types/saved-book';
+import { BookTerm } from '../types/book-term';
 
 interface SavedState {
   savedBooks: SavedBook[];
@@ -34,6 +35,11 @@ interface OptionState {
   setRemove: (remove: boolean) => void;
 }
 
+interface ModifyState {
+  modifiedTerm: BookTerm | null;
+  setModifiedTerm: (modifiedTerm: BookTerm | null) => void;
+}
+
 export const useSavedStore = create<SavedState>((set) => ({
   savedBooks: [],
   setSavedBooks: (savedBooks) => set({ savedBooks }),
@@ -65,4 +71,9 @@ export const useBookOptionStore = create<OptionState>((set) => ({
   setMoveTo: (moveTo) => set({ moveTo }),
   remove: false,
   setRemove: (remove) => set({ remove }),
+}));
+
+export const useModifyState = create<ModifyState>((set) => ({
+  modifiedTerm: null,
+  setModifiedTerm: (modifiedTerm) => set({ modifiedTerm }),
 }));
