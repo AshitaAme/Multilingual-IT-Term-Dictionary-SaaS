@@ -1,4 +1,10 @@
 import { create } from 'zustand';
+import { SavedBook } from '../types/saved-book';
+
+interface SavedState {
+  savedBooks: SavedBook[];
+  setSavedBooks: (savedBooks: SavedBook[]) => void;
+}
 
 interface BookState {
   openBook: boolean; // bookId
@@ -27,6 +33,11 @@ interface OptionState {
   remove: boolean;
   setRemove: (remove: boolean) => void;
 }
+
+export const useSavedStore = create<SavedState>((set) => ({
+  savedBooks: [],
+  setSavedBooks: (savedBooks) => set({ savedBooks }),
+}));
 
 export const useBookStore = create<BookState>((set) => ({
   openBook: false,

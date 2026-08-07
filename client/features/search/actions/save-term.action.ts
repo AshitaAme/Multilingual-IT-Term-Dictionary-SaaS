@@ -40,7 +40,7 @@ export async function saveTermAction(data: SaveTermInput) {
   try {
     await saveTerms(payload);
 
-    // 4. Success
+    // 5. Success
     return { success: true };
   } catch (err) {
     console.error('[saveTermAction] Save term failed: ', err);

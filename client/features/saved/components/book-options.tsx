@@ -15,7 +15,11 @@ import {
   Trash2,
   Search,
 } from 'lucide-react';
-import { useBookOptionStore, useBookStore } from '../stores/saved.store';
+import {
+  useBookOptionStore,
+  useBookStore,
+  useSavedStore,
+} from '../stores/saved.store';
 import { Input } from '@/shared/components/ui/input';
 import { MAX_SEARCH_LIST_QUERY_LENGTH } from '@/features/search/constants/search.constants';
 import {
@@ -25,10 +29,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/shared/components/ui/dropdown-menu';
-import { useEffect, useState } from 'react';
-import { getSavedBooksAction } from '../actions/get-saved-books.action';
-import { toast } from 'sonner';
-import { SavedBook } from '../types/saved-book';
 import { useTranslations } from 'next-intl';
 
 export function BookOptions() {
@@ -53,19 +53,8 @@ export function BookOptions() {
   const setRemove = useBookOptionStore((state) => state.setRemove);
   const setMoveTo = useBookOptionStore((state) => state.setMoveTo);
 
-  // Fetch books for move-to menu
-  const [isFetchingBooks, setIsFetchingBooks] = useState(true);
-  const [savedBooks, setSavedBooks] = useState<SavedBook[]>([]);
-  useEffect(() => {
-    const fetchBooks = async () => {
-      setIsFetchingBooks(true);
-      const res = await getSavedBooksAction();
-      if (!res.success) toast.error(res.error);
-      else setSavedBooks(res.data!.filter((book) => book.id !== bookId)); // Filter out the current book
-      setIsFetchingBooks(false);
-    };
-    fetchBooks();
-  }, [bookId]);
+  // Used for move-to menu
+  const savedBooks = useSavedStore((state) => state.savedBooks);
 
   return (
     <div
@@ -167,32 +156,30 @@ export function BookOptions() {
             {/* Move to */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  disabled={isFetchingBooks || savedBooks.length === 0}
-                  variant="ghost"
-                >
+                <Button variant="ghost">
                   <FolderPlus />
                   <span>{t('moveTo')}</span>
                 </Button>
               </DropdownMenuTrigger>
 
               {/* Move-to menu */}
-              <DropdownMenuContent align="center" sideOffset={5}>
-                {savedBooks.map((book, index) => {
+              <DropdownMenuContent
+                align="center"
+                sideOffset={5}
+                className="p-2 flex flex-col gap-1"
+              >
+                {savedBooks.map((book) => {
+                  if (bookId === book.id) return;
                   return (
-                    <div key={book.id}>
-                      {index !== 0 && (
-                        <DropdownMenuSeparator className="mx-2 mt-1" />
-                      )}
-                      <DropdownMenuItem
-                        className="flex items-center pl-3 hover:bg-muted-foreground/20!"
-                        onClick={() => setMoveTo(book.id)}
-                      >
-                        <span className={cn('w-20 inline-block truncate')}>
-                          {book.name}
-                        </span>
-                      </DropdownMenuItem>
-                    </div>
+                    <DropdownMenuItem
+                      key={book.id}
+                      className="flex items-center hover:bg-muted-foreground/20!"
+                      onClick={() => setMoveTo(book.id)}
+                    >
+                      <span className={cn('w-20 inline-block truncate')}>
+                        {book.name}
+                      </span>
+                    </DropdownMenuItem>
                   );
                 })}
               </DropdownMenuContent>

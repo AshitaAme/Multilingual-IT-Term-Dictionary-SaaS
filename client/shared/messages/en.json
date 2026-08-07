@@ -186,6 +186,7 @@
       "clear": "Clear",
       "doReview": "Do-review",
       "deReview": "De-review",
+      "remove": "Remove",
       "moveTo": "Move to"
     },
     "bookTermList": {

@@ -1,7 +1,11 @@
 'use client';
 
 import { toast } from 'sonner';
-import { useBookOptionStore, useBookStore } from '../stores/saved.store';
+import {
+  useBookOptionStore,
+  useBookStore,
+  useSavedStore,
+} from '../stores/saved.store';
 import { useEffect, useMemo, useState } from 'react';
 import { getBookTermListAction } from '../actions/get-book-term-list.action';
 import { BookTerm } from '../types/book-term';
@@ -14,6 +18,9 @@ import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
   ContextMenuTrigger,
 } from '@/shared/components/ui/context-menu';
 import { enableMapSet } from 'immer';
@@ -37,6 +44,7 @@ export function BookTermList() {
 
   // Context menu operations
   const [isOperating, setIsOperating] = useState('');
+  const savedBooks = useSavedStore((state) => state.savedBooks);
 
   // Book term operation options
   const [selected, updateSelected] = useImmer<Set<string>>(new Set()); // savedTermId
@@ -321,6 +329,7 @@ export function BookTermList() {
                 <ContextMenuContent className="p-2 flex flex-col gap-1">
                   {/* Remove */}
                   <ContextMenuItem
+                    className="hover:bg-muted-foreground/20!"
                     onClick={async () => {
                       setIsOperating(savedTermId);
                       const res = await removeSaveAction([savedTermId]);
@@ -337,6 +346,7 @@ export function BookTermList() {
 
                   {/* Add/Delete review */}
                   <ContextMenuItem
+                    className="hover:bg-muted-foreground/20!"
                     onClick={async () => {
                       setIsOperating(savedTermId);
                       if (!inReview) {
@@ -372,24 +382,46 @@ export function BookTermList() {
                   </ContextMenuItem>
 
                   {/* Move to */}
-                  <ContextMenuItem
-                    onClick={async () => {
-                      setIsOperating(savedTermId);
-                      const res = await moveSaveAction({
-                        moveTo,
-                        ids: [savedTermId],
-                      });
-                      if (!res.success) toast.error(res.error);
-                      else
-                        updateBookTermList((draft) =>
-                          draft.filter((t) => t.savedTermId !== savedTermId),
+                  <ContextMenuSub>
+                    <ContextMenuSubTrigger className="hover:bg-muted-foreground/20!">
+                      {t('moveTo')}
+                    </ContextMenuSubTrigger>
+                    <ContextMenuSubContent
+                      sideOffset={8}
+                      className="p-2 flex flex-col gap-1"
+                    >
+                      {savedBooks.map((book) => {
+                        if (book.id === bookId) return;
+                        return (
+                          <ContextMenuItem
+                            className="hover:bg-muted-foreground/20!"
+                            key={book.id}
+                            onClick={async () => {
+                              setIsOperating(savedTermId);
+                              const res = await moveSaveAction({
+                                moveTo,
+                                ids: [savedTermId],
+                              });
+                              if (!res.success) toast.error(res.error);
+                              else
+                                updateBookTermList((draft) =>
+                                  draft.filter(
+                                    (t) => t.savedTermId !== savedTermId,
+                                  ),
+                                );
+                              setIsOperating('');
+                            }}
+                          >
+                            {book.name}
+                          </ContextMenuItem>
                         );
-                      setIsOperating('');
-                    }}
-                  >
-                    {t('moveTo')}
+                      })}
+                    </ContextMenuSubContent>
+                  </ContextMenuSub>
+
+                  <ContextMenuItem className="hover:bg-muted-foreground/20!">
+                    {t('modify')}
                   </ContextMenuItem>
-                  <ContextMenuItem>{t('modify')}</ContextMenuItem>
                 </ContextMenuContent>
               </ContextMenu>
             );

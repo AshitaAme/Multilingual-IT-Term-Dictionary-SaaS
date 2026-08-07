@@ -3,10 +3,9 @@
 import { useEffect, useState } from 'react';
 import { getSavedBooksAction } from '../actions/get-saved-books.action';
 import { toast } from 'sonner';
-import { useBookStore } from '../stores/saved.store';
+import { useBookStore, useSavedStore } from '../stores/saved.store';
 import { useRouter } from 'next/navigation';
 import { Check, Plus, Trash2 } from 'lucide-react';
-import { SavedBook } from '../types/saved-book';
 import { upsertBookAction } from '../actions/upsert-book.action';
 import { LoadingCircle } from '@/shared/components/ui/loading-circle';
 import { ClickCard } from '@/shared/components/ui/click-card';
@@ -16,7 +15,8 @@ import { deleteBookAction } from '../actions/delete-book.action';
 import { FanOutCards } from './fan-out-cards';
 
 export function SavedBooksDisplay() {
-  const [savedBooks, setSavedBooks] = useState<SavedBook[]>([]);
+  const savedBooks = useSavedStore((state) => state.savedBooks);
+  const setSavedBooks = useSavedStore((state) => state.setSavedBooks);
   const setOpenBook = useBookStore((state) => state.setOpenBook);
   const setBookId = useBookStore((state) => state.setBookId);
   const router = useRouter();
@@ -35,7 +35,7 @@ export function SavedBooksDisplay() {
       setIsFetchingBooks(false);
     };
     fetchBook();
-  }, [router]);
+  }, [router, setSavedBooks]);
 
   const handleOpenBook = (bookId: string) => {
     setBookId(bookId);
@@ -57,10 +57,10 @@ export function SavedBooksDisplay() {
     if (!res.success) toast.error(res.error);
     else {
       const upsertedBook = { id: bookId, name };
-      if (isAdding) setSavedBooks((prev) => [...prev, upsertedBook]);
+      if (isAdding) setSavedBooks([...savedBooks, upsertedBook]);
       else
-        setSavedBooks((prev) =>
-          prev.map((book) =>
+        setSavedBooks(
+          savedBooks.map((book) =>
             book.id === bookBeingNamed ? upsertedBook : book,
           ),
         );
@@ -72,7 +72,7 @@ export function SavedBooksDisplay() {
     setBookBeingDeleted(bookId);
     const res = await deleteBookAction(bookId);
     if (!res.success) toast.error(res.error);
-    else setSavedBooks((prev) => prev.filter((_, i) => i !== index));
+    else setSavedBooks(savedBooks.filter((_, i) => i !== index));
     setBookBeingDeleted('');
   };
 
