@@ -2,6 +2,7 @@ import { Card } from '@/shared/components/ui/card';
 import { cn } from '@/shared/utils/utils';
 import { Astroid, Sparkle, Star } from 'lucide-react';
 
+// Used for loading
 export function FanOutCards() {
   const total = 10;
   const cards = new Array(total);

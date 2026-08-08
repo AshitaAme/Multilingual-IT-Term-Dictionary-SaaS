@@ -73,7 +73,7 @@ export const useBookOptionStore = create<OptionState>((set) => ({
   setRemove: (remove) => set({ remove }),
 }));
 
-export const useModifyState = create<ModifyState>((set) => ({
+export const useModifyStore = create<ModifyState>((set) => ({
   modifiedTerm: null,
   setModifiedTerm: (modifiedTerm) => set({ modifiedTerm }),
 }));
