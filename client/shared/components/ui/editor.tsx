@@ -4,14 +4,7 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import { Button } from './button';
-import {
-  AxeIcon,
-  Bold,
-  Italic,
-  LetterText,
-  LetterTextIcon,
-  List,
-} from 'lucide-react';
+import { AxeIcon, Bold, Italic, List } from 'lucide-react';
 import { TooltipWrapper } from './tooltipWrapper';
 import { cn } from '@/shared/utils/utils';
 import { FieldSeparator } from './field';
@@ -39,7 +32,7 @@ export default function Editor({
   if (!editor) return null;
 
   return (
-    <div className="border rounded-md">
+    <div className="h-full border rounded-md">
       <div className="flex items-center justify-start p-2">
         <TooltipWrapper label={'Bold'} side="top">
           <Button
@@ -88,7 +81,7 @@ export default function Editor({
       <EditorContent
         editor={editor}
         className={cn(
-          'h-105 prose [&_.ProseMirror]:outline-none [&_.ProseMirror]:h-full [&_.ProseMirror]:min-h-full',
+          'h-full prose [&_.ProseMirror]:outline-none [&_.ProseMirror]:h-full [&_.ProseMirror]:min-h-full',
           'rounded-md ring-muted-foreground/20',
           'overflow-y-auto p-4',
         )}

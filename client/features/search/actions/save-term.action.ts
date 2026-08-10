@@ -1,6 +1,6 @@
 'use server';
 
-import { saveTerms } from '../services/save-term';
+import { saveTerms } from '../services/save-terms';
 import {
   createSaveTermSchema,
   SaveTermInput,

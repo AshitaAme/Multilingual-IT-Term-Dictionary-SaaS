@@ -46,7 +46,10 @@ export function BookTermList() {
   // Context menu operations
   const [isOperating, setIsOperating] = useState('');
   const savedBooks = useSavedStore((state) => state.savedBooks);
+  const modifiedTerm = useModifyStore((state) => state.modifiedTerm);
   const setModifiedTerm = useModifyStore((state) => state.setModifiedTerm);
+  const updatedText = useModifyStore((state) => state.updatedText);
+  const setUpdatedText = useModifyStore((state) => state.setUpdatedText);
 
   // Book term operation options
   const [selected, updateSelected] = useImmer<Set<string>>(new Set()); // savedTermId
@@ -247,6 +250,17 @@ export function BookTermList() {
     updateSelected,
   ]);
 
+  // Modify operation
+  useEffect(() => {
+    if (modifiedTerm === null || updatedText === null) return;
+    updateBookTermList((draft) => {
+      draft.forEach((t) => {
+        if (t.savedTermId === modifiedTerm.savedTermId) t.text = updatedText;
+      });
+    });
+    setUpdatedText(null);
+  }, [modifiedTerm, setUpdatedText, updateBookTermList, updatedText]);
+
   // Check emptiness of list
   const isEmpty = useMemo(
     () => bookTermList.length === 0,
@@ -383,6 +397,7 @@ export function BookTermList() {
                     {!inReview ? t('doReview') : t('deReview')}
                   </ContextMenuItem>
 
+                  {/* Modify */}
                   <ContextMenuItem
                     className="hover:bg-muted-foreground/20!"
                     onClick={() => setModifiedTerm(item)}

@@ -175,7 +175,9 @@
       "moveSaveFailed": "Move saved term failed",
       "removeSaveFailed": "Remove saved term failed",
       "sameBookMoveForbidden": "Cannot move to the same book",
-      "bookNameOverLength": "Book name is over length (20)"
+      "bookNameOverLength": "Book name is over length (20)",
+      "updateTermTextFailed": "Update term text failed",
+      "textOverLength": "Text is over length (1000)"
     },
     "bookOptions": {
       "back": "Back",

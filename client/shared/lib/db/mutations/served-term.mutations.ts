@@ -3,6 +3,8 @@ import { db } from '../db';
 import { savedTerms } from '../schemas/dictionary.schema';
 
 export async function upsertSavedTerm(values: {
+  name: string;
+  text: string;
   userId: string;
   termId: string;
 }) {

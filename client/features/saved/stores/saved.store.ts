@@ -38,6 +38,8 @@ interface OptionState {
 interface ModifyState {
   modifiedTerm: BookTerm | null;
   setModifiedTerm: (modifiedTerm: BookTerm | null) => void;
+  updatedText: string | null;
+  setUpdatedText: (updatedText: string | null) => void;
 }
 
 export const useSavedStore = create<SavedState>((set) => ({
@@ -76,4 +78,6 @@ export const useBookOptionStore = create<OptionState>((set) => ({
 export const useModifyStore = create<ModifyState>((set) => ({
   modifiedTerm: null,
   setModifiedTerm: (modifiedTerm) => set({ modifiedTerm }),
+  updatedText: null,
+  setUpdatedText: (updatedText) => set({ updatedText }),
 }));
