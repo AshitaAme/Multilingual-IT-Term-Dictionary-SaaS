@@ -12,7 +12,8 @@ export async function moveSaveActionRaw(t: ServerTranslator, data: MoveSave) {
   // 1. Zod validation
   const MoveSaveSchema = createMoveSaveSchema(t);
   const parsed = MoveSaveSchema.safeParse(data);
-  if (!parsed.success) return { success: false, error: 'Invalid input' };
+  if (!parsed.success)
+    return { success: false, error: t ? t('invalidInput') : 'Invalid input' };
 
   // 2. Check origin and destination (should not be equal)
   try {

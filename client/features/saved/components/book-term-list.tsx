@@ -31,6 +31,7 @@ import { removeSaveAction } from '../actions/remove-save.action';
 import { moveSaveAction } from '../actions/move-save.action';
 import { PAGE_SIZE } from '@/features/search/constants/search.constants';
 import { useTranslations } from 'next-intl';
+import { BookTermCard } from './book-term-card';
 
 export function BookTermList() {
   const t = useTranslations('saved.bookTermList');
@@ -277,7 +278,10 @@ export function BookTermList() {
         <span className="font-semibold">{t('stillEmpty')}</span>
       )}
 
-      {/* List mode */}
+      {/* Card mode */}
+      {!isLoading && !isEmpty && mode !== 'List' && (<BookTermCard bookTermList={bookTermList} updateBookTermList={updateBookTermList}/> mode={mode})}
+
+      {/* List mode*/}
       {!isLoading && !isEmpty && mode === 'List' && (
         <div className="w-140 flex flex-col justify-center gap-3 ring-1 rounded-md p-6">
           {filteredList.map((item, index) => {
@@ -423,7 +427,7 @@ export function BookTermList() {
                             onClick={async () => {
                               setIsOperating(savedTermId);
                               const res = await moveSaveAction({
-                                moveTo,
+                                moveTo: book.id,
                                 ids: [savedTermId],
                               });
                               if (!res.success) toast.error(res.error);
@@ -530,6 +534,8 @@ export function BookTermList() {
           </div>
         </div>
       )}
+
+      {/* Card mode */}
     </div>
   );
 }
