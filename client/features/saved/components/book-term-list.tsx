@@ -269,21 +269,33 @@ export function BookTermList() {
   );
 
   return (
-    <div className={cn('min-h-100', 'flex items-center justify-center')}>
+    <div className={cn('w-full min-h-100 flex justify-center')}>
       {/* Loading */}
-      {isLoading && <LoadingCircle />}
+      {isLoading && (
+        <div className="h-100 flex items-center">
+          <LoadingCircle />
+        </div>
+      )}
 
       {/* Empty */}
       {!isLoading && isEmpty && (
-        <span className="font-semibold">{t('stillEmpty')}</span>
+        <div className="h-100 flex items-center">
+          <span className="font-semibold">{t('stillEmpty')}</span>
+        </div>
       )}
 
       {/* Card mode */}
-      {!isLoading && !isEmpty && mode !== 'List' && (<BookTermCard bookTermList={bookTermList} updateBookTermList={updateBookTermList}/> mode={mode})}
+      {!isLoading && !isEmpty && mode !== 'List' && (
+        <BookTermCard
+          bookTermList={bookTermList}
+          updateBookTermList={updateBookTermList}
+          mode={mode}
+        />
+      )}
 
-      {/* List mode*/}
+      {/* List mode */}
       {!isLoading && !isEmpty && mode === 'List' && (
-        <div className="w-140 flex flex-col justify-center gap-3 ring-1 rounded-md p-6">
+        <div className="w-140 flex flex-col not-even:justify-center gap-3 ring-1 rounded-md p-6">
           {filteredList.map((item, index) => {
             // 1. Filter by page
             const count = index + 1;

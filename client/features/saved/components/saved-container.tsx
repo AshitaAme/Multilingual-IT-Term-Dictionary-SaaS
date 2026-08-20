@@ -12,7 +12,7 @@ export function SavedContainer() {
   const modifiedTerm = useModifyStore((state) => state.modifiedTerm);
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       {modifiedTerm !== null && (
         <div className="fixed inset-0 flex items-center justify-center backdrop-blur z-50">
           <TermModifyCard />
@@ -21,7 +21,7 @@ export function SavedContainer() {
       {openBook && (
         <div
           className={cn(
-            'w-full px-[20%] py-[10%] flex flex-col gap-10 justify-center items-center',
+            'w-full px-[20%] py-[10%] lg:py-[7%] flex flex-col gap-15 justify-center items-center',
           )}
         >
           <BookOptions />

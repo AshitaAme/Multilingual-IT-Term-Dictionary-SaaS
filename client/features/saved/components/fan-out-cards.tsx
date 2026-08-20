@@ -12,7 +12,7 @@ export function FanOutCards() {
       <style>{`
         @keyframes fanOutLoop {
           0% { transform: rotate(-45deg); opacity: 0.3; }
-          15% {opacity: 1; }
+          15% { opacity: 1; }
           65% { transform: rotate(var(--target-angle)); opacity: 1; }
           85% { transform: rotate(var(--target-angle)); opacity: 0; }
           100% { transform: rotate(-45deg); opacity: 0; }
