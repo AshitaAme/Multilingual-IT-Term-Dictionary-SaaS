@@ -12,7 +12,7 @@ import { getBookTermListAction } from '../actions/get-book-term-list.action';
 import { BookTerm } from '../types/book-term';
 import { cn } from '@/shared/utils/utils';
 import { Button } from '@/shared/components/ui/button';
-import { ChevronLeft, ChevronRight, Circle, ClockPlus } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Circle } from 'lucide-react';
 import { useImmer } from 'use-immer';
 import { LoadingCircle } from '@/shared/components/ui/loading-circle';
 import {
@@ -32,6 +32,7 @@ import { moveSaveAction } from '../actions/move-save.action';
 import { PAGE_SIZE } from '@/features/search/constants/search.constants';
 import { useTranslations } from 'next-intl';
 import { BookTermCard } from './book-term-card';
+import { ReviewProgress } from './review-progress';
 
 export function BookTermList() {
   const t = useTranslations('saved.bookTermList');
@@ -295,7 +296,7 @@ export function BookTermList() {
 
       {/* List mode */}
       {!isLoading && !isEmpty && mode === 'List' && (
-        <div className="w-140 flex flex-col not-even:justify-center gap-3 ring-1 rounded-md p-6">
+        <div className="w-140 flex flex-col not-even:justify-center gap-3 ring-1 ring-foreground/10 rounded-md p-6">
           {filteredList.map((item, index) => {
             // 1. Filter by page
             const count = index + 1;
@@ -320,7 +321,7 @@ export function BookTermList() {
                   <Button
                     disabled={inOperation}
                     variant="ghost"
-                    className="w-full flex flex-row items-center justify-between gap-x-10"
+                    className="w-full flex items-center justify-between gap-x-10"
                     onClick={() => {
                       // Select the item
                       if (selected.has(savedTermId)) {
@@ -337,10 +338,10 @@ export function BookTermList() {
                     }}
                   >
                     {/* Item basic info */}
-                    <div className="flex gap-x-4">
+                    <div className="flex gap-x-4 items-center">
                       <span>{count < 10 ? '0' + count : count.toString()}</span>
                       <span>{item.name}</span>
-                      {inReview && <ClockPlus />}
+                      {inReview && <ReviewProgress term={item} />}
                     </div>
 
                     {/* Mark for selected status */}
@@ -546,8 +547,6 @@ export function BookTermList() {
           </div>
         </div>
       )}
-
-      {/* Card mode */}
     </div>
   );
 }

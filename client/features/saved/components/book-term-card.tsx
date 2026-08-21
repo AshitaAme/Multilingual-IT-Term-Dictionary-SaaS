@@ -4,8 +4,9 @@ import { useMemo, useState } from 'react';
 import { BookTerm } from '../types/book-term';
 import { Card, CardContent, CardTitle } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, SquarePen } from 'lucide-react';
 import { cn } from '@/shared/utils/utils';
+import { useModifyStore } from '../stores/saved.store';
 
 export function BookTermCard({
   bookTermList,
@@ -22,12 +23,14 @@ export function BookTermCard({
     [bookTermList, shownTerm],
   );
   const [showText, setShowText] = useState(false);
+  const setModifiedTerm = useModifyStore((state) => state.setModifiedTerm);
+
   return (
-    <Card className="w-140 h-90 bg-background relative rounded-lg py-0">
+    <div className="w-160 h-90 relative flex justify-center items-center">
       <Button
         variant="outline"
         size="icon"
-        className="absolute left-4 top-0 bottom-0 my-auto h-8 w-8 rounded-full z-20"
+        className="absolute left-0 top-0 bottom-0 my-auto h-8 w-8 rounded-full z-20"
         disabled={shownTerm === 0}
         onClick={() => {
           setShownTerm((prev) => prev - 1);
@@ -38,7 +41,7 @@ export function BookTermCard({
       </Button>
       <Button
         variant="outline"
-        className="absolute right-4 top-0 bottom-0 my-auto h-8 w-8 rounded-full z-20"
+        className="absolute right-0 top-0 bottom-0 my-auto h-8 w-8 rounded-full z-20"
         disabled={shownTerm === bookTermList.length - 1}
         onClick={() => {
           setShownTerm((prev) => prev + 1);
@@ -48,32 +51,38 @@ export function BookTermCard({
         <ChevronRight />
       </Button>
 
-      <CardTitle className="px-8 pt-6 flex flex-col gap-1">
-        <span className="text-sm font-normal text-foreground/50">
-          {shownTerm + 1} / {bookTermList.length}
-        </span>
-        <span className="text-2xl">{term.name}</span>
-      </CardTitle>
+      <Card className="w-130 h-80 bg-background relative rounded-lg py-0">
+        <CardTitle className="px-8 pt-6 flex flex-col gap-1">
+          <span className="text-sm font-normal text-foreground/50">
+            {shownTerm + 1} / {bookTermList.length}
+          </span>
+          <div className="flex items-baseline gap-1">
+            <span className="text-2xl">{term.name}</span>
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={() => setModifiedTerm(term)}
+            >
+              <SquarePen />
+            </Button>
+          </div>
+        </CardTitle>
 
-      <CardContent className="flex flex-1 min-h-0 justify-center overflow-hidden py-4">
-        <div
-          className={cn(
-            'w-100 h-full flex justify-center overflow-auto',
-            !showText && 'relative',
-          )}
-        >
+        <CardContent className="flex flex-1 justify-center overflow-auto relative px-10 pb-6">
           {!showText && (
             <Button
               variant="outline"
               onClick={() => setShowText(true)}
-              className="rounded-md absolute bottom-8"
+              className="rounded-md absolute bottom-10"
             >
               <span>Show text</span>
             </Button>
           )}
-          {showText && <span>{term.text}</span>}
-        </div>
-      </CardContent>
-    </Card>
+          {showText && (
+            <span className="max-h-full overflow-auto px-4">{term.text}</span>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }
