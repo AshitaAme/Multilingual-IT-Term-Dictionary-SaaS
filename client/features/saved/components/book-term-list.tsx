@@ -287,11 +287,7 @@ export function BookTermList() {
 
       {/* Card mode */}
       {!isLoading && !isEmpty && mode !== 'List' && (
-        <BookTermCard
-          bookTermList={bookTermList}
-          updateBookTermList={updateBookTermList}
-          mode={mode}
-        />
+        <BookTermCard bookTermList={bookTermList} mode={mode} />
       )}
 
       {/* List mode */}

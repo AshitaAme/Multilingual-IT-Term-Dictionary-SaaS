@@ -7,7 +7,7 @@ export function ReviewProgress({
   className = '',
 }: Readonly<{ term: BookTerm; className?: string }>) {
   const percentage = calculateRetention(term.reviewCard!);
-  //   const percentage = 90;
+  // const percentage = 90;
 
   return (
     <div
