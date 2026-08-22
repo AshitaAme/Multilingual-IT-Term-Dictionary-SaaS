@@ -5,7 +5,7 @@ import {
   withTranslations,
 } from '@/shared/utils/action-wrappers';
 import { createMoveSaveSchema, MoveSave } from '../schemas/move-save.schema';
-import { getBookIdByTerm } from '../services/get-book-id-by-term';
+import { getBookId } from '../services/get-book-id';
 import { moveSave } from '../services/move-save';
 
 export async function moveSaveActionRaw(t: ServerTranslator, data: MoveSave) {
@@ -17,7 +17,7 @@ export async function moveSaveActionRaw(t: ServerTranslator, data: MoveSave) {
 
   // 2. Check origin and destination (should not be equal)
   try {
-    const bookIds = await getBookIdByTerm(data.ids);
+    const bookIds = await getBookId(data.ids);
     const res = bookIds.filter(({ bookId }) => bookId === data.moveTo);
     if (res.length !== 0)
       return {

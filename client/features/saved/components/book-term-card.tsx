@@ -1,18 +1,16 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { BookTerm } from '../types/book-term';
 import { Card, CardContent, CardTitle } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
-import {
-  ChevronLeft,
-  ChevronRight,
-  SeparatorVertical,
-  SquarePen,
-} from 'lucide-react';
+import { ChevronLeft, ChevronRight, SquarePen } from 'lucide-react';
 import { useModifyStore } from '../stores/saved.store';
 import { cn } from '@/shared/utils/utils';
-import { Separator } from '@/shared/components/ui/separator';
+import { Rating } from 'ts-fsrs';
+import { updateReviewAction } from '../actions/update-review.action';
+import { toast } from 'sonner';
+import { useImmer } from 'use-immer';
 
 export function BookTermCard({
   bookTermList,
@@ -21,29 +19,40 @@ export function BookTermCard({
   bookTermList: BookTerm[];
   mode: 'Card' | 'Review';
 }>) {
+  const now = new Date();
   const cardMode = mode === 'Card';
-  const waitReview = bookTermList.filter(
-    (t) =>
-      t.reviewCard &&
-      t.reviewCard.nextReviewAt.getTime() < new Date().getTime(),
+  const initialWaitReview = bookTermList.filter(
+    (t) => t.reviewCard && t.reviewCard.nextReviewAt.getTime() < now.getTime(),
   );
-  const total = cardMode ? bookTermList.length : waitReview.length;
-  const [shownTerm, setShownTerm] = useState(() =>
-    cardMode ? 0 : Math.floor(Math.random() * waitReview.length),
-  );
+  const initialShownTermIdx = () =>
+    cardMode ? 0 : Math.floor(Math.random() * initialWaitReview.length);
+  const total = cardMode ? bookTermList.length : initialWaitReview.length;
+
+  const [waitReview, updateWaitReview] = useImmer(initialWaitReview);
+  const [shownTermIdx, setShownTermIdx] = useState(initialShownTermIdx);
   const [reviewed, setReviewed] = useState(0);
 
   const term = useMemo(
-    () => bookTermList[shownTerm],
-    [bookTermList, shownTerm],
+    () => bookTermList[shownTermIdx],
+    [bookTermList, shownTermIdx],
   );
 
   const [showText, setShowText] = useState(false);
   const setModifiedTerm = useModifyStore((state) => state.setModifiedTerm);
-  const handleReviewClick = (remember: boolean) => {
-    if (remember) {
-      setReviewed((prev) => prev + 1);
+
+  const handleReviewClick = async (rating: 1 | 2 | 3 | 4) => {
+    setReviewed((prev) => prev + 1);
+
+    if (rating !== 1) {
+      updateWaitReview((draft) => draft.filter((_, i) => i !== shownTermIdx));
     }
+    setShownTermIdx(Math.floor(Math.random() * waitReview.length));
+
+    const res = await updateReviewAction({
+      savedTermId: term.savedTermId,
+      rating,
+    });
+    if (!res.success) toast.error(res.error);
   };
 
   return (
@@ -55,9 +64,9 @@ export function BookTermCard({
               variant="outline"
               size="icon"
               className="absolute left-0 top-0 bottom-0 my-auto h-8 w-8 rounded-full z-20"
-              disabled={shownTerm === 0}
+              disabled={shownTermIdx === 0}
               onClick={() => {
-                setShownTerm((prev) => prev - 1);
+                setShownTermIdx((prev) => prev - 1);
                 setShowText(false);
               }}
             >
@@ -66,9 +75,9 @@ export function BookTermCard({
             <Button
               variant="outline"
               className="absolute right-0 top-0 bottom-0 my-auto h-8 w-8 rounded-full z-20"
-              disabled={shownTerm === total - 1}
+              disabled={shownTermIdx === total - 1}
               onClick={() => {
-                setShownTerm((prev) => prev + 1);
+                setShownTermIdx((prev) => prev + 1);
                 setShowText(false);
               }}
             >
@@ -80,7 +89,7 @@ export function BookTermCard({
         <Card className="w-130 h-80 bg-background relative rounded-lg py-0 space-y-0">
           <CardTitle className="px-8 pt-6 flex flex-col gap-1">
             <span className="text-sm font-normal text-foreground/50">
-              {shownTerm + 1} / {total}
+              {cardMode ? shownTermIdx + 1 : reviewed} / {total}
             </span>
             <div className="flex items-baseline gap-1">
               <span className="text-2xl">{term.name}</span>
@@ -117,12 +126,32 @@ export function BookTermCard({
       </div>
       {!cardMode && (
         <div className="w-160 flex gap-4 items-center justify-center">
-          <Button variant="ghost" onClick={() => handleReviewClick(true)}>
-            Yes
+          <Button
+            variant="ghost"
+            onClick={() => handleReviewClick(Rating.Easy)}
+          >
+            Easy
           </Button>
           <span>|</span>
-          <Button variant="ghost" onClick={() => handleReviewClick(true)}>
-            No
+          <Button
+            variant="ghost"
+            onClick={() => handleReviewClick(Rating.Good)}
+          >
+            Good
+          </Button>
+          <span>|</span>
+          <Button
+            variant="ghost"
+            onClick={() => handleReviewClick(Rating.Hard)}
+          >
+            Hard
+          </Button>
+          <span>|</span>
+          <Button
+            variant="ghost"
+            onClick={() => handleReviewClick(Rating.Again)}
+          >
+            Again
           </Button>
         </div>
       )}
