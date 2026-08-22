@@ -7,8 +7,6 @@ const scheduler = fsrs({
   enable_short_term: true,
   learning_steps: ['1m', '10m'],
   relearning_steps: ['10m'],
-  // request_retention: 0.9,
-  // maximum_interval: 36500,
 });
 
 function toFsrsState(state: string): State {
@@ -32,6 +30,7 @@ function fromFsrsState(state: State): string {
 }
 
 export async function updateReview(savedTermId: string, rating: Grade) {
+  // 1. Get current review card
   const [current] = await db
     .select()
     .from(reviewCards)
@@ -41,6 +40,7 @@ export async function updateReview(savedTermId: string, rating: Grade) {
     throw new Error(`Review card not found for savedTermId: ${savedTermId}`);
   }
 
+  // 2. Create a card to be updated
   const now = new Date();
   const card: Card = {
     due: current.nextReviewAt,
@@ -57,6 +57,7 @@ export async function updateReview(savedTermId: string, rating: Grade) {
 
   const { card: updated } = scheduler.next(card, now, rating);
 
+  // 3. Insert updated card
   await db
     .update(reviewCards)
     .set({

@@ -11,6 +11,7 @@ import { Rating } from 'ts-fsrs';
 import { updateReviewAction } from '../actions/update-review.action';
 import { toast } from 'sonner';
 import { useImmer } from 'use-immer';
+import { useTranslations } from 'next-intl';
 
 export function BookTermCard({
   bookTermList,
@@ -19,27 +20,29 @@ export function BookTermCard({
   bookTermList: BookTerm[];
   mode: 'Card' | 'Review';
 }>) {
+  const t = useTranslations('saved.bookTermCard');
   const now = new Date();
   const cardMode = mode === 'Card';
   const initialWaitReview = bookTermList.filter(
     (t) => t.reviewCard && t.reviewCard.nextReviewAt.getTime() < now.getTime(),
   );
+
   const initialShownTermIdx = () =>
     cardMode ? 0 : Math.floor(Math.random() * initialWaitReview.length);
   const total = cardMode ? bookTermList.length : initialWaitReview.length;
 
-  const [waitReview, updateWaitReview] = useImmer(initialWaitReview);
-  const [shownTermIdx, setShownTermIdx] = useState(initialShownTermIdx);
+  const [waitReview, updateWaitReview] = useImmer(initialWaitReview); // Terms to be reviewed
+  const [shownTermIdx, setShownTermIdx] = useState(initialShownTermIdx); // Index of current shown term
   const [reviewed, setReviewed] = useState(0);
 
-  const term = useMemo(
+  const shownTerm = useMemo(
     () => bookTermList[shownTermIdx],
     [bookTermList, shownTermIdx],
   );
-
-  const [showText, setShowText] = useState(false);
+  const [showDef, setShowDef] = useState(false);
   const setModifiedTerm = useModifyStore((state) => state.setModifiedTerm);
 
+  // Review
   const handleReviewClick = async (rating: 1 | 2 | 3 | 4) => {
     setReviewed((prev) => prev + 1);
 
@@ -49,7 +52,7 @@ export function BookTermCard({
     setShownTermIdx(Math.floor(Math.random() * waitReview.length));
 
     const res = await updateReviewAction({
-      savedTermId: term.savedTermId,
+      savedTermId: shownTerm.savedTermId,
       rating,
     });
     if (!res.success) toast.error(res.error);
@@ -58,6 +61,7 @@ export function BookTermCard({
   return (
     <div className="w-160 h-90">
       <div className="w-160 h-90 relative flex justify-center items-center p-0 space-y-0">
+        {/* Page turing buttons in card mode */}
         {cardMode && (
           <>
             <Button
@@ -67,7 +71,7 @@ export function BookTermCard({
               disabled={shownTermIdx === 0}
               onClick={() => {
                 setShownTermIdx((prev) => prev - 1);
-                setShowText(false);
+                setShowDef(false);
               }}
             >
               <ChevronLeft />
@@ -78,7 +82,7 @@ export function BookTermCard({
               disabled={shownTermIdx === total - 1}
               onClick={() => {
                 setShownTermIdx((prev) => prev + 1);
-                setShowText(false);
+                setShowDef(false);
               }}
             >
               <ChevronRight />
@@ -86,72 +90,79 @@ export function BookTermCard({
           </>
         )}
 
+        {/* Term info */}
         <Card className="w-130 h-80 bg-background relative rounded-lg py-0 space-y-0">
           <CardTitle className="px-8 pt-6 flex flex-col gap-1">
             <span className="text-sm font-normal text-foreground/50">
               {cardMode ? shownTermIdx + 1 : reviewed} / {total}
             </span>
             <div className="flex items-baseline gap-1">
-              <span className="text-2xl">{term.name}</span>
+              {/* Modify term */}
+              <span className="text-2xl">{shownTerm.name}</span>
               <Button
                 size="icon"
                 variant="ghost"
-                onClick={() => setModifiedTerm(term)}
+                onClick={() => setModifiedTerm(shownTerm)}
               >
                 <SquarePen />
               </Button>
             </div>
           </CardTitle>
 
+          {/* Term definition */}
           <CardContent
             className={cn(
               'flex flex-1 overflow-auto relative px-10 pb-6 py-2',
-              showText && cardMode ? 'justify-start' : 'justify-center',
+              showDef && cardMode ? 'justify-start' : 'justify-center',
             )}
           >
-            {!showText && (
+            {!showDef && (
               <Button
                 variant="outline"
-                onClick={() => setShowText(true)}
+                onClick={() => setShowDef(true)}
                 className="rounded-md absolute bottom-25"
               >
-                <span>Show text</span>
+                {t('showDef')}
               </Button>
             )}
-            {showText && (
-              <span className="max-h-full overflow-auto px-4">{term.text}</span>
+            {showDef && (
+              <span className="max-h-full overflow-auto px-4">
+                {shownTerm.text}
+              </span>
             )}
           </CardContent>
         </Card>
       </div>
+
+      {/* Rating for review */}
       {!cardMode && (
         <div className="w-160 flex gap-4 items-center justify-center">
           <Button
             variant="ghost"
             onClick={() => handleReviewClick(Rating.Easy)}
           >
-            Easy
+            {t('easy')}
           </Button>
           <span>|</span>
           <Button
             variant="ghost"
             onClick={() => handleReviewClick(Rating.Good)}
           >
-            Good
+            {t('good')}
           </Button>
           <span>|</span>
           <Button
             variant="ghost"
             onClick={() => handleReviewClick(Rating.Hard)}
           >
-            Hard
+            {t('hard')}
           </Button>
           <span>|</span>
           <Button
             variant="ghost"
             onClick={() => handleReviewClick(Rating.Again)}
           >
-            Again
+            {t('again')}
           </Button>
         </div>
       )}

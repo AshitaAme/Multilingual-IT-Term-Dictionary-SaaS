@@ -163,6 +163,7 @@
     "errors": {
       "invalidInput": "Invalid input",
       "invalidBook": "Invalid book",
+      "invalidTermId": "Invalid term id",
       "bookExists": "Book already Exists",
       "checkBookFailed": "Check saved book existence failed",
       "upsertBookFailed": "Upsert saved book failed",
@@ -177,7 +178,10 @@
       "sameBookMoveForbidden": "Cannot move to the same book",
       "bookNameOverLength": "Book name is over length (20)",
       "updateTermTextFailed": "Update term text failed",
-      "textOverLength": "Text is over length (1000)"
+      "textOverLength": "Text is over length (1000)",
+      "ratingRequired": "Rating is required",
+      "invalidRating": "Invalid rating number",
+      "updateReviewFailed": "Update review failed"
     },
     "bookOptions": {
       "back": "Back",
@@ -200,6 +204,13 @@
       "modify": "Modify",
       "prev": "Prev",
       "next": "Next"
+    },
+    "bookTermCard": {
+      "showDef": "Definition",
+      "easy": "Easy",
+      "good": "Good",
+      "hard": "Hard",
+      "again": "Again"
     }
   }
 }

@@ -3,15 +3,15 @@ import z from 'zod';
 
 export const createUpdateReviewSchema = (t: ServerTranslator) => {
   return z.object({
-    savedTermId: z.string().min(1, t ? t('validation.required') : ''),
+    savedTermId: z.string().min(1, t ? t('invalidTermId') : ''),
     rating: z
       .number({
-        required_error: t ? t('validation.required') : '',
-        invalid_type_error: t ? t('validation.invalidType') : '',
+        required_error: t ? t('ratingRequired') : '',
+        invalid_type_error: t ? t('invalidRating') : '',
       })
       .int()
-      .min(1, t ? t('validation.ratingRange') : '')
-      .max(4, t ? t('validation.ratingRange') : ''),
+      .min(1, t ? t('invalidRating') : '')
+      .max(4, t ? t('invalidRating') : ''),
   });
 };
 
