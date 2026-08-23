@@ -2,7 +2,7 @@
 
 import { Separator } from '@/shared/components/ui/separator';
 import { createPortal } from 'react-dom';
-import { useOpenTermStore } from '../stores/search.store';
+import { useOpenTermStore, useSearchOptionStore } from '../stores/search.store';
 import {
   Card,
   CardContent,
@@ -35,6 +35,7 @@ export function TermInfo() {
   const userId = session.data?.user.id;
   const [isLoading, setIsLoading] = useState(true);
   const [isTogglingStar, setIsTogglingStar] = useState(false);
+  const toSaveBook = useSearchOptionStore((state) => state.toSaveBook);
 
   // Check whether the term is saved
   useEffect(() => {
@@ -79,11 +80,14 @@ export function TermInfo() {
         toast.error(res.error);
       }
     } else {
-      const res = await saveTermAction({
-        termId,
-        name: term.displayName,
-        text: getTextFromTerm(term),
-      });
+      const res = await saveTermAction([
+        {
+          savedBookId: toSaveBook.id,
+          termId,
+          name: term.displayName,
+          text: getTextFromTerm(term),
+        },
+      ]);
       if (res.success) {
         setSaved(true);
       } else {
