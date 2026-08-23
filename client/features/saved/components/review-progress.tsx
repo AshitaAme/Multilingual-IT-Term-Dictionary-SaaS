@@ -6,7 +6,7 @@ export function ReviewProgress({
   term,
   className = '',
 }: Readonly<{ term: BookTerm; className?: string }>) {
-  const percentage = calculateRetention(term.reviewCard!);
+  const percentage = calculateLearningProgress(term.reviewCard!);
   // const percentage = 90;
 
   return (
@@ -24,18 +24,16 @@ export function ReviewProgress({
   );
 }
 
-export function calculateRetention(card: ReviewCard) {
+export function calculateLearningProgress(card: ReviewCard) {
   if (card.state === 'new' || !card.lastReviewAt) {
     return 0;
   }
 
-  const now = new Date();
-  const msPerDay = 1000 * 60 * 60 * 24;
-  const elapsedDays = (now.getTime() - card.lastReviewAt.getTime()) / msPerDay;
+  const TARGET_STABILITY = 21;
 
-  if (card.stability <= 0) return 0;
+  const MIN_PROGRESS = 8;
 
-  const retention = Math.pow(0.9, elapsedDays / card.stability);
+  const progress = (card.stability / TARGET_STABILITY) * 100;
 
-  return Math.min(Math.max(retention * 100, 0), 100);
+  return Math.min(Math.max(progress, MIN_PROGRESS), 100);
 }

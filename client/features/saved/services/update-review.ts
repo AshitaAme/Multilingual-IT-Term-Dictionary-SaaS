@@ -44,7 +44,7 @@ export async function updateReview(savedTermId: string, rating: Grade) {
   const now = new Date();
   const card: Card = {
     due: current.nextReviewAt,
-    stability: current.stability,
+    stability: Math.max(current.stability, 0.1),
     difficulty: current.difficulty,
     elapsed_days: 0,
     scheduled_days: 0,

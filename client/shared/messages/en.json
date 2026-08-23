@@ -190,17 +190,17 @@
       "review": "Review",
       "all": "All",
       "clear": "Clear",
-      "doReview": "Do-review",
-      "deReview": "De-review",
+      "doReview": "Add",
+      "deReview": "Cancel",
       "remove": "Remove",
-      "moveTo": "Move to"
+      "moveTo": "Move"
     },
     "bookTermList": {
       "stillEmpty": "Still empty...",
       "remove": "Remove",
-      "doReview": "Do-review",
-      "deReview": "De-review",
-      "moveTo": "Move to",
+      "doReview": "Add review",
+      "deReview": "Cancel review",
+      "moveTo": "Move",
       "modify": "Modify",
       "prev": "Prev",
       "next": "Next"

@@ -26,7 +26,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/shared/components/ui/dropdown-menu';
 import { useTranslations } from 'next-intl';
@@ -40,6 +39,7 @@ export function BookOptions() {
   const isSelecting = useBookStore((state) => state.isSelecting);
 
   // Operation options based on select
+  const mode = useBookOptionStore((state) => state.mode);
   const query = useBookOptionStore((state) => state.query);
   const doReview = useBookOptionStore((state) => state.doReview);
   const deReview = useBookOptionStore((state) => state.deReview);
@@ -91,15 +91,27 @@ export function BookOptions() {
       <div className="flex gap-2">
         {!isSelecting && (
           <>
-            <Button variant="ghost" onClick={() => setMode('List')}>
+            <Button
+              className={cn(mode === 'List' && 'bg-muted dark:bg-muted/50')}
+              variant="ghost"
+              onClick={() => setMode('List')}
+            >
               <List />
               <span>{t('list')}</span>
             </Button>
-            <Button variant="ghost" onClick={() => setMode('Card')}>
+            <Button
+              className={cn(mode === 'Card' && 'bg-muted dark:bg-muted/50')}
+              variant="ghost"
+              onClick={() => setMode('Card')}
+            >
               <Diamond />
               <span>{t('card')}</span>
             </Button>
-            <Button variant="ghost" onClick={() => setMode('Review')}>
+            <Button
+              className={cn(mode === 'Review' && 'bg-muted dark:bg-muted/50')}
+              variant="ghost"
+              onClick={() => setMode('Review')}
+            >
               <Clock />
               <span>{t('review')}</span>
             </Button>
@@ -128,7 +140,6 @@ export function BookOptions() {
               onClick={() => setDoReview(true)}
             >
               <ClockPlus />
-
               <span>{t('doReview')}</span>
             </Button>
 

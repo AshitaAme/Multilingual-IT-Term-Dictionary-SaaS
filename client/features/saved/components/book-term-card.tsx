@@ -10,7 +10,7 @@ import { cn } from '@/shared/utils/utils';
 import { Rating } from 'ts-fsrs';
 import { updateReviewAction } from '../actions/update-review.action';
 import { toast } from 'sonner';
-import { useImmer } from 'use-immer';
+import { Updater, useImmer } from 'use-immer';
 import { useTranslations } from 'next-intl';
 
 export function BookTermCard({
@@ -26,42 +26,106 @@ export function BookTermCard({
   const initialWaitReview = bookTermList.filter(
     (t) => t.reviewCard && t.reviewCard.nextReviewAt.getTime() < now.getTime(),
   );
-
+  const total = cardMode ? bookTermList.length : initialWaitReview.length;
   const initialShownTermIdx = () =>
     cardMode ? 0 : Math.floor(Math.random() * initialWaitReview.length);
-  const total = cardMode ? bookTermList.length : initialWaitReview.length;
 
   const [waitReview, updateWaitReview] = useImmer(initialWaitReview); // Terms to be reviewed
   const [shownTermIdx, setShownTermIdx] = useState(initialShownTermIdx); // Index of current shown term
   const [reviewed, setReviewed] = useState(0);
+  const reviewEnd = useMemo(
+    () => !cardMode && reviewed === total,
+    [cardMode, reviewed, total],
+  );
 
   const shownTerm = useMemo(
-    () => bookTermList[shownTermIdx],
-    [bookTermList, shownTermIdx],
+    () => (cardMode ? bookTermList[shownTermIdx] : waitReview[shownTermIdx]),
+    [bookTermList, cardMode, shownTermIdx, waitReview],
   );
   const [showDef, setShowDef] = useState(false);
   const setModifiedTerm = useModifyStore((state) => state.setModifiedTerm);
 
   // Review
   const handleReviewClick = async (rating: 1 | 2 | 3 | 4) => {
-    setReviewed((prev) => prev + 1);
+    const currentTerm = shownTerm;
+    if (!currentTerm) return;
+    let nextWaitReviewLength = waitReview.length;
 
     if (rating !== 1) {
       updateWaitReview((draft) => draft.filter((_, i) => i !== shownTermIdx));
+      setReviewed((prev) => prev + 1);
+      nextWaitReviewLength -= 1;
     }
-    setShownTermIdx(Math.floor(Math.random() * waitReview.length));
+    if (nextWaitReviewLength <= 0) {
+      setShownTermIdx(0);
+    } else {
+      const nextIdx = Math.floor(Math.random() * nextWaitReviewLength);
+      setShownTermIdx(nextIdx);
+    }
+
+    setShowDef(false);
 
     const res = await updateReviewAction({
       savedTermId: shownTerm.savedTermId,
       rating,
     });
-    if (!res.success) toast.error(res.error);
+    if (!res.success) {
+      toast.error(res.error);
+    }
   };
+
+  const cardInfo = reviewEnd ? (
+    <div className="h-full w-full flex items-center justify-center text-2xl font-semibold pb-6">
+      Congratulations
+    </div>
+  ) : (
+    <>
+      <CardTitle className="px-8 pt-6 flex flex-col gap-1">
+        <span className="text-sm font-normal text-foreground/50">
+          {cardMode ? shownTermIdx + 1 : reviewed} / {total}
+        </span>
+        <div className="flex items-baseline gap-1">
+          {/* Modify term */}
+          <span className="text-2xl">{shownTerm.name}</span>
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={() => setModifiedTerm(shownTerm)}
+          >
+            <SquarePen />
+          </Button>
+        </div>
+      </CardTitle>
+
+      {/* Term definition */}
+      <CardContent
+        className={cn(
+          'flex flex-1 overflow-auto relative px-10 pb-6 py-2',
+          showDef && cardMode ? 'justify-start' : 'justify-center',
+        )}
+      >
+        {!showDef && (
+          <Button
+            variant="outline"
+            onClick={() => setShowDef(true)}
+            className="rounded-md absolute bottom-25"
+          >
+            {t('showDef')}
+          </Button>
+        )}
+        {showDef && (
+          <span className="max-h-full overflow-auto px-4">
+            {shownTerm.text}
+          </span>
+        )}
+      </CardContent>
+    </>
+  );
 
   return (
     <div className="w-160 h-90">
       <div className="w-160 h-90 relative flex justify-center items-center p-0 space-y-0">
-        {/* Page turing buttons in card mode */}
+        {/* Card changing */}
         {cardMode && (
           <>
             <Button
@@ -92,50 +156,12 @@ export function BookTermCard({
 
         {/* Term info */}
         <Card className="w-130 h-80 bg-background relative rounded-lg py-0 space-y-0">
-          <CardTitle className="px-8 pt-6 flex flex-col gap-1">
-            <span className="text-sm font-normal text-foreground/50">
-              {cardMode ? shownTermIdx + 1 : reviewed} / {total}
-            </span>
-            <div className="flex items-baseline gap-1">
-              {/* Modify term */}
-              <span className="text-2xl">{shownTerm.name}</span>
-              <Button
-                size="icon"
-                variant="ghost"
-                onClick={() => setModifiedTerm(shownTerm)}
-              >
-                <SquarePen />
-              </Button>
-            </div>
-          </CardTitle>
-
-          {/* Term definition */}
-          <CardContent
-            className={cn(
-              'flex flex-1 overflow-auto relative px-10 pb-6 py-2',
-              showDef && cardMode ? 'justify-start' : 'justify-center',
-            )}
-          >
-            {!showDef && (
-              <Button
-                variant="outline"
-                onClick={() => setShowDef(true)}
-                className="rounded-md absolute bottom-25"
-              >
-                {t('showDef')}
-              </Button>
-            )}
-            {showDef && (
-              <span className="max-h-full overflow-auto px-4">
-                {shownTerm.text}
-              </span>
-            )}
-          </CardContent>
+          {cardInfo}
         </Card>
       </div>
 
       {/* Rating for review */}
-      {!cardMode && (
+      {!cardMode && !reviewEnd && (
         <div className="w-160 flex gap-4 items-center justify-center">
           <Button
             variant="ghost"
