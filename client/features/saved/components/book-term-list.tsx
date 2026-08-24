@@ -270,7 +270,7 @@ export function BookTermList() {
   );
 
   return (
-    <div className={cn('w-full min-h-100 flex justify-center')}>
+    <div className={cn('w-full min-h-100 flex flex-col items-center relative')}>
       {/* Loading */}
       {isLoading && (
         <div className="h-100 flex items-center">

@@ -21,7 +21,7 @@ export function SavedContainer() {
       {openBook && (
         <div
           className={cn(
-            'w-full py-[10%] lg:py-[7%]',
+            'w-full py-25',
             'flex flex-col gap-15 justify-center items-center',
           )}
         >

@@ -49,13 +49,18 @@ export function BookTermCard({
   const handleReviewClick = async (rating: 1 | 2 | 3 | 4) => {
     const currentTerm = shownTerm;
     if (!currentTerm) return;
-    let nextWaitReviewLength = waitReview.length;
-
-    if (rating !== 1) {
+    const updateTerm = () =>
       updateWaitReview((draft) => draft.filter((_, i) => i !== shownTermIdx));
-      setReviewed((prev) => prev + 1);
-      nextWaitReviewLength -= 1;
+
+    if (rating === 1) {
+      updateTerm();
+      return;
     }
+
+    let nextWaitReviewLength = waitReview.length;
+    updateTerm();
+    setReviewed((prev) => prev + 1);
+    nextWaitReviewLength -= 1;
     if (nextWaitReviewLength <= 0) {
       setShownTermIdx(0);
     } else {
@@ -64,7 +69,6 @@ export function BookTermCard({
     }
 
     setShowDef(false);
-
     const res = await updateReviewAction({
       savedTermId: shownTerm.savedTermId,
       rating,
@@ -75,7 +79,7 @@ export function BookTermCard({
   };
 
   const cardInfo = reviewEnd ? (
-    <div className="h-full w-full flex items-center justify-center text-2xl font-semibold pb-6">
+    <div className="h-80 flex flex-col items-center justify-center text-2xl font-semibold pb-6">
       Congratulations
     </div>
   ) : (
@@ -100,7 +104,7 @@ export function BookTermCard({
       {/* Term definition */}
       <CardContent
         className={cn(
-          'flex flex-1 overflow-auto relative px-10 pb-6 py-2',
+          'flex flex-1 overflow-auto relative px-10 py-2 pb-6',
           showDef && cardMode ? 'justify-start' : 'justify-center',
         )}
       >
@@ -123,8 +127,8 @@ export function BookTermCard({
   );
 
   return (
-    <div className="w-160 h-90">
-      <div className="w-160 h-90 relative flex justify-center items-center p-0 space-y-0">
+    <div className="flex flex-col items-center w-160 h-90 gap-6">
+      <div className="w-160 h-80 relative flex flex-col items-center p-0 space-y-0">
         {/* Card changing */}
         {cardMode && (
           <>
@@ -162,7 +166,7 @@ export function BookTermCard({
 
       {/* Rating for review */}
       {!cardMode && !reviewEnd && (
-        <div className="w-160 flex gap-4 items-center justify-center">
+        <div className="w-160 flex gap-6 items-center justify-center">
           <Button
             variant="ghost"
             onClick={() => handleReviewClick(Rating.Easy)}

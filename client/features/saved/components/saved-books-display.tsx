@@ -109,13 +109,13 @@ export function SavedBooksDisplay() {
 
   if (isFetchingBooks)
     return (
-      <div className="pb-[15%] w-full h-200 flex justify-center items-center">
+      <div className="flex h-160 items-center">
         <FanOutCards />
       </div>
     );
 
   return (
-    <div className="py-[10%] px-[12%] flex flex-wrap items-center gap-14">
+    <div className="py-30 px-20 lg:px-30 flex flex-wrap justify-center items-center gap-14">
       {savedBooks.length > 0 &&
         savedBooks.map((book, index) => {
           const bookName = (
