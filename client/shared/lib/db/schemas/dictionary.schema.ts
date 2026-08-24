@@ -125,6 +125,8 @@ export const savedTerms = pgTable(
     termId: text('term_id')
       .notNull()
       .references(() => terms.id, { onDelete: 'cascade' }),
+    name: text('name').notNull(),
+    text: text('text').notNull(),
     createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
   },
   (t) => [
@@ -140,12 +142,9 @@ export const reviewCards = pgTable(
     id: text('id')
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
-    userId: text('user_id')
+    savedTermId: text('saved_term_id')
       .notNull()
-      .references(() => users.id, { onDelete: 'cascade' }),
-    termId: text('term_id')
-      .notNull()
-      .references(() => terms.id, { onDelete: 'cascade' }),
+      .references(() => savedTerms.id, { onDelete: 'cascade' }),
 
     // --- FSRS core fields ---
     stability: real('stability').default(0).notNull(), // memory stability in days (S)
@@ -158,12 +157,14 @@ export const reviewCards = pgTable(
       .defaultNow()
       .notNull(),
     lastReviewAt: timestamp('last_review_at', { mode: 'date' }),
-
     createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
   },
   (t) => [
-    unique().on(t.userId, t.termId),
-    index('idx_review_card_user_next_review').on(t.userId, t.nextReviewAt),
+    index('idx_review_card_saved_term_next_review').on(
+      t.savedTermId,
+      t.nextReviewAt,
+    ),
+    unique('uq_review_card_saved_term_id').on(t.savedTermId),
   ],
 );
 
@@ -190,5 +191,38 @@ export const reviewLogs = pgTable(
   (t) => [
     index('idx_review_log_card_id').on(t.reviewCardId),
     index('idx_review_log_user_created').on(t.userId, t.createdAt),
+  ],
+);
+
+export const savedBooks = pgTable(
+  'saved_book',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    name: text('name').notNull(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+  },
+  (t) => [
+    unique().on(t.name, t.userId),
+    index('idx_saved_book_user_id').on(t.userId),
+  ],
+);
+
+export const savedBookTerms = pgTable(
+  'saved_book_term',
+  {
+    savedBookId: text('saved_book_id')
+      .notNull()
+      .references(() => savedBooks.id, { onDelete: 'cascade' }),
+    savedTermId: text('saved_term_id')
+      .notNull()
+      .references(() => savedTerms.id, { onDelete: 'cascade' }),
+  },
+  (t) => [
+    primaryKey({ columns: [t.savedBookId, t.savedTermId] }),
+    index('idx_saved_book_term_saved_book_id').on(t.savedBookId),
   ],
 );

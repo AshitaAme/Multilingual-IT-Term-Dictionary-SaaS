@@ -24,9 +24,9 @@ export default function IconNav() {
               <Button
                 variant="outline"
                 size="icon"
-                className="cursor-pointer rounded-md hover:[&_svg]:scale-115"
+                className="rounded-md border-0! bg-muted-foreground/10! hover:bg-muted-foreground/20!"
               >
-                <HomeIcon className="transition-all duration-300" />
+                <HomeIcon className="" />
               </Button>
             </TooltipWrapper>
           </NavigationMenuLink>
@@ -34,14 +34,14 @@ export default function IconNav() {
 
         {/* Saved Words*/}
         <NavigationMenuItem>
-          <NavigationMenuLink href="/">
+          <NavigationMenuLink href="/saved">
             <TooltipWrapper label={t('savedWords')} side="bottom">
               <Button
                 variant="outline"
                 size="icon"
-                className="cursor-pointer rounded-md hover:[&_svg]:scale-110 "
+                className="rounded-md border-0! bg-muted-foreground/10! hover:bg-muted-foreground/20!"
               >
-                <Book className="transition-all duration-300" />
+                <Book className="" />
               </Button>
             </TooltipWrapper>
           </NavigationMenuLink>

@@ -1,0 +1,1 @@
+ALTER TABLE "review_card" ADD COLUMN "review_text" text NOT NULL;

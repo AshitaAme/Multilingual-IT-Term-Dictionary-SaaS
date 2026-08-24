@@ -1,31 +1,46 @@
 'use server';
 
-import { saveTerm } from '../services/save-term';
+import { saveTerms } from '../services/save-terms';
 import {
   createSaveTermSchema,
   SaveTermInput,
 } from '../schemas/save-term.schema';
 import { getTranslations } from 'next-intl/server';
+import { auth } from '@/shared/lib/auth/auth';
 
 export async function saveTermAction(data: SaveTermInput) {
-  // 1. Get i18n translator
+  // 1. Get userId
+  let userId;
+  try {
+    const session = await auth();
+    userId = session?.user.id;
+    if (!userId) return { success: false, error: 'User not found' };
+  } catch (err) {
+    console.error('[saveTermAction] Get user id failed:', err);
+    return { success: false, error: 'User not found' };
+  }
+  // 2. Get i18n translator
   let t;
   try {
     t = await getTranslations('search');
   } catch (err) {
     console.warn('[checkSavedTermAction] Get i18n translator failed: ', err);
   }
-  // 2. Zod validation
+
+  // 3. Zod validation
   const SaveTermSchema = createSaveTermSchema(t);
   const parsed = SaveTermSchema.safeParse(data);
   if (!parsed.success) return { success: false, error: parsed.error.message };
-  const { userId, termId } = parsed.data;
+  const payload = parsed.data.map((t) => ({
+    ...t,
+    userId,
+  }));
 
-  // 3. Save term
+  // 4. Save term
   try {
-    await saveTerm(userId, termId, true);
+    await saveTerms(payload);
 
-    // 4. Success
+    // 5. Success
     return { success: true };
   } catch (err) {
     console.error('[saveTermAction] Save term failed: ', err);

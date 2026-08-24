@@ -2,7 +2,7 @@
 
 import { Separator } from '@/shared/components/ui/separator';
 import { createPortal } from 'react-dom';
-import { useOpenTermStore } from '../stores/search.store';
+import { useOpenTermStore, useSearchOptionStore } from '../stores/search.store';
 import {
   Card,
   CardContent,
@@ -20,6 +20,8 @@ import { useSession } from 'next-auth/react';
 import { LoadingCircle } from '@/shared/components/ui/loading-circle';
 import { TooltipWrapper } from '@/shared/components/ui/tooltipWrapper';
 import { useTranslations } from 'next-intl';
+import { getLanguage } from '@/shared/utils/utils';
+import { getTextFromTerm } from '../utils/get-text-from-term';
 
 export function TermInfo() {
   const t = useTranslations('search');
@@ -33,6 +35,7 @@ export function TermInfo() {
   const userId = session.data?.user.id;
   const [isLoading, setIsLoading] = useState(true);
   const [isTogglingStar, setIsTogglingStar] = useState(false);
+  const toSaveBook = useSearchOptionStore((state) => state.toSaveBook);
 
   // Check whether the term is saved
   useEffect(() => {
@@ -47,7 +50,7 @@ export function TermInfo() {
         toast.error(t('termInfo.invalidTermId'));
         return;
       }
-      const res = await checkSavedTermAction({ userId, termId });
+      const res = await checkSavedTermAction(termId);
       if (res.success) setSaved(res.data!);
       else toast.error(res.error);
       setIsLoading(false);
@@ -55,19 +58,9 @@ export function TermInfo() {
     checkSave();
   }, [unActivate, termId, userId, t]);
 
-  const language = (languageCode: string) => {
-    switch (languageCode) {
-      case 'zh':
-        return '中文（简）';
-      case 'ja':
-        return '日本語';
-      default:
-        return 'English';
-    }
-  };
-
   // Save / unsave term
-  const handleStarClick = async () => {
+  const handleSaveClick = async () => {
+    // Check auth and availability
     if (!userId) {
       toast.error(t('termInfo.invalidUserId'));
       return;
@@ -76,16 +69,25 @@ export function TermInfo() {
       toast.error(t('termInfo.invalidTermId'));
       return;
     }
+
+    // Start
     setIsTogglingStar(true);
     if (saved) {
-      const res = await unsaveTermAction({ userId, termId });
+      const res = await unsaveTermAction(termId);
       if (res.success) {
         setSaved(false);
       } else {
         toast.error(res.error);
       }
     } else {
-      const res = await saveTermAction({ userId, termId });
+      const res = await saveTermAction([
+        {
+          savedBookId: toSaveBook.id,
+          termId,
+          name: term.displayName,
+          text: getTextFromTerm(term),
+        },
+      ]);
       if (res.success) {
         setSaved(true);
       } else {
@@ -122,7 +124,7 @@ export function TermInfo() {
             variant="ghost"
             className="cursor-pointer"
             size="icon"
-            onClick={handleStarClick}
+            onClick={handleSaveClick}
             disabled={isTogglingStar}
           >
             <Star
@@ -137,14 +139,14 @@ export function TermInfo() {
 
       {/* Term information */}
       <CardContent className="flex flex-col gap-6">
-        {term?.translations.map((t) => (
-          <div key={t.languageCode} className="flex flex-col gap-2">
+        {term?.translations.map((translation) => (
+          <div key={translation.languageCode} className="flex flex-col gap-2">
             <span className="flex gap-2">
-              <span>{t.name}</span>
-              <span>{language(t.languageCode)}</span>
+              <span>{translation.name}</span>
+              <span>{getLanguage(translation.languageCode)}</span>
             </span>
             <Separator />
-            <p>{t.definition}</p>
+            <p>{translation.definition}</p>
           </div>
         ))}
       </CardContent>

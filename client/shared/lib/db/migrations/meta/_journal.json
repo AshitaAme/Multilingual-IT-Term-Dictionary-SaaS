@@ -22,6 +22,55 @@
       "when": 1782282579186,
       "tag": "0002_late_shaman",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1783405667877,
+      "tag": "0003_regular_wendell_vaughn",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1783407346659,
+      "tag": "0004_living_deathbird",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1783407913604,
+      "tag": "0005_cold_proudstar",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1783409164432,
+      "tag": "0006_solid_proudstar",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1783498704375,
+      "tag": "0007_omniscient_black_tom",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1783499138082,
+      "tag": "0008_round_harpoon",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1785650886309,
+      "tag": "0009_clever_invisible_woman",
+      "breakpoints": true
     }
   ]
 }

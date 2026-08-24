@@ -7,7 +7,7 @@ export function LoadingCircle({
 }: Readonly<{ size?: number; className?: string }>) {
   return (
     <Loader2Icon
-      size={size || 8}
+      size={size || 25}
       className={cn('animate-spin text-muted-foreground', className)}
     />
   );

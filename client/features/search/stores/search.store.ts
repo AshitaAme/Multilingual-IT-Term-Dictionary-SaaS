@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { SearchItem } from '../types/search-item';
+import { SavedBook } from '@/features/saved';
 
 interface SearchState {
   query: string;
@@ -16,6 +17,19 @@ interface OpenTermState {
   setOpenTerm: (openTerm: boolean) => void;
   term: SearchItem | null;
   setTerm: (term: SearchItem) => void;
+}
+
+interface SearchOptionState {
+  toSaveBook: SavedBook;
+  setToSaveBook: (toSaveBook: SavedBook) => void;
+  layout: 'Scroll' | 'Page';
+  setLayout: (layout: 'Scroll' | 'Page') => void;
+  selectMode: 'Single' | 'Multiple';
+  setSelectMode: (selectMode: 'Single' | 'Multiple') => void;
+  doSave: boolean;
+  setDoSave: (save: boolean) => void;
+  selectAll: boolean;
+  setSelectAll: (selectAll: boolean) => void;
 }
 
 // Used by server to fetch data
@@ -36,4 +50,17 @@ export const useOpenTermStore = create<OpenTermState>((set) => ({
   setOpenTerm: (openTerm) => set({ openTerm }),
   term: null,
   setTerm: (term: SearchItem) => set({ term }),
+}));
+
+export const useSearchOptionStore = create<SearchOptionState>((set) => ({
+  toSaveBook: { id: '', name: 'Default' },
+  setToSaveBook: (toSaveBook) => set({ toSaveBook: toSaveBook }),
+  layout: 'Scroll',
+  setLayout: (layout) => set({ layout: layout }),
+  selectMode: 'Single',
+  setSelectMode: (selectMode) => set({ selectMode }),
+  doSave: false,
+  setDoSave: (save) => set({ doSave: save }),
+  selectAll: false,
+  setSelectAll: (selectAll) => set({ selectAll }),
 }));

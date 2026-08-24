@@ -44,9 +44,8 @@ export function SearchBox({
     <div className={cn(isSearch ? 'w-120 h-10' : 'w-45 h-8', 'relative')}>
       <Input
         className={cn(
-          'w-full h-full ring-1 ring-foreground/40 focus:ring-foreground border-0',
-          isSearch ? 'pl-4 pr-9.5 rounded-3xl' : 'pl-3 pr-8 rounded-xl ',
-          'focus:',
+          'w-full h-full border-0 rounded-md bg-muted-foreground/10! focus:bg-muted-foreground/20! pb-1.5',
+          isSearch ? 'pl-4 pr-9.5' : 'pl-3 pr-8',
         )}
         placeholder={t('searchBox.inputPlaceholder')}
         value={isSearch ? input : navInput}
@@ -65,8 +64,8 @@ export function SearchBox({
         <TooltipWrapper side="bottom" label={t('searchBox.searchLabel')}>
           <Search
             onClick={handleSearch}
-            size={14}
-            className="absolute right-4 bottom-1/2 translate-1/2 cursor-pointer hover:scale-110 transition-all duration-150"
+            size={15}
+            className="absolute right-2.5 bottom-1/2 translate-y-1/2 cursor-pointer duration-150"
           />
         </TooltipWrapper>
       )}

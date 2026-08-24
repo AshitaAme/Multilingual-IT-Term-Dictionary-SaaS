@@ -158,5 +158,59 @@
         "languageCodeDuplicate": "Language codes must be unique"
       }
     }
+  },
+  "saved": {
+    "errors": {
+      "invalidInput": "Invalid input",
+      "invalidBook": "Invalid book",
+      "invalidTermId": "Invalid term id",
+      "bookExists": "Book already Exists",
+      "checkBookFailed": "Check saved book existence failed",
+      "upsertBookFailed": "Upsert saved book failed",
+      "selectEmpty": "Must select over 1 item",
+      "addReviewFailed": "Add review failed",
+      "deleteBookFailed": "Delete book failed",
+      "deleteReviewFailed": "Delete review failed",
+      "getSavedBooksFailed": "Get saved books failed",
+      "userNotFound": "User not found",
+      "moveSaveFailed": "Move saved term failed",
+      "removeSaveFailed": "Remove saved term failed",
+      "sameBookMoveForbidden": "Cannot move to the same book",
+      "bookNameOverLength": "Book name is over length (20)",
+      "updateTermTextFailed": "Update term text failed",
+      "textOverLength": "Text is over length (1000)",
+      "ratingRequired": "Rating is required",
+      "invalidRating": "Invalid rating number",
+      "updateReviewFailed": "Update review failed"
+    },
+    "bookOptions": {
+      "back": "Back",
+      "list": "List",
+      "card": "Card",
+      "review": "Review",
+      "all": "All",
+      "clear": "Clear",
+      "doReview": "Add",
+      "deReview": "Cancel",
+      "remove": "Remove",
+      "moveTo": "Move"
+    },
+    "bookTermList": {
+      "stillEmpty": "Still empty...",
+      "remove": "Remove",
+      "doReview": "Add review",
+      "deReview": "Cancel review",
+      "moveTo": "Move",
+      "modify": "Modify",
+      "prev": "Prev",
+      "next": "Next"
+    },
+    "bookTermCard": {
+      "showDef": "Definition",
+      "easy": "Easy",
+      "good": "Good",
+      "hard": "Hard",
+      "again": "Again"
+    }
   }
 }
