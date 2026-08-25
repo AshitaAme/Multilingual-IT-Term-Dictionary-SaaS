@@ -1,1 +1,1 @@
-export { TagCardsDisplay as TagCardDisplay } from './components/tag-cards-display';
+export { HomeContainer } from './components/home-container';

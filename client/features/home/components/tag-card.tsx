@@ -10,7 +10,7 @@ export default function TagCard({
 }: Readonly<{ tagKey: string; tagName: string }>) {
   return (
     <ClickCard className="w-60 h-70 relative grid grid-rows-2 p-0">
-      <div className="row-start-1 flex relative pt-[30%] justify-center">
+      <div className="row-start-1 pt-20 flex justify-center">
         {tagIcons[tagKey]}
       </div>
       <CardHeader className="row-start-2 flex items-center justify-center">
