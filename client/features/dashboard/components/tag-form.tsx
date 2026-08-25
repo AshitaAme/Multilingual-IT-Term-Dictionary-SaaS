@@ -28,7 +28,6 @@ import { TagFormProps } from '../types/tag-form-props';
 import { updateTagAction } from '../actions/update-tag.action';
 import { insertTagAction } from '../actions/insert-tag.action';
 import { createPortal } from 'react-dom';
-import { TAG_COLORS } from '@/features/dictionary';
 import {
   SelectTrigger,
   SelectValue,
@@ -37,6 +36,7 @@ import {
   Select,
 } from '@/shared/components/ui/select';
 import { cn } from '@/shared/utils/utils';
+import { TAG_COLORS } from '@/shared/constants/constants';
 
 export default function TagForm({
   isUpdate,

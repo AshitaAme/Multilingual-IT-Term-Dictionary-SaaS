@@ -3,19 +3,15 @@
 import { cn } from '@/shared/utils/utils';
 
 import UserMenu from './user-menu';
-import IconNav from './icon-nav';
+import IconLinks from './icon-links';
 import { ThemeToggle } from './theme-toggle';
 import { LocaleMenu } from './locale-menu';
-import { NavigationContainerProps } from '../types/navigation-container-props';
+import { ReactNode } from 'react';
 
-export function NavigationContainer({
+export function NavContainer({
   searchBox,
-}: Readonly<NavigationContainerProps>) {
+}: Readonly<{ searchBox: ReactNode }>) {
   return (
-    // Navigation bar on the top of all pages with three sections:
-    // left (icons with links),
-    // center (search),
-    // right (locale menu, theme toggle and user nav)
     <div
       className={cn(
         'grid grid-cols-3 items-center',
@@ -24,15 +20,15 @@ export function NavigationContainer({
         'bg-background/80 backdrop-blur', // Make bar slightly transparent and items behind blurred
       )}
     >
-      {/* Left section: Icons with links */}
+      {/* Icon links */}
       <div className="flex pl-2 gap-2 justify-start">
-        <IconNav />
+        <IconLinks />
       </div>
 
-      {/* Center section: Search */}
+      {/* Search */}
       <div className="flex justify-center w-full">{searchBox}</div>
 
-      {/* Right section: Locale, theme, and user nav */}
+      {/* Locale, theme, and user */}
       <div className="flex pr-2 gap-2 justify-end">
         <LocaleMenu />
         <ThemeToggle />

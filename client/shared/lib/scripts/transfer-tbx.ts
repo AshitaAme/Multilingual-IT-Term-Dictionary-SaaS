@@ -31,7 +31,7 @@ import {
   termTags,
   termTranslations,
 } from '../db/schemas/dictionary.schema';
-import { TAG_COLORS } from '@/features/dictionary';
+import { TAG_COLORS } from '@/shared/constants/constants';
 
 export async function transferTbx(formData: FormData) {
   // 1. Check auth

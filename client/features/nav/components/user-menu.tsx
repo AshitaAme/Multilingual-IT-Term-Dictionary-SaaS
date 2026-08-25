@@ -111,7 +111,9 @@ export default function UserMenu() {
               </DropdownMenuItem>
             </>
           )}
+
           <DropdownMenuSeparator className="mx-2 my-2" />
+
           {/* Profile */}
           <DropdownMenuItem
             onClick={() => router.push('/profile')}
@@ -120,6 +122,7 @@ export default function UserMenu() {
             <CreditCardIcon />
             {t('profile')}
           </DropdownMenuItem>
+
           {/* Settings */}
           <DropdownMenuItem className="hover:bg-muted! px-2 py-1.5">
             <SettingsIcon />
@@ -127,8 +130,8 @@ export default function UserMenu() {
           </DropdownMenuItem>
 
           <DropdownMenuSeparator className="mx-2 my-2" />
-          {/* Sign out */}
 
+          {/* Sign out */}
           <DropdownMenuItem
             onClick={() => signOut()}
             className="hover:bg-muted! px-2 py-1.5"

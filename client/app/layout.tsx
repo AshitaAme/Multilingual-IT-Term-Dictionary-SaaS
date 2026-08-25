@@ -4,8 +4,8 @@ import AppProviders from '@/shared/components/providers';
 import { Toaster } from '@/shared/components/ui/sonner';
 import { getLocale, getMessages, getTranslations } from 'next-intl/server';
 import { AuthContainer } from '@/features/auth';
-import { NavigationContainer } from '@/features/navigation';
 import { SearchBox } from '@/features/search';
+import { NavContainer } from '@/features/nav';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('common');
@@ -32,7 +32,7 @@ export default async function RootLayout({
     >
       <body className="bg-background relative">
         <AppProviders messages={messages} locale={locale}>
-          <NavigationContainer searchBox={<SearchBox />} />
+          <NavContainer searchBox={<SearchBox />} />
           <AuthContainer />
           {children}
           <Toaster />
