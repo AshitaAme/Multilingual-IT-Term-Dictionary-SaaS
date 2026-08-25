@@ -14,10 +14,8 @@ export function ImportTerm() {
       )}
     >
       <FileUp size={50} className="mb-4" />
-      <span className="p-0 mb-1 font-semibold">
-        Choose a file or drag it here
-      </span>
-      <span className="text-xs">allowed extension: .csv, .tbx</span>
+      <span className="p-0 mb-1 font-semibold">Choose / drag a file</span>
+      <span className="text-xm font-serif">allowed: .csv, .tbx</span>
     </DropZone>
   );
 }

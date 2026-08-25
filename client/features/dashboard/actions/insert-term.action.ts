@@ -26,7 +26,12 @@ export async function insertTermAction(data: TermFormInput) {
       error: '[insertTermAction] Term form data parse failed',
     };
 
-  const { slug, langInfos, tagInfos, status } = parsed.data;
+  const {
+    slug,
+    langInfoList: langInfos,
+    tagInfoList: tagInfos,
+    status,
+  } = parsed.data;
 
   // 3. Check existence
   try {

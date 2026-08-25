@@ -23,10 +23,10 @@ export const createTermFormSchema = (t: Translator = DEFAULT_TRANSLATOR) => {
 
   const TermFormSchema = z.object({
     slug: z.string().min(1, { message: t('termForm.error.slugRequired') }),
-    tagInfos: z
+    tagInfoList: z
       .array(TagInfoSchema)
       .min(1, { message: t('termForm.error.tagInfosMin') }),
-    langInfos: z
+    langInfoList: z
       .array(LangInfoSchema)
       .min(2, { message: t('termForm.error.langInfosMin') })
       .refine(
@@ -43,4 +43,4 @@ export const createTermFormSchema = (t: Translator = DEFAULT_TRANSLATOR) => {
 };
 
 export type TermFormInput = z.infer<ReturnType<typeof createTermFormSchema>>;
-export type TagInfoInput = TermFormInput['tagInfos'][number];
+export type TagInfoList = TermFormInput['tagInfoList'][number];

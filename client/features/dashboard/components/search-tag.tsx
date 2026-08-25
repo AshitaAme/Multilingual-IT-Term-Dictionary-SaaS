@@ -16,7 +16,7 @@ import { toast } from 'sonner';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { cn } from '@/shared/utils/utils';
 import { SearchTagProps } from '../types/search-tag-props';
-import { TagInfoInput } from '../schemas/term-form.schema';
+import { TagInfoList } from '../schemas/term-form.schema';
 
 const PAGE_SIZE = 20;
 
@@ -29,7 +29,7 @@ export default function SearchTag({
   const t = useTranslations('dashboard');
   const locale = useLocale();
 
-  const [tags, setTags] = useState<TagInfoInput[]>([]); // tags for display
+  const [tags, setTags] = useState<TagInfoList[]>([]); // tags for display
   const [search, setSearch] = useState(''); // query condition
   const [page, setPage] = useState(1); // current page
   const [loading, setLoading] = useState(false);
@@ -79,7 +79,7 @@ export default function SearchTag({
     [tagFields],
   );
   const toggleTag = useCallback(
-    (tag: TagInfoInput) => {
+    (tag: TagInfoList) => {
       if (checkTag(tag.tagId)) {
         const index = tagFields.findIndex((t) => t.tagId === tag.tagId);
         if (index !== -1) removeTag(index);

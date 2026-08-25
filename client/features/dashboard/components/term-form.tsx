@@ -25,7 +25,6 @@ import {
   NativeSelect,
   NativeSelectOption,
 } from '@/shared/components/ui/native-select';
-import { TermFormProps } from '../types/term-form-props';
 import SearchTag from './search-tag';
 import { updateTermAction } from '../actions/update-term.action';
 import { insertTermAction } from '../actions/insert-term.action';
@@ -33,14 +32,14 @@ import { useTranslations } from 'next-intl';
 import { createPortal } from 'react-dom';
 import { cn } from '@/shared/utils/utils';
 import { Button } from '@/shared/components/ui/button';
+import { useTermFormStore } from '../stores/dashboard.store';
 
-export default function TermForm({
-  isUpdate,
-  currentTerm,
-  onClose,
-}: Readonly<TermFormProps>) {
+export default function TermForm() {
   const t = useTranslations('dashboard');
   const TermFormSchema = createTermFormSchema(t);
+  const isUpdated = useTermFormStore((state) => state.isUpdated);
+  const termForm = useTermFormStore((state) => state.termForm);
+  const setOpenTermForm = useTermFormStore((state) => state.setOpenTermForm);
 
   const {
     register,
@@ -53,34 +52,35 @@ export default function TermForm({
   } = useForm<TermFormInput>({
     resolver: zodResolver(TermFormSchema),
     mode: 'onSubmit',
-    defaultValues: isUpdate
-      ? currentTerm
-      : {
-          slug: '',
-          status: 'published',
-          tagInfos: [],
-          langInfos: [
-            { languageCode: '', name: '', definition: '' },
-            { languageCode: '', name: '', definition: '' },
-          ],
-        },
+    defaultValues:
+      isUpdated && termForm
+        ? termForm
+        : {
+            slug: '',
+            status: 'published',
+            tagInfoList: [],
+            langInfoList: [
+              { languageCode: '', name: '', definition: '' },
+              { languageCode: '', name: '', definition: '' },
+            ],
+          },
   });
 
   const {
     fields: langFields,
     append: appendLang,
     remove: removeLang,
-  } = useFieldArray({ control, name: 'langInfos' });
+  } = useFieldArray({ control, name: 'langInfoList' });
 
   const {
     fields: tagFields,
     append: appendTag,
     remove: removeTag,
-  } = useFieldArray({ control, name: 'tagInfos' });
+  } = useFieldArray({ control, name: 'tagInfoList' });
 
   const onSubmit = async (data: TermFormInput) => {
     console.log('Term Submitted:', data);
-    const res = isUpdate
+    const res = isUpdated
       ? await updateTermAction(data)
       : await insertTermAction(data);
     if (!res.success) {
@@ -91,7 +91,7 @@ export default function TermForm({
       return;
     }
     reset();
-    onClose();
+    setOpenTermForm(false);
   };
 
   return createPortal(
@@ -103,12 +103,12 @@ export default function TermForm({
             className="absolute z-10 right-2.5 top-2.5 cursor-pointer"
             onClick={() => {
               reset();
-              onClose();
+              setOpenTermForm(false);
             }}
           />
           {/* Card title */}
           <CardTitle className="pl-5 pt-4">
-            {t(isUpdate ? 'termForm.titleUpdate' : 'termForm.titleAdd')}
+            {t(isUpdated ? 'termForm.titleUpdate' : 'termForm.titleAdd')}
           </CardTitle>
         </CardHeader>
 
@@ -133,7 +133,7 @@ export default function TermForm({
                   {t('termForm.label.slug')}
                 </FieldLabel>
                 <Input
-                  readOnly={isUpdate}
+                  readOnly={isUpdated}
                   {...register('slug')}
                   id="slug"
                   placeholder={t('termForm.slugPlaceholder')}
@@ -175,7 +175,7 @@ export default function TermForm({
 
             {/* Tags */}
             <FieldGroup>
-              <Field data-invalid={!!errors.tagInfos}>
+              <Field data-invalid={!!errors.tagInfoList}>
                 <FieldTitle className="pl-1">
                   {t('termForm.label.tags')}
                 </FieldTitle>
@@ -183,15 +183,15 @@ export default function TermForm({
                   {t('termForm.label.tags')}
                 </FieldLabel>
 
-                {errors.tagInfos && !Array.isArray(errors.tagInfos) && (
+                {errors.tagInfoList && !Array.isArray(errors.tagInfoList) && (
                   <FieldError className="pl-1">
-                    {errors.tagInfos.message}
+                    {errors.tagInfoList.message}
                   </FieldError>
                 )}
 
-                {errors.tagInfos &&
-                  Array.isArray(errors.tagInfos) &&
-                  errors.tagInfos.map((err) => (
+                {errors.tagInfoList &&
+                  Array.isArray(errors.tagInfoList) &&
+                  errors.tagInfoList.map((err) => (
                     <FieldError key={err.message} className="pl-1">
                       {err.message}
                     </FieldError>
@@ -232,9 +232,9 @@ export default function TermForm({
                 </div>
 
                 {/* Translation Main Error */}
-                {errors.langInfos && !Array.isArray(errors.langInfos) && (
+                {errors.langInfoList && !Array.isArray(errors.langInfoList) && (
                   <FieldError className="pl-1">
-                    {errors.langInfos.message}
+                    {errors.langInfoList.message}
                   </FieldError>
                 )}
               </div>
@@ -259,7 +259,9 @@ export default function TermForm({
 
                     {/* Language code */}
                     <Field
-                      data-invalid={!!errors.langInfos?.[index]?.languageCode}
+                      data-invalid={
+                        !!errors.langInfoList?.[index]?.languageCode
+                      }
                     >
                       <FieldLabel
                         htmlFor={`langCode-${index}`}
@@ -268,7 +270,7 @@ export default function TermForm({
                         {t('termForm.label.languageCode')}
                       </FieldLabel>
                       <NativeSelect
-                        {...register(`langInfos.${index}.languageCode`)}
+                        {...register(`langInfoList.${index}.languageCode`)}
                         id={`langCode-${index}`}
                       >
                         <NativeSelectOption value="">
@@ -285,47 +287,47 @@ export default function TermForm({
                         </NativeSelectOption>
                       </NativeSelect>
 
-                      {errors.langInfos?.[index]?.languageCode && (
+                      {errors.langInfoList?.[index]?.languageCode && (
                         <FieldError className="pl-1">
-                          {errors.langInfos[index].languageCode?.message}
+                          {errors.langInfoList[index].languageCode?.message}
                         </FieldError>
                       )}
                     </Field>
 
                     {/* Language name input */}
-                    <Field data-invalid={!!errors.langInfos?.[index]?.name}>
+                    <Field data-invalid={!!errors.langInfoList?.[index]?.name}>
                       <FieldLabel htmlFor={`name-${index}`} className="sr-only">
                         {t('termForm.label.name')}
                       </FieldLabel>
                       <Input
-                        {...register(`langInfos.${index}.name`)}
+                        {...register(`langInfoList.${index}.name`)}
                         id={`name-${index}`}
                         placeholder={t('termForm.namePlaceholder')}
                         className="rounded-sm h-8 text-xs focus:ring-1"
                       />
-                      {errors.langInfos?.[index]?.name && (
+                      {errors.langInfoList?.[index]?.name && (
                         <FieldError className="pl-1">
-                          {errors.langInfos[index].name?.message}
+                          {errors.langInfoList[index].name?.message}
                         </FieldError>
                       )}
                     </Field>
 
                     {/* Definition input */}
                     <Field
-                      data-invalid={!!errors.langInfos?.[index]?.definition}
+                      data-invalid={!!errors.langInfoList?.[index]?.definition}
                     >
                       <FieldLabel htmlFor={`def-${index}`} className="sr-only">
                         {t('termForm.label.definition')}
                       </FieldLabel>
                       <Input
-                        {...register(`langInfos.${index}.definition`)}
+                        {...register(`langInfoList.${index}.definition`)}
                         id={`def-${index}`}
                         placeholder={t('termForm.definitionPlaceholder')}
                         className="rounded-sm h-8 text-xs focus:ring-1"
                       />
-                      {errors.langInfos?.[index]?.definition && (
+                      {errors.langInfoList?.[index]?.definition && (
                         <FieldError className="pl-1">
-                          {errors.langInfos[index].definition?.message}
+                          {errors.langInfoList[index].definition?.message}
                         </FieldError>
                       )}
                     </Field>

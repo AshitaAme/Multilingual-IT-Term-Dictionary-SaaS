@@ -1,4 +1,4 @@
-import { TagInfoInput } from '../schemas/term-form.schema';
+import { TagInfoList } from '../schemas/term-form.schema';
 
 interface TagField {
   id: string;
@@ -9,6 +9,6 @@ interface TagField {
 export interface SearchTagProps {
   tagFields: TagField[];
   removeTag: (index: number) => void;
-  appendTag: (val: TagInfoInput) => void;
+  appendTag: (val: TagInfoList) => void;
   className?: string;
 }

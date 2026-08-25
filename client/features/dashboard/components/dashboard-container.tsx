@@ -1,11 +1,17 @@
-import { DictionaryDataDisplay } from './dictionary-data-display';
-import { UserDataDisplay } from './user-data-display';
+import { cn } from '@/shared/utils/utils';
+import { DictOperations } from './dict-operations';
+import { UserOperations } from './user-operations';
 
 export function DashboardContainer() {
   return (
-    <div className="flex flex-col">
-      <DictionaryDataDisplay />
-      <UserDataDisplay />
+    <div
+      className={cn(
+        'w-full h-full py-6 md:px-20 xl:px-100',
+        'flex flex-col justify-center items-center',
+      )}
+    >
+      <DictOperations />
+      <UserOperations />
     </div>
   );
 }

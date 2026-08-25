@@ -23,7 +23,12 @@ export async function updateTermAction(data: TermFormInput) {
       error: 'Term form data parse failed',
     };
 
-  const { slug, langInfos, tagInfos, status } = parsed.data;
+  const {
+    slug,
+    langInfoList: langInfos,
+    tagInfoList: tagInfos,
+    status,
+  } = parsed.data;
 
   // 3. Update term
   const termPayload = {
