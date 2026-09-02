@@ -20,7 +20,7 @@ import {
 } from '@/shared/components/ui/field';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/shared/components/ui/input';
-import { X, Plus } from 'lucide-react';
+import { X, Plus, Minus } from 'lucide-react';
 import {
   NativeSelect,
   NativeSelectOption,
@@ -33,13 +33,15 @@ import { createPortal } from 'react-dom';
 import { cn } from '@/shared/utils/utils';
 import { Button } from '@/shared/components/ui/button';
 import { useTermFormStore } from '../stores/dashboard.store';
+import { ClickCard } from '@/shared/components/ui/click-card';
 
 export default function TermForm() {
   const t = useTranslations('dashboard');
   const TermFormSchema = createTermFormSchema(t);
   const isUpdated = useTermFormStore((state) => state.isUpdated);
-  const termForm = useTermFormStore((state) => state.termForm);
-  const setOpenTermForm = useTermFormStore((state) => state.setOpenTermForm);
+  const termForm = useTermFormStore((state) => state.formInput);
+  const openForm = useTermFormStore((state) => state.openForm);
+  const setOpenForm = useTermFormStore((state) => state.setOpenForm);
 
   const {
     register,
@@ -91,19 +93,29 @@ export default function TermForm() {
       return;
     }
     reset();
-    setOpenTermForm(false);
+    setOpenForm(false);
   };
+
+  if (!openForm)
+    return (
+      <ClickCard
+        className="w-50 h-50 flex items-center justify-center"
+        onClick={() => setOpenForm(true)}
+      >
+        Term form
+      </ClickCard>
+    );
 
   return createPortal(
     <div className="fixed inset-0 flex items-center justify-center backdrop-blur z-50">
-      <Card className="h-160 w-120 rounded-md bg-background py-0">
+      <Card className="h-160 w-130 rounded-sm bg-background py-0">
         <CardHeader className="relative items-center h-12 w-full px-0">
           <X
             size={16}
             className="absolute z-10 right-2.5 top-2.5 cursor-pointer"
             onClick={() => {
               reset();
-              setOpenTermForm(false);
+              setOpenForm(false);
             }}
           />
           {/* Card title */}
@@ -112,7 +124,7 @@ export default function TermForm() {
           </CardTitle>
         </CardHeader>
 
-        <CardContent className=" flex-1 overflow-y-auto h-140">
+        <CardContent className=" flex-1 overflow-auto hide-scrollbar h-140">
           <form
             onSubmit={handleSubmit(onSubmit, (errs) =>
               console.log('VALIDATION FAILED:', errs),
@@ -124,7 +136,7 @@ export default function TermForm() {
             className="flex flex-col gap-6"
           >
             {/* Slug */}
-            <FieldGroup>
+            <FieldGroup className="mt-4">
               <Field data-invalid={!!errors.slug}>
                 <FieldTitle className="pl-1">
                   {t('termForm.label.slug')}
@@ -137,7 +149,7 @@ export default function TermForm() {
                   {...register('slug')}
                   id="slug"
                   placeholder={t('termForm.slugPlaceholder')}
-                  className="rounded-sm h-10 text-sm focus:ring-1"
+                  className="rounded-sm text-sm focus:ring-1"
                 />
                 {errors.slug && (
                   <FieldError className="pl-1">
@@ -174,7 +186,7 @@ export default function TermForm() {
             </FieldGroup>
 
             {/* Tags */}
-            <FieldGroup>
+            <FieldGroup className="mt-8">
               <Field data-invalid={!!errors.tagInfoList}>
                 <FieldTitle className="pl-1">
                   {t('termForm.label.tags')}
@@ -198,7 +210,6 @@ export default function TermForm() {
                   ))}
 
                 <SearchTag
-                  className="h-80"
                   appendTag={appendTag}
                   tagFields={tagFields}
                   removeTag={removeTag}
@@ -207,7 +218,7 @@ export default function TermForm() {
             </FieldGroup>
 
             {/* Translation */}
-            <FieldGroup className="gap-3">
+            <FieldGroup className="mt-8">
               {/* Translation heading */}
               <div className="flex flex-col gap-1">
                 {/* Title and add translation */}
@@ -240,19 +251,19 @@ export default function TermForm() {
               </div>
 
               {/* Translation fields */}
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-6">
                 {langFields.map((field, index) => (
                   <div
                     key={field.id}
                     className={cn(
-                      'flex flex-col rounded-md border border-border p-3 space-y-2',
-                      langFields.length > 2 && 'relative pt-6',
+                      'flex flex-col rounded-sm border border-border p-4 pt-7 pb-5 gap-2',
+                      langFields.length > 2 && 'relative',
                     )}
                   >
                     {langFields.length > 2 && (
-                      <X
-                        className="absolute right-1.5 top-1.5"
-                        size={12}
+                      <Minus
+                        className="absolute right-1.5 top-1.5 cursor-pointer"
+                        size={14}
                         onClick={() => removeLang(index)}
                       />
                     )}
@@ -346,7 +357,7 @@ export default function TermForm() {
             <Button
               variant="outline"
               type="submit"
-              className="mb-6 cursor-pointer"
+              className="mb-6 cursor-pointer rounded-sm border-0"
             >
               {t('termForm.submit')}
             </Button>

@@ -24,7 +24,6 @@ export default function SearchTag({
   tagFields,
   removeTag,
   appendTag,
-  className,
 }: Readonly<SearchTagProps>) {
   const t = useTranslations('dashboard');
   const locale = useLocale();
@@ -73,7 +72,6 @@ export default function SearchTag({
   };
 
   // Set page to the beginning when search button is clicked
-  const handleSearchClick = () => setPage(1);
   const checkTag = useCallback(
     (tagId: string) => tagFields.find((t) => t.tagId === tagId),
     [tagFields],
@@ -91,7 +89,7 @@ export default function SearchTag({
   );
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 py-2">
       <Card className="flex flex-col rounded-sm p-0 py-1 bg-background">
         <CardContent className="flex flex-wrap content-start gap-2 py-2 overflow-y-auto h-30 max-h-30">
           {tagFields.map(
@@ -100,7 +98,7 @@ export default function SearchTag({
                 <Button
                   type="button"
                   key={field.id}
-                  className="flex items-center justify-center relative cursor-pointer"
+                  className="flex items-center justify-center relative cursor-pointer rounded-sm"
                   onClick={() => removeTag(index)}
                 >
                   {field.name}
@@ -110,30 +108,19 @@ export default function SearchTag({
           )}
         </CardContent>
       </Card>
-      <Card
-        className={cn(
-          className,
-          'rounded-sm p-0 flex flex-col gap-0 bg-background',
-        )}
-      >
+      <Card className={cn('rounded-sm p-0 flex flex-col gap-0 bg-background')}>
         {/* Search tag */}
-        <CardHeader className="flex items-center justify-center py-3">
-          <ButtonGroup>
+        <CardHeader className="flex items-center justify-center py-4">
+          <div className="relative">
             <Input
+              className="w-full t-full rounded-sm border-0 focus:bg-muted-foreground/20!"
               placeholder={t('searchTag.search')}
               value={search}
               onChange={handleSearchInput}
             />
-            <Button
-              type="button"
-              variant="outline"
-              aria-label="Search"
-              className="group/search cursor-pointer"
-              onClick={handleSearchClick}
-            >
-              <SearchIcon className="group-hover/search:scale-110 transition-all duration-500" />
-            </Button>
-          </ButtonGroup>
+
+            <SearchIcon className="h-4 w-4 absolute right-2 bottom-1/2 translate-y-1/2" />
+          </div>
         </CardHeader>
 
         <CardContent className="flex-1 flex flex-col space-y-2 overflow-y-auto max-h-80">
@@ -152,14 +139,14 @@ export default function SearchTag({
           )}
 
           {/* Tag list */}
-          <div className="flex-1 flex flex-wrap gap-2 content-start">
+          <div className="h-45! overflow-auto hide-scrollbar flex flex-wrap content-start gap-2">
             {!loading &&
               pagedTags.map((tag) => (
                 <Button
                   type="button"
                   key={tag.tagId}
                   className={cn(
-                    'flex items-center justify-center cursor-pointer opacity-50',
+                    'flex items-center justify-center cursor-pointer opacity-50 rounded-sm',
                     checkTag(tag.tagId) && 'opacity-100',
                   )}
                   variant={'outline'}
@@ -212,16 +199,6 @@ export default function SearchTag({
             </div>
           )}
         </CardContent>
-        <CardFooter className="p-0 rounded-none">
-          <Button
-            type="button"
-            className="w-full h-full py-2 rounded-none cursor-pointer border-0"
-            variant="ghost"
-            onClick={() => {}}
-          >
-            {t('searchTag.generate')}
-          </Button>
-        </CardFooter>
       </Card>
     </div>
   );

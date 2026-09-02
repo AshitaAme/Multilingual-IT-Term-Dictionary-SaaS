@@ -24,7 +24,6 @@ import {
 } from '@/shared/components/ui/native-select';
 import { Plus, X } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
-import { TagFormProps } from '../types/tag-form-props';
 import { updateTagAction } from '../actions/update-tag.action';
 import { insertTagAction } from '../actions/insert-tag.action';
 import { createPortal } from 'react-dom';
@@ -37,14 +36,16 @@ import {
 } from '@/shared/components/ui/select';
 import { cn } from '@/shared/utils/utils';
 import { TAG_COLORS } from '@/shared/constants/constants';
+import { useTagFormStore } from '../stores/dashboard.store';
+import { ClickCard } from '@/shared/components/ui/click-card';
 
-export default function TagForm({
-  isUpdate,
-  currentTag,
-  onClose,
-}: Readonly<TagFormProps>) {
+export default function TagForm() {
   const t = useTranslations('dashboard');
   const TagFormSchema = createTagFormSchema(t);
+  const openForm = useTagFormStore((state) => state.openForm);
+  const isUpdated = useTagFormStore((state) => state.isUpdated);
+  const formInput = useTagFormStore((state) => state.formInput);
+  const setOpenForm = useTagFormStore((state) => state.setOpenForm);
 
   const {
     handleSubmit,
@@ -57,16 +58,17 @@ export default function TagForm({
   } = useForm<TagFormInput>({
     resolver: zodResolver(TagFormSchema),
     mode: 'onSubmit',
-    defaultValues: isUpdate
-      ? currentTag
-      : {
-          slug: '',
-          color: '',
-          langInfos: [
-            { languageCode: '', name: '' },
-            { languageCode: '', name: '' },
-          ],
-        },
+    defaultValues:
+      isUpdated && formInput
+        ? formInput
+        : {
+            slug: '',
+            color: '',
+            langInfos: [
+              { languageCode: '', name: '' },
+              { languageCode: '', name: '' },
+            ],
+          },
   });
 
   const {
@@ -78,7 +80,7 @@ export default function TagForm({
   const onSubmit = async (data: TagFormInput) => {
     console.log('Tag form submitted:', data);
 
-    const res = isUpdate
+    const res = isUpdated
       ? await updateTagAction(data)
       : await insertTagAction(data);
 
@@ -90,8 +92,18 @@ export default function TagForm({
       return;
     }
     reset();
-    onClose();
+    setOpenForm(false);
   };
+
+  if (!openForm)
+    return (
+      <ClickCard
+        className="w-50 h-50 flex items-center justify-center"
+        onClick={() => setOpenForm(true)}
+      >
+        Tag form
+      </ClickCard>
+    );
 
   return createPortal(
     <div className="fixed inset-0 flex items-center justify-center backdrop-blur z-50">
@@ -102,12 +114,12 @@ export default function TagForm({
             className="absolute z-10 right-2.5 top-2.5 cursor-pointer"
             onClick={() => {
               reset();
-              onClose();
+              setOpenForm(false);
             }}
           />
           {/* Card title */}
           <CardTitle className="pl-5 pt-4">
-            {t(isUpdate ? 'tagForm.titleUpdate' : 'tagForm.titleAdd')}
+            {t(isUpdated ? 'tagForm.titleUpdate' : 'tagForm.titleAdd')}
           </CardTitle>
         </CardHeader>
         <CardContent className="flex-1 overflow-y-auto h-140">
@@ -129,7 +141,7 @@ export default function TagForm({
                 </FieldLabel>
                 <Input
                   {...register('slug')}
-                  readOnly={isUpdate}
+                  readOnly={isUpdated}
                   id="slug"
                   placeholder={t('tagForm.slugPlaceholder')}
                   className="rounded-sm h-10 text-sm focus:ring-1"

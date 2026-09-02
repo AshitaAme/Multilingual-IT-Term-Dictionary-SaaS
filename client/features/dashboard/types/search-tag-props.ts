@@ -10,5 +10,4 @@ export interface SearchTagProps {
   tagFields: TagField[];
   removeTag: (index: number) => void;
   appendTag: (val: TagInfoList) => void;
-  className?: string;
 }
