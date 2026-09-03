@@ -137,7 +137,7 @@ export default function SearchTag({
           <div className="h-50">
             {/* Loading state */}
             {loading && (
-              <div className="h-full flex items-center justify-center">
+              <div className="h-full flex items-center justify-center pb-4">
                 <LoadingCircle />
               </div>
             )}

@@ -34,6 +34,7 @@ import { cn } from '@/shared/utils/utils';
 import { Button } from '@/shared/components/ui/button';
 import { useTermFormStore } from '../stores/dashboard.store';
 import { ClickCard } from '@/shared/components/ui/click-card';
+import { TermListDrawer } from './term-list-drawer';
 
 export default function TermForm() {
   const t = useTranslations('dashboard');
@@ -98,12 +99,26 @@ export default function TermForm() {
 
   if (!openForm)
     return (
-      <ClickCard
-        className="w-50 h-50 flex items-center justify-center"
-        onClick={() => setOpenForm(true)}
-      >
-        {t('termForm.titleAdd')}
-      </ClickCard>
+      <div className="h-50 w-50 flex flex-col p-0 gap-0">
+        <Button
+          variant="outline"
+          className="flex-1 w-full rounded-b-none border-0"
+          onClick={() => setOpenForm(true)}
+        >
+          {t('termForm.titleAdd')}
+        </Button>
+        <TermListDrawer
+          className="flex-1 w-full"
+          trigger={
+            <Button
+              variant="outline"
+              className="flex-1 w-full h-full rounded-t-none border-0 border-t-2"
+            >
+              {t('termForm.titleUpdate')}
+            </Button>
+          }
+        />
+      </div>
     );
 
   return createPortal(
