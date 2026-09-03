@@ -102,7 +102,7 @@ export default function TermForm() {
         className="w-50 h-50 flex items-center justify-center"
         onClick={() => setOpenForm(true)}
       >
-        Term form
+        {t('termForm.titleAdd')}
       </ClickCard>
     );
 
@@ -186,7 +186,7 @@ export default function TermForm() {
             </FieldGroup>
 
             {/* Tags */}
-            <FieldGroup className="mt-8">
+            <FieldGroup className="mt-6">
               <Field data-invalid={!!errors.tagInfoList}>
                 <FieldTitle className="pl-1">
                   {t('termForm.label.tags')}
@@ -218,7 +218,7 @@ export default function TermForm() {
             </FieldGroup>
 
             {/* Translation */}
-            <FieldGroup className="mt-8">
+            <FieldGroup className="mt-6">
               {/* Translation heading */}
               <div className="flex flex-col gap-1">
                 {/* Title and add translation */}

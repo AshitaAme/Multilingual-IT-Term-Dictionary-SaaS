@@ -60,3 +60,8 @@ export async function getTermBySlug(slug: string) {
   const result = await db.select().from(terms).where(eq(terms.slug, slug));
   return result[0];
 }
+
+export async function getTermList() {
+  const result = await db.select().from(terms);
+  return result;
+}

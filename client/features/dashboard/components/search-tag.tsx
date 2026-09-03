@@ -1,13 +1,7 @@
 'use client';
 
 import { Button } from '@/shared/components/ui/button';
-import { ButtonGroup } from '@/shared/components/ui/button-group';
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from '@/shared/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
 import { SearchIcon, ChevronLeftIcon, ChevronRightIcon, X } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
@@ -17,6 +11,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { cn } from '@/shared/utils/utils';
 import { SearchTagProps } from '../types/search-tag-props';
 import { TagInfoList } from '../schemas/term-form.schema';
+import { LoadingCircle } from '@/shared/components/ui/loading-circle';
 
 const PAGE_SIZE = 20;
 
@@ -88,6 +83,21 @@ export default function SearchTag({
     [checkTag, tagFields, removeTag, appendTag],
   );
 
+  const tagList = pagedTags.map((tag) => (
+    <Button
+      type="button"
+      key={tag.tagId}
+      className={cn(
+        'flex items-center justify-center cursor-pointer opacity-50 rounded-sm',
+        checkTag(tag.tagId) && 'opacity-100',
+      )}
+      variant={'outline'}
+      onClick={() => toggleTag(tag)}
+    >
+      <span className="flex-1 truncate">{tag.name}</span>
+    </Button>
+  ));
+
   return (
     <div className="flex flex-col gap-2 py-2">
       <Card className="flex flex-col rounded-sm p-0 py-1 bg-background">
@@ -123,38 +133,28 @@ export default function SearchTag({
           </div>
         </CardHeader>
 
-        <CardContent className="flex-1 flex flex-col space-y-2 overflow-y-auto max-h-80">
-          {/* Loading state */}
-          {loading && (
-            <div className="py-8 text-center text-sm text-muted-foreground">
-              {t('searchTag.loading')}
-            </div>
-          )}
+        <CardContent className="flex-1 flex flex-col">
+          <div className="h-50">
+            {/* Loading state */}
+            {loading && (
+              <div className="h-full flex items-center justify-center">
+                <LoadingCircle />
+              </div>
+            )}
 
-          {/* Empty state */}
-          {!loading && filteredTags.length === 0 && (
-            <div className="py-8 text-center text-sm text-muted-foreground">
-              {t('searchTag.noResults')}
-            </div>
-          )}
+            {/* Empty state */}
+            {loading && filteredTags.length === 0 && (
+              <div className="h-full py-8 text-center text-sm text-muted-foreground">
+                {t('searchTag.noResults')}
+              </div>
+            )}
 
-          {/* Tag list */}
-          <div className="h-45! overflow-auto hide-scrollbar flex flex-wrap content-start gap-2">
-            {!loading &&
-              pagedTags.map((tag) => (
-                <Button
-                  type="button"
-                  key={tag.tagId}
-                  className={cn(
-                    'flex items-center justify-center cursor-pointer opacity-50 rounded-sm',
-                    checkTag(tag.tagId) && 'opacity-100',
-                  )}
-                  variant={'outline'}
-                  onClick={() => toggleTag(tag)}
-                >
-                  <span className="flex-1 truncate">{tag.name}</span>
-                </Button>
-              ))}
+            {/* Tag list */}
+            {!loading && (
+              <div className="h-full overflow-auto hide-scrollbar flex flex-wrap content-start gap-2">
+                {tagList}
+              </div>
+            )}
           </div>
 
           {/* Pagination */}

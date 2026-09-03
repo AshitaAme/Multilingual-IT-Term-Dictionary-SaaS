@@ -22,7 +22,7 @@ import {
   NativeSelect,
   NativeSelectOption,
 } from '@/shared/components/ui/native-select';
-import { Plus, X } from 'lucide-react';
+import { Minus, Plus, X } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import { updateTagAction } from '../actions/update-tag.action';
 import { insertTagAction } from '../actions/insert-tag.action';
@@ -101,7 +101,7 @@ export default function TagForm() {
         className="w-50 h-50 flex items-center justify-center"
         onClick={() => setOpenForm(true)}
       >
-        Tag form
+        {t('tagForm.titleAdd')}
       </ClickCard>
     );
 
@@ -144,7 +144,7 @@ export default function TagForm() {
                   readOnly={isUpdated}
                   id="slug"
                   placeholder={t('tagForm.slugPlaceholder')}
-                  className="rounded-sm h-10 text-sm focus:ring-1"
+                  className="rounded-sm text-sm focus:ring-1"
                 />
                 {errors.slug && (
                   <FieldError className="pl-1">
@@ -201,7 +201,7 @@ export default function TagForm() {
             </FieldGroup>
 
             {/* Translation */}
-            <FieldGroup className="gap-3">
+            <FieldGroup className="mt-6">
               {/* Translation heading */}
               <div className="flex flex-col gap-1">
                 {/* Title and add translation */}
@@ -236,14 +236,14 @@ export default function TagForm() {
                   <div
                     key={field.id}
                     className={cn(
-                      'flex flex-col rounded-md border border-border p-3 space-y-2',
-                      langFields.length > 2 && 'relative pt-6',
+                      'flex flex-col rounded-sm border border-border p-4 pt-7 pb-5 gap-2',
+                      langFields.length > 2 && 'relative',
                     )}
                   >
                     {langFields.length > 2 && (
-                      <X
-                        className="absolute right-1.5 top-1.5"
-                        size={12}
+                      <Minus
+                        className="absolute right-1.5 top-1.5 cursor-pointer"
+                        size={14}
                         onClick={() => removeLang(index)}
                       />
                     )}
@@ -315,7 +315,7 @@ export default function TagForm() {
             <Button
               variant="outline"
               type="submit"
-              className="mb-6 cursor-pointer"
+              className="mb-6 cursor-pointer rounded-sm border-0"
             >
               {t('tagForm.submit')}
             </Button>

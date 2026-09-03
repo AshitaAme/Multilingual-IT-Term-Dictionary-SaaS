@@ -54,7 +54,7 @@ export async function replaceTermTranslations({
   });
 }
 
-export async function getTermList(page: number) {
+export async function getTermTranslationList(page: number) {
   const results = await db
     .select({
       termId: termTranslations.termId,
