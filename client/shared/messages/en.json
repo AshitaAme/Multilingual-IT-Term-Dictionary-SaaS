@@ -122,7 +122,9 @@
         "definitionRequired": "Definition cannot be empty.",
         "definitionTooLong": "Definition cannot exceed 200 characters.",
         "langInfosMin": "At least two language definitions are required.",
-        "languageCodeDuplicate": "Language code must be unique."
+        "languageCodeDuplicate": "Language code must be unique.",
+        "invalidPageNum": "Invalid page number",
+        "getTermListFailed": "Get term list failed"
       }
     },
     "tagForm": {

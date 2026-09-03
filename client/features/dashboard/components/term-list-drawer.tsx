@@ -17,6 +17,8 @@ import {
   Drawer,
 } from '@/shared/components/ui/drawer';
 import { useTranslations } from 'next-intl';
+import { useTermFormStore } from '../stores/dashboard.store';
+import { TermFormInput } from '../schemas/term-form.schema';
 
 export function TermListDrawer({
   trigger,
@@ -26,6 +28,9 @@ export function TermListDrawer({
   const [page, setPage] = useState(1);
   const [query, setQuery] = useState('');
   const [termList, updateTermList] = useImmer<SearchItem[]>([]);
+  const setIsUpdate = useTermFormStore((state) => state.setIsUpdate);
+  const setOpenForm = useTermFormStore((state) => state.setOpenForm);
+  const setFormInput = useTermFormStore((state) => state.setFormInput);
   useEffect(() => {
     const fetchList = async () => {
       const res = await getSearchListAction({ page, query });
@@ -35,15 +40,19 @@ export function TermListDrawer({
     fetchList();
   }, [page, query]);
 
+  const handleTermClick = (item: SearchItem) => {
+    setIsUpdate(true);
+    setOpenForm(true);
+  };
+
   return (
     <Drawer direction="right">
       <DrawerTrigger className={className}>{trigger}</DrawerTrigger>
       <DrawerContent>
         <DrawerHeader>
-          <DrawerTitle>Are you absolutely sure?</DrawerTitle>
-          <DrawerDescription>This action cannot be undone.</DrawerDescription>
+          <DrawerTitle>{t('updateTerm')}</DrawerTitle>
         </DrawerHeader>
-        <div className="overflow-y-auto flex flex-col not-even:justify-center gap-3 ring-1 ring-foreground/10 rounded-md p-6">
+        <div className="flex flex-col gap-3 p-6 overflow-y-scroll overflow-x-hidden">
           {termList.map((item, index) => {
             const count = (page - 1) * PAGE_SIZE + index + 1;
             return (
@@ -51,19 +60,23 @@ export function TermListDrawer({
                 variant="ghost"
                 className="w-full flex items-center justify-between gap-x-10"
                 key={item.termId}
+                onClick={() => handleTermClick(item)}
               >
                 <div className="flex gap-x-4 items-center">
                   <span>{count < 10 ? '0' + count : count.toString()}</span>
-                  <span>{item.displayName}</span>
+                  <span className="text-start w-60 truncate">
+                    {item.displayName}
+                  </span>
                 </div>
               </Button>
             );
           })}
         </div>
         <DrawerFooter>
-          <Button>Submit</Button>
           <DrawerClose>
-            <Button>Cancel</Button>
+            <Button variant="outline" className="border-0 w-full">
+              Cancel
+            </Button>
           </DrawerClose>
         </DrawerFooter>
       </DrawerContent>

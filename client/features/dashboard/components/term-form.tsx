@@ -39,7 +39,7 @@ import { TermListDrawer } from './term-list-drawer';
 export default function TermForm() {
   const t = useTranslations('dashboard');
   const TermFormSchema = createTermFormSchema(t);
-  const isUpdated = useTermFormStore((state) => state.isUpdated);
+  const isUpdate = useTermFormStore((state) => state.isUpdate);
   const termForm = useTermFormStore((state) => state.formInput);
   const openForm = useTermFormStore((state) => state.openForm);
   const setOpenForm = useTermFormStore((state) => state.setOpenForm);
@@ -56,7 +56,7 @@ export default function TermForm() {
     resolver: zodResolver(TermFormSchema),
     mode: 'onSubmit',
     defaultValues:
-      isUpdated && termForm
+      isUpdate && termForm
         ? termForm
         : {
             slug: '',
@@ -83,7 +83,7 @@ export default function TermForm() {
 
   const onSubmit = async (data: TermFormInput) => {
     console.log('Term Submitted:', data);
-    const res = isUpdated
+    const res = isUpdate
       ? await updateTermAction(data)
       : await insertTermAction(data);
     if (!res.success) {
@@ -135,7 +135,7 @@ export default function TermForm() {
           />
           {/* Card title */}
           <CardTitle className="pl-5 pt-4">
-            {t(isUpdated ? 'termForm.titleUpdate' : 'termForm.titleAdd')}
+            {t(isUpdate ? 'termForm.titleUpdate' : 'termForm.titleAdd')}
           </CardTitle>
         </CardHeader>
 
@@ -160,7 +160,7 @@ export default function TermForm() {
                   {t('termForm.label.slug')}
                 </FieldLabel>
                 <Input
-                  readOnly={isUpdated}
+                  readOnly={isUpdate}
                   {...register('slug')}
                   id="slug"
                   placeholder={t('termForm.slugPlaceholder')}

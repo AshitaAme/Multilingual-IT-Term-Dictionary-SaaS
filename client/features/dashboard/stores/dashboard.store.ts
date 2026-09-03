@@ -7,8 +7,8 @@ export interface TermFormState {
   setOpenForm: (openForm: boolean) => void;
   formInput: TermFormInput | null;
   setFormInput: (formInput: TermFormInput | null) => void;
-  isUpdated: boolean;
-  setIsUpdated: (isUpdate: boolean) => void;
+  isUpdate: boolean;
+  setIsUpdate: (isUpdate: boolean) => void;
 }
 
 export interface TagFormState {
@@ -25,8 +25,8 @@ export const useTermFormStore = create<TermFormState>((set) => ({
   setOpenForm: (openForm) => set({ openForm: openForm }),
   formInput: null,
   setFormInput: (formInput) => set({ formInput: formInput }),
-  isUpdated: false,
-  setIsUpdated: (isUpdate) => set({ isUpdated: isUpdate }),
+  isUpdate: false,
+  setIsUpdate: (isUpdate) => set({ isUpdate: isUpdate }),
 }));
 
 export const useTagFormStore = create<TagFormState>((set) => ({
