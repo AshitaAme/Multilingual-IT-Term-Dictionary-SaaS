@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader } from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
 import { SearchIcon, ChevronLeftIcon, ChevronRightIcon, X } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
-import { getTagListAction } from '../actions/get-tag-list.action';
+import { getAttachTagsAction } from '../actions/get-attach-tags.action';
 import { toast } from 'sonner';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { cn } from '@/shared/utils/utils';
@@ -15,7 +15,7 @@ import { LoadingCircle } from '@/shared/components/ui/loading-circle';
 
 const PAGE_SIZE = 20;
 
-export default function SearchTag({
+export default function AttachTag({
   tagFields,
   removeTag,
   appendTag,
@@ -38,7 +38,7 @@ export default function SearchTag({
   useEffect(() => {
     const fetchTags = async () => {
       setLoading(true);
-      const res = await getTagListAction(languageCode);
+      const res = await getAttachTagsAction(languageCode);
       if (res.success) setTags(res.data!);
       else toast.error(res.error);
       setLoading(false);

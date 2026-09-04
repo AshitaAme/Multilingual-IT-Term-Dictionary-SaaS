@@ -25,7 +25,7 @@ import {
   NativeSelect,
   NativeSelectOption,
 } from '@/shared/components/ui/native-select';
-import SearchTag from './search-tag';
+import AttachTag from './attach-tag';
 import { updateTermAction } from '../actions/update-term.action';
 import { insertTermAction } from '../actions/insert-term.action';
 import { useTranslations } from 'next-intl';
@@ -243,7 +243,7 @@ export default function TermForm() {
                     </FieldError>
                   ))}
 
-                <SearchTag
+                <AttachTag
                   appendTag={appendTag}
                   tagFields={tagFields}
                   removeTag={removeTag}

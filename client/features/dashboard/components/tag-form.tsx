@@ -37,14 +37,15 @@ import {
 import { cn } from '@/shared/utils/utils';
 import { TAG_COLORS } from '@/shared/constants/constants';
 import { useTagFormStore } from '../stores/dashboard.store';
-import { ClickCard } from '@/shared/components/ui/click-card';
+import { TagListDrawer } from './tag-list-drawer';
+import { useEffect } from 'react';
 
 export default function TagForm() {
   const t = useTranslations('dashboard');
   const TagFormSchema = createTagFormSchema(t);
   const openForm = useTagFormStore((state) => state.openForm);
-  const isUpdated = useTagFormStore((state) => state.isUpdated);
-  const formInput = useTagFormStore((state) => state.formInput);
+  const isUpdate = useTagFormStore((state) => state.isUpdate);
+  const tagForm = useTagFormStore((state) => state.formInput);
   const setOpenForm = useTagFormStore((state) => state.setOpenForm);
 
   const {
@@ -58,29 +59,43 @@ export default function TagForm() {
   } = useForm<TagFormInput>({
     resolver: zodResolver(TagFormSchema),
     mode: 'onSubmit',
-    defaultValues:
-      isUpdated && formInput
-        ? formInput
-        : {
-            slug: '',
-            color: '',
-            langInfos: [
-              { languageCode: '', name: '' },
-              { languageCode: '', name: '' },
-            ],
-          },
+    defaultValues: {
+      slug: '',
+      color: '',
+      langInfoList: [
+        { languageCode: '', name: '' },
+        { languageCode: '', name: '' },
+      ],
+    },
   });
+
+  useEffect(() => {
+    if (!openForm) return;
+
+    if (isUpdate && tagForm) {
+      reset(tagForm);
+    } else {
+      reset({
+        slug: '',
+        color: '',
+        langInfoList: [
+          { languageCode: '', name: '' },
+          { languageCode: '', name: '' },
+        ],
+      });
+    }
+  }, [isUpdate, openForm, reset, tagForm]);
 
   const {
     fields: langFields,
     append: appendLang,
     remove: removeLang,
-  } = useFieldArray({ control, name: 'langInfos' });
+  } = useFieldArray({ control, name: 'langInfoList' });
 
   const onSubmit = async (data: TagFormInput) => {
     console.log('Tag form submitted:', data);
 
-    const res = isUpdated
+    const res = isUpdate
       ? await updateTagAction(data)
       : await insertTagAction(data);
 
@@ -97,12 +112,30 @@ export default function TagForm() {
 
   if (!openForm)
     return (
-      <ClickCard
-        className="w-50 h-50 flex items-center justify-center"
-        onClick={() => setOpenForm(true)}
-      >
-        {t('tagForm.titleAdd')}
-      </ClickCard>
+      <div className="h-50 w-50 flex flex-col p-0 gap-0">
+        <Button
+          variant="outline"
+          className="flex-1 w-full rounded-b-none border-0"
+          onClick={() => setOpenForm(true)}
+        >
+          {t('tagForm.titleAdd')}
+        </Button>
+        <TagListDrawer
+          className="flex-1 w-full"
+          trigger={
+            <div
+              className={cn(
+                'flex-1 w-full h-full rounded-b-md border-0 border-t-2',
+                'flex items-center justify-center bg-background',
+                'font-semibold text-sm',
+                'hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50',
+              )}
+            >
+              {t('tagForm.titleUpdate')}
+            </div>
+          }
+        />
+      </div>
     );
 
   return createPortal(
@@ -119,7 +152,7 @@ export default function TagForm() {
           />
           {/* Card title */}
           <CardTitle className="pl-5 pt-4">
-            {t(isUpdated ? 'tagForm.titleUpdate' : 'tagForm.titleAdd')}
+            {t(isUpdate ? 'tagForm.titleUpdate' : 'tagForm.titleAdd')}
           </CardTitle>
         </CardHeader>
         <CardContent className="flex-1 overflow-y-auto h-140">
@@ -141,7 +174,7 @@ export default function TagForm() {
                 </FieldLabel>
                 <Input
                   {...register('slug')}
-                  readOnly={isUpdated}
+                  readOnly={isUpdate}
                   id="slug"
                   placeholder={t('tagForm.slugPlaceholder')}
                   className="rounded-sm text-sm focus:ring-1"
@@ -224,9 +257,9 @@ export default function TagForm() {
                   </button>
                 </div>
                 {/* Translation Main Error */}
-                {errors.langInfos && !Array.isArray(errors.langInfos) && (
+                {errors.langInfoList && !Array.isArray(errors.langInfoList) && (
                   <FieldError className="pl-1">
-                    {errors.langInfos.message}
+                    {errors.langInfoList.message}
                   </FieldError>
                 )}
               </div>
@@ -250,7 +283,9 @@ export default function TagForm() {
 
                     {/* Language code selector */}
                     <Field
-                      data-invalid={!!errors.langInfos?.[index]?.languageCode}
+                      data-invalid={
+                        !!errors.langInfoList?.[index]?.languageCode
+                      }
                     >
                       <FieldLabel
                         htmlFor={`languageCode-${index}`}
@@ -259,7 +294,7 @@ export default function TagForm() {
                         {t('tagForm.label.languageCode')}
                       </FieldLabel>
                       <NativeSelect
-                        {...register(`langInfos.${index}.languageCode`)}
+                        {...register(`langInfoList.${index}.languageCode`)}
                         id={`languageCode-${index}`}
                       >
                         <NativeSelectOption value="">
@@ -276,27 +311,27 @@ export default function TagForm() {
                         </NativeSelectOption>
                       </NativeSelect>
 
-                      {errors.langInfos?.[index]?.languageCode && (
+                      {errors.langInfoList?.[index]?.languageCode && (
                         <FieldError className="pl-1">
-                          {errors.langInfos[index].languageCode?.message}
+                          {errors.langInfoList[index].languageCode?.message}
                         </FieldError>
                       )}
                     </Field>
 
                     {/* Language name input */}
-                    <Field data-invalid={!!errors.langInfos?.[index]?.name}>
+                    <Field data-invalid={!!errors.langInfoList?.[index]?.name}>
                       <FieldLabel htmlFor={`name-${index}`} className="sr-only">
                         {t('tagForm.label.name')}
                       </FieldLabel>
                       <Input
-                        {...register(`langInfos.${index}.name`)}
+                        {...register(`langInfoList.${index}.name`)}
                         id={`name-${index}`}
                         placeholder={t('tagForm.namePlaceholder')}
                         className="rounded-sm h-8 text-xs focus:ring-1"
                       />
-                      {errors.langInfos?.[index]?.name && (
+                      {errors.langInfoList?.[index]?.name && (
                         <FieldError className="pl-1">
-                          {errors.langInfos[index].name?.message}
+                          {errors.langInfoList[index].name?.message}
                         </FieldError>
                       )}
                     </Field>

@@ -16,8 +16,8 @@ export interface TagFormState {
   setOpenForm: (openForm: boolean) => void;
   formInput: TagFormInput | null;
   setFormInput: (formInput: TagFormInput | null) => void;
-  isUpdated: boolean;
-  setIsUpdated: (isUpdate: boolean) => void;
+  isUpdate: boolean;
+  setIsUpdate: (isUpdate: boolean) => void;
 }
 
 export const useTermFormStore = create<TermFormState>((set) => ({
@@ -34,6 +34,6 @@ export const useTagFormStore = create<TagFormState>((set) => ({
   setOpenForm: (openForm) => set({ openForm: openForm }),
   formInput: null,
   setFormInput: (formInput) => set({ formInput: formInput }),
-  isUpdated: false,
-  setIsUpdated: (isUpdate) => set({ isUpdated: isUpdate }),
+  isUpdate: false,
+  setIsUpdate: (isUpdate) => set({ isUpdate: isUpdate }),
 }));

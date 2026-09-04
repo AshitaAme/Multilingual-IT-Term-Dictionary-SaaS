@@ -26,7 +26,7 @@ export const createTagFormSchema = (t: Translator = (k: string) => k) => {
       .string()
       .min(1, { message: t('tagForm.error.colorRequired') })
       .max(30, { message: t('tagForm.error.colorTooLong') }),
-    langInfos: z
+    langInfoList: z
       .array(LangInfoSchema)
       .min(2, { message: t('tagForm.error.langInfosMin') })
       .max(3, { message: t('tagForm.error.langInfosMax') })

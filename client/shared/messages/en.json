@@ -76,7 +76,16 @@
 
   "dashboard": {
     "termListDrawer": {
-      "updateTerm": "Update term"
+      "updateTerm": "Update term",
+      "prev": "Prev",
+      "next": "Next",
+      "cancel": "Cancel"
+    },
+    "tagListDrawer": {
+      "updateTag": "Update tag",
+      "prev": "Prev",
+      "next": "Next",
+      "cancel": "Cancel"
     },
     "searchTag": {
       "generate": "Generate",
@@ -113,6 +122,7 @@
       "definitionPlaceholder": "Definition (max 100 letters)",
       "submit": "Submit",
       "error": {
+        "invalidInput": "Invalid input",
         "slugRequired": "Slug is required.",
         "tagRequired": "Tag cannot be empty.",
         "tagInfosMin": "At least one tag is required.",

@@ -2,7 +2,7 @@
 
 import { getTagTranslationList } from '@/shared/lib/db/mutations/tag-translation.mutations';
 
-export async function getTagListAction(languageCode: string) {
+export async function getAttachTagsAction(languageCode: string) {
   if (
     !languageCode ||
     typeof languageCode !== 'string' ||

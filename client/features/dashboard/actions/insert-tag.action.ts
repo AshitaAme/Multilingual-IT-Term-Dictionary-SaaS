@@ -18,7 +18,7 @@ export async function insertTagAction(data: TagFormInput) {
   const parsed = TagFormSchema.safeParse(data);
   if (!parsed.success)
     return { success: false, error: 'Tag form data parse failed' };
-  const { slug, color, langInfos } = parsed.data;
+  const { slug, color, langInfoList: langInfos } = parsed.data;
 
   // 3. Check existence
   try {

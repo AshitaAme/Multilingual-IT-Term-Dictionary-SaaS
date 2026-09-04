@@ -17,7 +17,7 @@ export async function updateTagAction(data: TagFormInput) {
     return { success: false, error: 'Tag form parse failed' };
 
   // 3. Update tag
-  const { slug, color, langInfos } = parsed.data;
+  const { slug, color, langInfoList: langInfos } = parsed.data;
   const tagPayload = {
     slug,
     color,
