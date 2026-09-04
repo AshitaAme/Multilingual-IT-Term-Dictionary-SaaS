@@ -33,8 +33,8 @@ import { createPortal } from 'react-dom';
 import { cn } from '@/shared/utils/utils';
 import { Button } from '@/shared/components/ui/button';
 import { useTermFormStore } from '../stores/dashboard.store';
-import { ClickCard } from '@/shared/components/ui/click-card';
 import { TermListDrawer } from './term-list-drawer';
+import { useEffect } from 'react';
 
 export default function TermForm() {
   const t = useTranslations('dashboard');
@@ -55,19 +55,34 @@ export default function TermForm() {
   } = useForm<TermFormInput>({
     resolver: zodResolver(TermFormSchema),
     mode: 'onSubmit',
-    defaultValues:
-      isUpdate && termForm
-        ? termForm
-        : {
-            slug: '',
-            status: 'published',
-            tagInfoList: [],
-            langInfoList: [
-              { languageCode: '', name: '', definition: '' },
-              { languageCode: '', name: '', definition: '' },
-            ],
-          },
+    defaultValues: {
+      slug: '',
+      status: 'published',
+      tagInfoList: [],
+      langInfoList: [
+        { languageCode: '', name: '', definition: '' },
+        { languageCode: '', name: '', definition: '' },
+      ],
+    },
   });
+
+  useEffect(() => {
+    if (!openForm) return;
+
+    if (isUpdate && termForm) {
+      reset(termForm);
+    } else {
+      reset({
+        slug: '',
+        status: 'published',
+        tagInfoList: [],
+        langInfoList: [
+          { languageCode: '', name: '', definition: '' },
+          { languageCode: '', name: '', definition: '' },
+        ],
+      });
+    }
+  }, [openForm, isUpdate, termForm, reset]);
 
   const {
     fields: langFields,
@@ -110,12 +125,16 @@ export default function TermForm() {
         <TermListDrawer
           className="flex-1 w-full"
           trigger={
-            <Button
-              variant="outline"
-              className="flex-1 w-full h-full rounded-t-none border-0 border-t-2"
+            <div
+              className={cn(
+                'flex-1 w-full h-full rounded-b-md border-0 border-t-2',
+                'flex items-center justify-center bg-background',
+                'font-semibold text-sm',
+                'hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50',
+              )}
             >
               {t('termForm.titleUpdate')}
-            </Button>
+            </div>
           }
         />
       </div>
@@ -160,7 +179,7 @@ export default function TermForm() {
                   {t('termForm.label.slug')}
                 </FieldLabel>
                 <Input
-                  readOnly={isUpdate}
+                  disabled={isUpdate}
                   {...register('slug')}
                   id="slug"
                   placeholder={t('termForm.slugPlaceholder')}

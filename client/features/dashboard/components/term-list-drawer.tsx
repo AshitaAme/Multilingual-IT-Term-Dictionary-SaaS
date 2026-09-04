@@ -1,7 +1,6 @@
 'use client';
 
 import { ReactNode, useEffect, useState } from 'react';
-import { getSearchListAction, SearchItem } from '@/features/search';
 import { toast } from 'sonner';
 import { useImmer } from 'use-immer';
 import { Button } from '@/shared/components/ui/button';
@@ -11,7 +10,6 @@ import {
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
-  DrawerDescription,
   DrawerFooter,
   DrawerClose,
   Drawer,
@@ -19,6 +17,7 @@ import {
 import { useTranslations } from 'next-intl';
 import { useTermFormStore } from '../stores/dashboard.store';
 import { TermFormInput } from '../schemas/term-form.schema';
+import { getTermListAction } from '../actions/get-term-list.action';
 
 export function TermListDrawer({
   trigger,
@@ -27,21 +26,24 @@ export function TermListDrawer({
   const t = useTranslations('dashboard.termListDrawer');
   const [page, setPage] = useState(1);
   const [query, setQuery] = useState('');
-  const [termList, updateTermList] = useImmer<SearchItem[]>([]);
+  const [termList, updateTermList] = useImmer<TermFormInput[]>([]);
   const setIsUpdate = useTermFormStore((state) => state.setIsUpdate);
   const setOpenForm = useTermFormStore((state) => state.setOpenForm);
   const setFormInput = useTermFormStore((state) => state.setFormInput);
+
   useEffect(() => {
     const fetchList = async () => {
-      const res = await getSearchListAction({ page, query });
+      const res = await getTermListAction({ page, query });
       if (!res.success) toast.error(res.error);
       else updateTermList(() => res.data);
+      console.log('term list: ', res.data);
     };
     fetchList();
   }, [page, query]);
 
-  const handleTermClick = (item: SearchItem) => {
+  const handleTermClick = (item: TermFormInput) => {
     setIsUpdate(true);
+    setFormInput(item);
     setOpenForm(true);
   };
 
@@ -59,14 +61,12 @@ export function TermListDrawer({
               <Button
                 variant="ghost"
                 className="w-full flex items-center justify-between gap-x-10"
-                key={item.termId}
+                key={item.slug}
                 onClick={() => handleTermClick(item)}
               >
                 <div className="flex gap-x-4 items-center">
                   <span>{count < 10 ? '0' + count : count.toString()}</span>
-                  <span className="text-start w-60 truncate">
-                    {item.displayName}
-                  </span>
+                  <span className="text-start w-60 truncate">{item.slug}</span>
                 </div>
               </Button>
             );

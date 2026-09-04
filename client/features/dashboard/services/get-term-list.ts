@@ -11,12 +11,7 @@ import { mapGetOrInsert } from '@/shared/utils/utils';
 import { PAGE_SIZE } from '@/features/search/constants/search.constants';
 import { TermFormInput } from '../schemas/term-form.schema';
 
-export interface GetSearchListInput {
-  page: number;
-  query: string;
-}
-
-export async function getTermList({ page, query }: GetSearchListInput) {
+export async function getTermList(page: number, query: string) {
   // 1. Build search condition on query params
   // 1.1 Filter invalid param
   const queryParams = [
@@ -69,15 +64,19 @@ export async function getTermList({ page, query }: GetSearchListInput) {
 
   // 2. Get paged terms
   const pagedTerms = await db
-    .select({ id: terms.id })
+    .select({ id: terms.id, slug: terms.slug, status: terms.status })
     .from(terms)
-
     .where(searchCondition)
     .orderBy(asc(terms.slug))
     .limit(PAGE_SIZE)
     .offset((page - 1) * PAGE_SIZE);
 
-  const termIds = pagedTerms.map((t) => t.id);
+  const termMap = new Map<string, [string, 'draft' | 'published']>();
+  const termIds = pagedTerms.map((t) => {
+    termMap.set(t.id, [t.slug, t.status]);
+    return t.id;
+  });
+
   if (termIds.length === 0) return [];
 
   // 3. Get term and tag translations for each term id
@@ -114,10 +113,12 @@ export async function getTermList({ page, query }: GetSearchListInput) {
   const searchItemMap = new Map<string, TermFormInput>();
   termTranslationList.forEach((t) => {
     const { termId, languageCode, name, definition } = t;
+    const [slug, status] = termMap.get(termId)!;
     const searchItem = mapGetOrInsert(searchItemMap, termId, {
-      translations: [],
-      tags: [],
-      saved: false,
+      slug,
+      status,
+      langInfoList: [],
+      tagInfoList: [],
     });
     searchItem.langInfoList.push({
       languageCode,
@@ -128,26 +129,27 @@ export async function getTermList({ page, query }: GetSearchListInput) {
   });
 
   tagTranslationList.forEach((t) => {
-    const { termId, name, color } = t;
-    if (!termId) return;
+    const { termId, name, tagId } = t;
+    if (!termId || !tagId) return;
+    const [slug, status] = termMap.get(termId)!;
     const searchItem = mapGetOrInsert(searchItemMap, termId, {
-      translations: [],
-      tags: [],
-      saved: false,
+      slug,
+      status,
+      langInfoList: [],
+      tagInfoList: [],
     });
-    searchItem.tagInfoList.push({ name });
+    searchItem.tagInfoList.push({ name, tagId });
   });
 
   // 5. Retrieve data from map by termId
   return pagedTerms.map((t) => {
+    const [slug, status] = termMap.get(t.id)!;
     const entries = mapGetOrInsert(searchItemMap, t.id, {
-      termId: t.id,
-      displayName: 'N',
-      translations: [],
-      tags: [],
-      saved: false,
+      slug,
+      status,
+      langInfoList: [],
+      tagInfoList: [],
     });
-    entries.saved = !!t.savedTerm;
     return entries;
   });
 }
