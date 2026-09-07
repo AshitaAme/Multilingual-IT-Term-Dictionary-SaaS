@@ -118,12 +118,6 @@ export function TermListDrawer({
             </Button>
           </div>
         </div>
-
-        <DrawerFooter>
-          <DrawerClose>
-            <div className="border-0 w-full">{t('cancel')}</div>
-          </DrawerClose>
-        </DrawerFooter>
       </DrawerContent>
     </Drawer>
   );

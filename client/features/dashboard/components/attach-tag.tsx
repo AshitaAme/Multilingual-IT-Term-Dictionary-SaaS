@@ -9,7 +9,7 @@ import { getAttachTagsAction } from '../actions/get-attach-tags.action';
 import { toast } from 'sonner';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { cn } from '@/shared/utils/utils';
-import { SearchTagProps } from '../types/search-tag-props';
+import { AttachTagProps } from '../types/attach-tag-props';
 import { TagInfoList } from '../schemas/term-form.schema';
 import { LoadingCircle } from '@/shared/components/ui/loading-circle';
 
@@ -19,7 +19,7 @@ export default function AttachTag({
   tagFields,
   removeTag,
   appendTag,
-}: Readonly<SearchTagProps>) {
+}: Readonly<AttachTagProps>) {
   const t = useTranslations('dashboard');
   const locale = useLocale();
 

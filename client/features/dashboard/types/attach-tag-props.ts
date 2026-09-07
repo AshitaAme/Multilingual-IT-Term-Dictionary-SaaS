@@ -6,7 +6,7 @@ interface TagField {
   name: string;
 }
 
-export interface SearchTagProps {
+export interface AttachTagProps {
   tagFields: TagField[];
   removeTag: (index: number) => void;
   appendTag: (val: TagInfoList) => void;
