@@ -18,7 +18,7 @@ import { toast } from 'sonner';
 import { useImmer } from 'use-immer';
 import { useTagFormStore } from '../stores/dashboard.store';
 import { TagFormInput } from '../schemas/tag-form.schema';
-import { getTagListAction } from '@/features/search/actions/get-tag-list.action';
+import { getTagListAction } from '@/features/search/actions/get-tag-names.action';
 
 export function TagListDrawer({
   trigger,

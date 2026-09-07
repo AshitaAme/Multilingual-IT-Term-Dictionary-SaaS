@@ -134,7 +134,8 @@
         "langInfosMin": "At least two language definitions are required.",
         "languageCodeDuplicate": "Language code must be unique.",
         "invalidPageNum": "Invalid page number",
-        "getTermListFailed": "Get term list failed"
+        "getTermListFailed": "Get term list failed",
+        "getTagListFailed": "Get tag list failed"
       }
     },
     "tagForm": {

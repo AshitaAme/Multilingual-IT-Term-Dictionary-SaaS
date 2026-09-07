@@ -14,13 +14,13 @@ import {
   MAX_TAG_QUERY_LENGTH,
 } from '../constants/search.constants';
 import { useEffect, useState } from 'react';
-import { getTagListAction as getTagNamesAction } from '../actions/get-tag-list.action';
 import { toast } from 'sonner';
 import { Button } from '@/shared/components/ui/button';
 import { useInputStore } from '../stores/search.store';
 import { LoadingCircle } from '@/shared/components/ui/loading-circle';
 import { TooltipWrapper } from '@/shared/components/ui/tooltipWrapper';
 import { useTranslations } from 'next-intl';
+import { getTagNamesAction } from '../actions/get-tag-names.action';
 
 export function TagMenu() {
   const t = useTranslations('search');

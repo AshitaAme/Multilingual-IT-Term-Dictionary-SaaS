@@ -21,30 +21,23 @@ export default function AttachTag({
   appendTag,
 }: Readonly<AttachTagProps>) {
   const t = useTranslations('dashboard');
-  const locale = useLocale();
 
   const [tags, setTags] = useState<TagInfoList[]>([]); // tags for display
   const [search, setSearch] = useState(''); // query condition
   const [page, setPage] = useState(1); // current page
   const [loading, setLoading] = useState(false);
 
-  const languageCode = useMemo(() => {
-    if (locale.startsWith('zh')) return 'zh';
-    if (locale.startsWith('ja')) return 'ja';
-    return 'en';
-  }, [locale]);
-
   // Fetch and set tags from server
   useEffect(() => {
     const fetchTags = async () => {
       setLoading(true);
-      const res = await getAttachTagsAction(languageCode);
+      const res = await getAttachTagsAction();
       if (res.success) setTags(res.data!);
       else toast.error(res.error);
       setLoading(false);
     };
     fetchTags();
-  }, [languageCode]);
+  }, []);
 
   // Tags to be displayed under search query condition
   const filteredTags = useMemo(() => {
