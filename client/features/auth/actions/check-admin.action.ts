@@ -13,7 +13,6 @@ export async function checkAdminAction() {
     const user = await getUserById(userId);
     if (user?.role !== 'admin')
       return { success: false, error: AUTH_ERRORS.ADMIN_ONLY };
-    console.log('[checkAdminAction] Success: ', user);
     return { success: true, data: { user: session.user } };
   } catch (err) {
     console.error('[checkAdminAction] Session or Role retrieval failed: ', err);

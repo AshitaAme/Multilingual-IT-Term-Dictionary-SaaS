@@ -266,7 +266,7 @@ export function SearchList() {
   // Loading while fetching data
   if (isLoading || (layout === 'Page' && isFetchingNextPage)) {
     return (
-      <div className="flex w-full items-center justify-center py-20">
+      <div className="flex w-full items-center justify-center mt-40">
         <LoadingCircle size={20} />
       </div>
     );
@@ -421,7 +421,7 @@ export function SearchList() {
 
         {/* Scroll: Loading / No more */}
         {layout === 'Scroll' && (
-          <div className="h-10 pt-[14%] w-full flex items-center justify-center">
+          <div className="h-10 pt-20 w-full flex items-center justify-center">
             {isFetchingNextPage && <LoadingCircle size={20} />}
             {!hasNextPage && !isLoading && (
               <span className="text-sm text-gray-400">
