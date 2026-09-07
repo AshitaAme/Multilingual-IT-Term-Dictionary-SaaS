@@ -110,36 +110,35 @@ export default function TagForm() {
     setOpenForm(false);
   };
 
-  if (!openForm)
-    return (
-      <div className="h-50 w-50 flex flex-col p-0 gap-0">
-        <Button
-          variant="outline"
-          className="flex-1 w-full rounded-b-none border-0"
-          onClick={() => setOpenForm(true)}
-        >
-          {t('tagForm.titleAdd')}
-        </Button>
-        <TagListDrawer
-          className="flex-1 w-full"
-          trigger={
-            <div
-              className={cn(
-                'flex-1 w-full h-full rounded-b-md border-0 border-t-2',
-                'flex items-center justify-center bg-background',
-                'font-semibold text-sm',
-                'hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50',
-              )}
-            >
-              {t('tagForm.titleUpdate')}
-            </div>
-          }
-        />
-      </div>
-    );
+  const formButtons = (
+    <div className="h-50 w-50 flex flex-col p-0 gap-0">
+      <Button
+        variant="outline"
+        className="flex-1 w-full rounded-b-none border-0"
+        onClick={() => setOpenForm(true)}
+      >
+        {t('tagForm.titleAdd')}
+      </Button>
+      <TagListDrawer
+        className="flex-1 w-full"
+        trigger={
+          <div
+            className={cn(
+              'flex-1 w-full h-full rounded-b-md border-0 border-t-2',
+              'flex items-center justify-center bg-background',
+              'font-semibold text-sm',
+              'hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50',
+            )}
+          >
+            {t('tagForm.titleUpdate')}
+          </div>
+        }
+      />
+    </div>
+  );
 
-  return createPortal(
-    <div className="fixed inset-0 flex items-center justify-center backdrop-blur z-50">
+  const formPanel = createPortal(
+    <div className="fixed inset-0 flex items-center justify-center backdrop-blur z-50 pointer-events-auto">
       <Card className="h-140 w-120 rounded-md bg-background py-0">
         <CardHeader className="relative items-center h-12 w-full px-0">
           <X
@@ -155,7 +154,10 @@ export default function TagForm() {
             {t(isUpdate ? 'tagForm.titleUpdate' : 'tagForm.titleAdd')}
           </CardTitle>
         </CardHeader>
-        <CardContent className="flex-1 overflow-y-auto h-140">
+        <CardContent
+          className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6"
+          onWheel={(e) => e.stopPropagation()}
+        >
           <form
             onSubmit={handleSubmit(onSubmit, (errs) =>
               console.log('VALIDATION FAILED:', errs),
@@ -174,7 +176,7 @@ export default function TagForm() {
                 </FieldLabel>
                 <Input
                   {...register('slug')}
-                  readOnly={isUpdate}
+                  disabled={isUpdate}
                   id="slug"
                   placeholder={t('tagForm.slugPlaceholder')}
                   className="rounded-sm text-sm focus:ring-1"
@@ -360,4 +362,14 @@ export default function TagForm() {
     </div>,
     document.body,
   );
+
+  if (openForm) {
+    return (
+      <>
+        {formButtons} {formPanel}
+      </>
+    );
+  } else {
+    return formButtons;
+  }
 }

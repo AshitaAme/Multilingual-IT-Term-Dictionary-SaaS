@@ -112,36 +112,35 @@ export default function TermForm() {
     setOpenForm(false);
   };
 
-  if (!openForm)
-    return (
-      <div className="h-50 w-50 flex flex-col p-0 gap-0">
-        <Button
-          variant="outline"
-          className="flex-1 w-full rounded-b-none border-0"
-          onClick={() => setOpenForm(true)}
-        >
-          {t('termForm.titleAdd')}
-        </Button>
-        <TermListDrawer
-          className="flex-1 w-full"
-          trigger={
-            <div
-              className={cn(
-                'flex-1 w-full h-full rounded-b-md border-0 border-t-2',
-                'flex items-center justify-center bg-background',
-                'font-semibold text-sm',
-                'hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50',
-              )}
-            >
-              {t('termForm.titleUpdate')}
-            </div>
-          }
-        />
-      </div>
-    );
+  const formButtons = (
+    <div className="h-50 w-50 flex flex-col p-0 gap-0">
+      <Button
+        variant="outline"
+        className="flex-1 w-full rounded-b-none border-0"
+        onClick={() => setOpenForm(true)}
+      >
+        {t('termForm.titleAdd')}
+      </Button>
+      <TermListDrawer
+        className="flex-1 w-full"
+        trigger={
+          <div
+            className={cn(
+              'flex-1 w-full h-full rounded-b-md border-0 border-t-2',
+              'flex items-center justify-center bg-background',
+              'font-semibold text-sm',
+              'hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50',
+            )}
+          >
+            {t('termForm.titleUpdate')}
+          </div>
+        }
+      />
+    </div>
+  );
 
-  return createPortal(
-    <div className="fixed inset-0 flex items-center justify-center backdrop-blur z-50">
+  const formPanel = createPortal(
+    <div className="fixed inset-0 flex items-center justify-center backdrop-blur z-50 pointer-events-auto">
       <Card className="h-160 w-130 rounded-sm bg-background py-0">
         <CardHeader className="relative items-center h-12 w-full px-0">
           <X
@@ -158,7 +157,10 @@ export default function TermForm() {
           </CardTitle>
         </CardHeader>
 
-        <CardContent className=" flex-1 overflow-auto hide-scrollbar h-140">
+        <CardContent
+          className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6"
+          onWheel={(e) => e.stopPropagation()}
+        >
           <form
             onSubmit={handleSubmit(onSubmit, (errs) =>
               console.log('VALIDATION FAILED:', errs),
@@ -401,4 +403,14 @@ export default function TermForm() {
     </div>,
     document.body,
   );
+
+  if (openForm) {
+    return (
+      <>
+        {formButtons} {formPanel}
+      </>
+    );
+  } else {
+    return formButtons;
+  }
 }

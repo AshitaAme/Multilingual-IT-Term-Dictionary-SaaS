@@ -28,6 +28,8 @@ export function TagListDrawer({
   const [page, setPage] = useState(1);
   const [input, setInput] = useState('');
   const [tagList, updateTagList] = useImmer<TagFormInput[]>([]);
+
+  const openForm = useTagFormStore((state) => state.openForm);
   const setIsUpdate = useTagFormStore((state) => state.setIsUpdate);
   const setOpenForm = useTagFormStore((state) => state.setOpenForm);
   const setFormInput = useTagFormStore((state) => state.setFormInput);
@@ -61,7 +63,12 @@ export function TagListDrawer({
   return (
     <Drawer direction="right">
       <DrawerTrigger className={className}>{trigger}</DrawerTrigger>
-      <DrawerContent className="h-full">
+      <DrawerContent
+        className="h-full"
+        onPointerDownOutside={(e) => {
+          if (openForm) e.preventDefault();
+        }}
+      >
         <DrawerHeader>
           <DrawerTitle>{t('updateTag')}</DrawerTitle>
         </DrawerHeader>

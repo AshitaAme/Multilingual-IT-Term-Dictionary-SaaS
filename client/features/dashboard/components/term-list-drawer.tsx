@@ -10,8 +10,6 @@ import {
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
-  DrawerFooter,
-  DrawerClose,
   Drawer,
 } from '@/shared/components/ui/drawer';
 import { useTranslations } from 'next-intl';
@@ -32,6 +30,8 @@ export function TermListDrawer({
   const [query, setQuery] = useState('');
   const [input, setInput] = useState('');
   const [termList, updateTermList] = useImmer<TermFormInput[]>([]);
+
+  const openForm = useTermFormStore((state) => state.openForm);
   const setIsUpdate = useTermFormStore((state) => state.setIsUpdate);
   const setOpenForm = useTermFormStore((state) => state.setOpenForm);
   const setFormInput = useTermFormStore((state) => state.setFormInput);
@@ -57,11 +57,16 @@ export function TermListDrawer({
   return (
     <Drawer direction="right">
       <DrawerTrigger className={className}>{trigger}</DrawerTrigger>
-      <DrawerContent className="h-full">
+      <DrawerContent
+        className="h-full"
+        onPointerDownOutside={(e) => {
+          if (openForm) e.preventDefault();
+        }}
+      >
         <DrawerHeader>
           <DrawerTitle>{t('updateTerm')}</DrawerTitle>
         </DrawerHeader>
-        <div className="flex flex-col h-6/7 justify-between">
+        <div className="flex flex-col h-6/7">
           <div className="w-full pl-4 pr-16 relative shrink-0">
             <Input
               value={input}
@@ -80,7 +85,7 @@ export function TermListDrawer({
               className="absolute right-18 bottom-1/2 translate-y-1/2 cursor-pointer"
             />
           </div>
-          <div className="flex flex-col gap-3 p-6 pt-4 overflow-y-scroll overflow-x-hidden">
+          <div className="flex-1 min-h-0 flex flex-col gap-3 p-6 pt-4 overflow-y-scroll overflow-x-hidden">
             {termList.map((item, index) => {
               const count = (page - 1) * PAGE_SIZE + index + 1;
               return (
