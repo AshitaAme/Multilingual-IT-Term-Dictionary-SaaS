@@ -8,7 +8,7 @@ export const createSearchListQuerySchema = (
   z.object({
     page: z.number(),
     query: z.string().max(MAX_SEARCH_LIST_QUERY_LENGTH, {
-      message: t('searchList.error.queryTooLong'),
+      message: t('queryTooLong'),
     }),
   });
 

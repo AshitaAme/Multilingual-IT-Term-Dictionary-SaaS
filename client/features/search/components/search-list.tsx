@@ -71,7 +71,6 @@ export function SearchList() {
         const res = await getSearchListAction({
           page: pageParam,
           query: query.trim(),
-          locale,
         });
 
         if (!res.success) {

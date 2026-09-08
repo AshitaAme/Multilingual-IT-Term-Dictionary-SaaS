@@ -51,11 +51,7 @@
 
   "search": {
     "searchList": {
-      "noMore": "No more...",
-      "error": {
-        "queryTooLong": "Query is too long",
-        "somethingWentWrong": "Something went wrong"
-      }
+      "noMore": "No more..."
     },
     "searchBox": {
       "inputPlaceholder": "Search...",
@@ -72,7 +68,10 @@
         "invalidTermId": "Term not found"
       }
     },
-    "errors": {}
+    "errors": {
+      "queryTooLong": "Query is too long",
+      "somethingWentWrong": "Something went wrong"
+    }
   },
 
   "dashboard": {

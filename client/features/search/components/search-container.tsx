@@ -5,22 +5,26 @@ import { SearchBox } from './search-box';
 import { SearchList } from './search-list';
 import { SearchOptions } from './search-options';
 import { TermInfo } from './term-info';
-import { useSearchStore } from '../stores/search.store';
+import { useInputStore, useSearchStore } from '../stores/search.store';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 export function SearchContainer() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const setQuery = useSearchStore((state) => state.setQuery);
+  const setInput = useInputStore((state) => state.setInput);
 
   useEffect(() => {
     const tagParam = searchParams.get('tag');
 
     if (tagParam) {
-      setQuery(tagParam === 'All' ? '' : tagParam);
+      const param = tagParam === 'All' ? '' : tagParam;
+      setQuery(param);
+      setInput(param);
+
       router.replace('/search');
     }
-  }, [searchParams, setQuery, router]);
+  }, [searchParams, setQuery, router, setInput]);
 
   return (
     <div>

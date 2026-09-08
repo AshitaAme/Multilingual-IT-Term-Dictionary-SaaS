@@ -13,7 +13,7 @@ export const createSearchListSchema = (t: ServerTranslator) => {
     color: z.string(),
   });
 
-  return z.string(
+  return z.array(
     z.object({
       termId: z.string(),
       displayName: z.string(),

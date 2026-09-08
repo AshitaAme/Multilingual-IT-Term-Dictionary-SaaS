@@ -32,7 +32,6 @@ export function SearchBox({
   const handleSearch = () => {
     if (isSearch) {
       setQuery(input);
-      setInput('');
     } else {
       setQuery(navInput);
       setNavInput('');

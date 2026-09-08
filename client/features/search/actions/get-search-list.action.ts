@@ -25,30 +25,36 @@ export async function getSearchListActionRaw(
   if (!parsed.success) return { success: false, error: parsed.error.message };
   const { page, query } = parsed.data;
 
-  // 2. Get userId
-  const userId = session?.user.id;
-
-  // 3. Get search list
+  // 2. Prepare params
   const payload = {
     page,
     userLang: l,
     query,
-    userId: userId || '',
+    userId: session?.user.id || '',
   };
 
-  // 4. Try redis cache
+  // 3. Try redis cache
   const key = `search:list:${JSON.stringify(payload)}`;
   const cache = await redis.get(key);
   const searchListSchema = createSearchListSchema(t);
   const cacheParsed = searchListSchema.safeParse(cache);
-  if (cacheParsed.success) return { success: true, data: cacheParsed };
+  if (cacheParsed.success) {
+    const cachedList = cacheParsed.data;
+    return { success: true, data: cachedList };
+  } else {
+    console.warn(
+      '[getSearchListAction] Non-existent redis cache or parse failed: ',
+      cacheParsed.error.message,
+    );
+  }
 
-  // 5. Get list from db
+  // 4. Get list from db
   try {
     const list = await getSearchList(payload);
-    await redis.set(key, list);
+    const ttlSec = 30 * 60;
+    await redis.set(key, list, { ex: ttlSec });
 
-    // 6. Success
+    // 5. Success
     return { success: true, data: list };
   } catch (err) {
     console.error('[getSearchListAction] Term list fetch failed: ', query, err);
