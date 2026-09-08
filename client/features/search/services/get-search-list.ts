@@ -12,7 +12,7 @@ import { SearchItem } from '../types/search-item';
 import { mapGetOrInsert } from '@/shared/utils/utils';
 import { PAGE_SIZE } from '../constants/search.constants';
 
-export interface GetSearchListInput {
+export interface SearchListParams {
   page: number;
   userLang: string;
   query: string;
@@ -24,7 +24,7 @@ export async function getSearchList({
   userLang,
   query,
   userId,
-}: GetSearchListInput) {
+}: SearchListParams) {
   // 1. Build search condition on query params
   // 1.1 Filter invalid param
   const queryParams = [

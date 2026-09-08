@@ -1,4 +1,4 @@
-import { kv } from '@/shared/lib/icons/redis/redis';
+import { redis } from '@/shared/lib/icons/redis/redis';
 import { VerificationInput } from '../schemas/verification';
 import { PendingUserSchema } from '../schemas/pending-user';
 import { AppError, NotFoundError } from '@/shared/errors/errors';
@@ -10,7 +10,7 @@ export async function verifySignup({
 }: VerificationInput) {
   // 1. Get pending user from Redis
   const key = `auth:signup:${email}`;
-  const pendingUserJSON = await kv.get<unknown>(key);
+  const pendingUserJSON = await redis.get(key);
   const pendingUser = PendingUserSchema.safeParse(pendingUserJSON);
 
   // 2. Check its existence
@@ -33,5 +33,5 @@ export async function verifySignup({
   await insertUser(userData);
 
   // 5. Delete pending user in Redis
-  await kv.del(key);
+  await redis.del(key);
 }

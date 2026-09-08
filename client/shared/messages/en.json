@@ -71,7 +71,8 @@
         "invalidUserId": "User not found",
         "invalidTermId": "Term not found"
       }
-    }
+    },
+    "errors": {}
   },
 
   "dashboard": {

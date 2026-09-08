@@ -10,7 +10,6 @@ export const createSearchListQuerySchema = (
     query: z.string().max(MAX_SEARCH_LIST_QUERY_LENGTH, {
       message: t('searchList.error.queryTooLong'),
     }),
-    locale: z.string().optional(),
   });
 
 export type SearchListQuery = z.infer<

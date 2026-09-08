@@ -86,3 +86,76 @@ export function withAuthAndTranslations<TInput extends unknown[], TOutput>(
     return action(session, t, ...args);
   };
 }
+
+export function withLocaleAndTranslations<TInput extends unknown[], TOutput>(
+  namespace: string,
+  action: (l: string, t: ServerTranslator, ...args: TInput) => Promise<TOutput>,
+) {
+  return async (...args: TInput): Promise<TOutput> => {
+    let l: string = 'en';
+    let t: ServerTranslator;
+
+    try {
+      l = await getLocale();
+    } catch (err) {
+      console.warn('[withLocale] Fetch locale failed: ', err);
+    }
+
+    if (l.startsWith('zh')) l = 'zh';
+    if (l.startsWith('jp')) l = 'jp';
+
+    try {
+      t = await getTranslations(namespace);
+    } catch (err) {
+      console.warn(
+        `[withTranslations] Fetch translator failed for namespace "${namespace}":`,
+        err,
+      );
+    }
+    return action(l, t, ...args);
+  };
+}
+
+export function withAuthAndLocaleAndTranslations<
+  TInput extends unknown[],
+  TOutput,
+>(
+  namespace: string,
+  action: (
+    session: Session | null,
+    l: string,
+    t: ServerTranslator,
+    ...args: TInput
+  ) => Promise<TOutput>,
+) {
+  return async (...args: TInput): Promise<TOutput> => {
+    let session: Session | null = null;
+    let l: string = 'en';
+    let t: ServerTranslator;
+
+    try {
+      session = await auth();
+    } catch (err) {
+      console.warn('[withAuthAndTranslator] Fetch session failed: ', err);
+    }
+
+    try {
+      l = await getLocale();
+    } catch (err) {
+      console.warn('[withLocale] Fetch locale failed: ', err);
+    }
+
+    if (l.startsWith('zh')) l = 'zh';
+    if (l.startsWith('jp')) l = 'jp';
+
+    try {
+      t = await getTranslations(namespace);
+    } catch (err) {
+      console.warn(
+        `[withTranslations] Fetch translator failed for namespace "${namespace}":`,
+        err,
+      );
+    }
+    return action(session, l, t, ...args);
+  };
+}

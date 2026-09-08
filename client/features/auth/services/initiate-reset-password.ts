@@ -1,4 +1,4 @@
-import { kv } from '@/shared/lib/icons/redis/redis';
+import { redis } from '@/shared/lib/icons/redis/redis';
 import bcrypt from 'bcryptjs';
 import crypto from 'node:crypto';
 import { PendingUserSchema } from '../schemas/pending-user';
@@ -16,7 +16,7 @@ export async function initiateResetPassword({
   const key = REDIS_KEYS.auth.resetPassword(email);
   const [activeUser, pendingUserJSON] = await Promise.all([
     getUserByEmail(email),
-    kv.get<unknown>(key),
+    redis.get<unknown>(key),
   ]);
 
   // 2. Check database for active user
@@ -47,7 +47,7 @@ export async function initiateResetPassword({
 
   console.log('initiate_reset_password:', payload);
 
-  await kv.set(key, payload, { ex: 600 });
+  await redis.set(key, payload, { ex: 600 });
 
   // 5. Send email verification to the user
   await sendVerificationEmail(email, verificationToken);
