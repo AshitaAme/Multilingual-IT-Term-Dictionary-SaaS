@@ -1,11 +1,13 @@
 'use server';
 
 import { getSavedBooks } from '@/shared/lib/db/mutations/saved-book.mutations';
+import { redis } from '@/shared/lib/icons/redis/redis';
 import {
   ServerTranslator,
   withAuthAndTranslations,
 } from '@/shared/utils/action-wrappers';
 import { Session } from 'next-auth';
+import { savedBookSchema } from '../schemas/saved-book.schema';
 
 export async function getSavedBooksActionRaw(
   session: Session | null,
@@ -16,11 +18,25 @@ export async function getSavedBooksActionRaw(
   if (!userId)
     return { success: false, error: t ? t('userNotFound') : 'User not found' };
 
-  // 2. Get saved books
+  // 2. Try redis cache
+  const key = `saved:books:${userId}`;
+  const cache = await redis.get(key);
+  const parsedCache = savedBookSchema.safeParse(cache);
+  if (parsedCache.success) {
+    return { success: true, data: parsedCache.data };
+  } else {
+    console.warn(
+      '[getSavedBooksAction] Non-existent cache or parse failed: ',
+      parsedCache.error.message,
+    );
+  }
+
+  // 3. Get saved books
   try {
     const res = await getSavedBooks(userId);
+    await redis.set(key, res, { ex: 30 * 60 });
 
-    // 3. Success
+    // 4. Success
     return { success: true, data: res };
   } catch (err) {
     console.error('[getSavedBooks] Get saved books failed: ', err);

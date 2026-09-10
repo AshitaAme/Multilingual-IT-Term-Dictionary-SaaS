@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import { toast } from 'sonner';
@@ -80,7 +81,7 @@ export function BookTermList() {
       setIsLoading(false);
     };
     fetchPage();
-  }, [bookId, updateBookTermList]);
+  }, [bookId]);
 
   // Filter result by query
   const filteredList = useMemo(
@@ -104,7 +105,7 @@ export function BookTermList() {
       bookTermList.forEach((t) => draft.add(t.savedTermId));
     });
     setAll(false);
-  }, [all, bookTermList, setAll, updateSelected]);
+  }, [all, bookTermList, setAll]);
 
   // Clear
   useEffect(() => {
@@ -114,7 +115,7 @@ export function BookTermList() {
     });
     setClear(false);
     setIsSelecting(false);
-  }, [clear, setClear, setIsSelecting, updateSelected]);
+  }, [clear, setClear, setIsSelecting]);
 
   // Do-review
   useEffect(() => {
@@ -148,7 +149,6 @@ export function BookTermList() {
     selected,
     setDoReview,
     setIsSelecting,
-    updateBookTermList,
     updateSelected,
   ]);
 
@@ -183,8 +183,6 @@ export function BookTermList() {
     selected,
     setDeReview,
     setIsSelecting,
-    updateBookTermList,
-    updateSelected,
   ]);
 
   // Remove
@@ -208,16 +206,7 @@ export function BookTermList() {
       setIsSelecting(false);
     };
     removeSave();
-  }, [
-    bookTermList,
-    isSelecting,
-    remove,
-    selected,
-    setIsSelecting,
-    setRemove,
-    updateBookTermList,
-    updateSelected,
-  ]);
+  }, [bookTermList, isSelecting, remove, selected, setIsSelecting, setRemove]);
 
   // Move to
   useEffect(() => {
@@ -248,8 +237,6 @@ export function BookTermList() {
     selected,
     setIsSelecting,
     setMoveTo,
-    updateBookTermList,
-    updateSelected,
   ]);
 
   // Modify operation
@@ -261,7 +248,7 @@ export function BookTermList() {
       });
     });
     setUpdatedText(null);
-  }, [modifiedTerm, setUpdatedText, updateBookTermList, updatedText]);
+  }, [modifiedTerm, setUpdatedText, updatedText]);
 
   // Check emptiness of list
   const isEmpty = useMemo(
