@@ -24,7 +24,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { ChevronLeft, ChevronRight, Circle, Star } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import { saveTermAction } from '../actions/save-term.action';
-import { getTextFromTerm } from '../utils/get-text-from-term';
+import { getStringText } from '../utils/get-text-from-term';
 import { unsaveTermAction } from '../actions/unsave-term.action';
 import { produce, enableMapSet } from 'immer';
 import { useImmer } from 'use-immer';
@@ -170,7 +170,7 @@ export function SearchList() {
           savedBookId: toSaveBook.id || 'Default',
           name: term.displayName,
           termId: term.termId,
-          text: getTextFromTerm(term),
+          text: getStringText(term),
         });
       });
 
@@ -239,7 +239,7 @@ export function SearchList() {
           savedBookId: toSaveBook.id || 'Default',
           termId,
           name: displayName,
-          text: getTextFromTerm(item),
+          text: getStringText(item),
         },
       ]);
       if (!res.success) toast.error(res.error);

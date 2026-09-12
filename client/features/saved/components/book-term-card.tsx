@@ -5,12 +5,12 @@ import { BookTerm } from '../types/book-term';
 import { Card, CardContent, CardTitle } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
 import { ChevronLeft, ChevronRight, SquarePen } from 'lucide-react';
-import { useModifyStore } from '../stores/saved.store';
+import { useTermTextStore } from '../stores/saved.store';
 import { cn } from '@/shared/utils/utils';
 import { Rating } from 'ts-fsrs';
 import { updateReviewAction } from '../actions/update-review.action';
 import { toast } from 'sonner';
-import { Updater, useImmer } from 'use-immer';
+import { useImmer } from 'use-immer';
 import { useTranslations } from 'next-intl';
 
 export function BookTermCard({
@@ -43,7 +43,7 @@ export function BookTermCard({
     [bookTermList, cardMode, shownTermIdx, waitReview],
   );
   const [showDef, setShowDef] = useState(false);
-  const setModifiedTerm = useModifyStore((state) => state.setModifiedTerm);
+  const setModifiedTerm = useTermTextStore((state) => state.setTerm);
 
   // Review
   const handleReviewClick = async (rating: 1 | 2 | 3 | 4) => {

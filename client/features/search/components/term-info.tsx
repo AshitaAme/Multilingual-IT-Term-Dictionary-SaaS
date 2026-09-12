@@ -21,7 +21,7 @@ import { LoadingCircle } from '@/shared/components/ui/loading-circle';
 import { TooltipWrapper } from '@/shared/components/ui/tooltipWrapper';
 import { useTranslations } from 'next-intl';
 import { getLanguage } from '@/shared/utils/utils';
-import { getTextFromTerm } from '../utils/get-text-from-term';
+import { getStringText } from '../utils/get-text-from-term';
 
 export function TermInfo() {
   const t = useTranslations('search');
@@ -85,7 +85,7 @@ export function TermInfo() {
           savedBookId: toSaveBook.id,
           termId,
           name: term.displayName,
-          text: getTextFromTerm(term),
+          text: getStringText(term),
         },
       ]);
       if (res.success) {

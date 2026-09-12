@@ -35,11 +35,9 @@ interface OptionState {
   setRemove: (remove: boolean) => void;
 }
 
-interface ModifyState {
-  modifiedTerm: BookTerm | null;
-  setModifiedTerm: (modifiedTerm: BookTerm | null) => void;
-  updatedText: string | null;
-  setUpdatedText: (updatedText: string | null) => void;
+interface TermTextState {
+  term: BookTerm | null;
+  setTerm: (term: BookTerm) => void;
 }
 
 export const useSavedStore = create<SavedState>((set) => ({
@@ -75,9 +73,7 @@ export const useBookOptionStore = create<OptionState>((set) => ({
   setRemove: (remove) => set({ remove }),
 }));
 
-export const useModifyStore = create<ModifyState>((set) => ({
-  modifiedTerm: null,
-  setModifiedTerm: (modifiedTerm) => set({ modifiedTerm }),
-  updatedText: null,
-  setUpdatedText: (updatedText) => set({ updatedText }),
+export const useTermTextStore = create<TermTextState>((set) => ({
+  term: null,
+  setTerm: (term) => set({ term: term }),
 }));

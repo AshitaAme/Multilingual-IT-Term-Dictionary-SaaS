@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import {
   useBookOptionStore,
   useBookStore,
-  useModifyStore,
+  useTermTextStore,
   useSavedStore,
 } from '../stores/saved.store';
 import { useEffect, useMemo, useState } from 'react';
@@ -49,10 +49,10 @@ export function BookTermList() {
   // Context menu operations
   const [isOperating, setIsOperating] = useState('');
   const savedBooks = useSavedStore((state) => state.savedBooks);
-  const modifiedTerm = useModifyStore((state) => state.modifiedTerm);
-  const setModifiedTerm = useModifyStore((state) => state.setModifiedTerm);
-  const updatedText = useModifyStore((state) => state.updatedText);
-  const setUpdatedText = useModifyStore((state) => state.setUpdatedText);
+  const modifiedTerm = useTermTextStore((state) => state.term);
+  const setModifiedTerm = useTermTextStore((state) => state.setTerm);
+  const updatedText = useTermTextStore((state) => state.text);
+  const setUpdatedText = useTermTextStore((state) => state.setText);
 
   // Book term operation options
   const [selected, updateSelected] = useImmer<Set<string>>(new Set()); // savedTermId
