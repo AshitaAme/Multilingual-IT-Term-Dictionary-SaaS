@@ -49,10 +49,8 @@ export function BookTermList() {
   // Context menu operations
   const [isOperating, setIsOperating] = useState('');
   const savedBooks = useSavedStore((state) => state.savedBooks);
-  const modifiedTerm = useTermTextStore((state) => state.term);
-  const setModifiedTerm = useTermTextStore((state) => state.setTerm);
-  const updatedText = useTermTextStore((state) => state.text);
-  const setUpdatedText = useTermTextStore((state) => state.setText);
+  const term = useTermTextStore((state) => state.term);
+  const setTerm = useTermTextStore((state) => state.setTerm);
 
   // Book term operation options
   const [selected, updateSelected] = useImmer<Set<string>>(new Set()); // savedTermId
@@ -241,14 +239,13 @@ export function BookTermList() {
 
   // Modify operation
   useEffect(() => {
-    if (modifiedTerm === null || updatedText === null) return;
+    if (term === null) return;
     updateBookTermList((draft) => {
       draft.forEach((t) => {
-        if (t.savedTermId === modifiedTerm.savedTermId) t.text = updatedText;
+        if (t.savedTermId === term.savedTermId) t.text = term.text;
       });
     });
-    setUpdatedText(null);
-  }, [modifiedTerm, setUpdatedText, updatedText]);
+  }, [term]);
 
   // Check emptiness of list
   const isEmpty = useMemo(
@@ -400,7 +397,7 @@ export function BookTermList() {
                   {/* Modify */}
                   <ContextMenuItem
                     className="hover:bg-muted-foreground/20!"
-                    onClick={() => setModifiedTerm(item)}
+                    onClick={() => setTerm(item)}
                   >
                     {t('modify')}
                   </ContextMenuItem>

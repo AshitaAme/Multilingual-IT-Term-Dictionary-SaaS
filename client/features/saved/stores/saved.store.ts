@@ -37,7 +37,7 @@ interface OptionState {
 
 interface TermTextState {
   term: BookTerm | null;
-  setTerm: (term: BookTerm) => void;
+  setTerm: (term: BookTerm | null) => void;
 }
 
 export const useSavedStore = create<SavedState>((set) => ({

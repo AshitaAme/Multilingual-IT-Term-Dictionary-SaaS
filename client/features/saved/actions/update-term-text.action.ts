@@ -19,9 +19,12 @@ export async function updateTermTextActionRaw(
 
   // 2. Save term text
   try {
-    await updateTermText(savedTermId, text);
+    const res = await updateTermText(savedTermId, text);
     // 3. Success
-    return { success: true };
+    return {
+      success: true,
+      data: res.text,
+    };
   } catch (err) {
     console.error('[updateTermTextAction] Update term text failed: ', err);
     return {
