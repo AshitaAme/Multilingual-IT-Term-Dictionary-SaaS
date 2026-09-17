@@ -38,6 +38,7 @@
     "languages": "Languages"
   },
   "tag": {
+    "leafDictionary": "Leaf Dictionary",
     "all": "All",
     "computerArchitecture": "Computer Architecture",
     "frontend": "Frontend",

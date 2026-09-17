@@ -20,14 +20,7 @@ export async function getBookTermListActionRaw(
   const key = `saved:bookTermList:${bookId}`;
   const cache = await redis.get(key);
   const parsedCache = bookTermListSchema.safeParse(cache);
-  if (parsedCache.success) {
-    return { success: true, data: parsedCache.data };
-  } else {
-    console.warn(
-      '[getBookTermListAction] Non-existent cache or parse failed: ',
-      parsedCache.error.message,
-    );
-  }
+  if (parsedCache.success) return { success: true, data: parsedCache.data };
 
   // 3. Get book term list
   try {

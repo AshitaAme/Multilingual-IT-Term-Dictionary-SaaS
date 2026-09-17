@@ -5,8 +5,8 @@
     "welcome": "葉の辞書へようこそ"
   },
   "auth": {
-    "signIn": "ログイン",
-    "signUp": "登録",
+    "signIn": "ログイン ๐•ᴗ•๐",
+    "signUp": "登録 つ♡⊂",
     "forgotPassword": "パスワード忘れ",
     "back": "...戻る",
     "name": "名前",
@@ -26,7 +26,7 @@
     "waiting": "待機中...{countdown}秒",
     "resend": "再送信"
   },
- "nav": {
+  "nav": {
     "home": "ホーム",
     "savedWords": "お気に入り",
     "signInUp": "ログイン/登録",
@@ -39,14 +39,197 @@
     "languages": "言語"
   },
   "tag": {
-  "all": "すべて",
-  "computerArchitecture": "アーキテクチャ",
-  "frontend": "フロントエンド",
-  "backend": "バックエンド",
-  "ai": "AI",
-  "data": "データ",
-  "cloudService": "クラウドサービス",
-  "git": "Git",
-  "nextjs": "Next.js"
-}
+    "leafDictionary": "葉の辞書",
+    "all": "すべて",
+    "computerArchitecture": "アーキテクチャ",
+    "frontend": "フロントエンド",
+    "backend": "バックエンド",
+    "ai": "AI",
+    "data": "データ",
+    "cloudService": "クラウドサービス",
+    "git": "Git",
+    "nextjs": "Next.js"
+  },
+  "search": {
+    "searchList": {
+      "noMore": "もうありません..."
+    },
+    "searchBox": {
+      "inputPlaceholder": "検索...",
+      "searchLabel": "検索"
+    },
+    "tagMenu": {
+      "addTagsLabel": "タグを追加"
+    },
+    "termInfo": {
+      "saveLabel": "保存",
+      "unsaveLabel": "保存解除",
+      "error": {
+        "invalidUserId": "ユーザーが見つかりません",
+        "invalidTermId": "用語が見つかりません"
+      }
+    },
+    "errors": {
+      "queryTooLong": "クエリが長すぎます",
+      "somethingWentWrong": "問題が発生しました"
+    }
+  },
+  "dashboard": {
+    "termListDrawer": {
+      "updateTerm": "用語を更新",
+      "prev": "前へ",
+      "next": "次へ",
+      "cancel": "キャンセル"
+    },
+    "tagListDrawer": {
+      "updateTag": "タグを更新",
+      "prev": "前へ",
+      "next": "次へ",
+      "cancel": "キャンセル"
+    },
+    "searchTag": {
+      "generate": "生成",
+      "search": "タグを検索...",
+      "attach": "関連付け",
+      "cancel": "キャンセル",
+      "loading": "読み込み中...",
+      "noResults": "結果なし"
+    },
+    "termForm": {
+      "published": "公開済み",
+      "draft": "下書き",
+      "titleAdd": "用語を追加",
+      "titleUpdate": "用語を更新",
+      "slugPlaceholder": "slug を入力...",
+      "addTag": "タグを追加",
+      "translations": "翻訳",
+      "addTranslation": "翻訳を追加",
+      "selectLanguage": "言語を選択",
+      "lang": {
+        "en": "英語",
+        "zh": "中国語（簡体）",
+        "ja": "日本語"
+      },
+      "namePlaceholder": "名前（最大 30 文字）",
+      "label": {
+        "status": "ステータス",
+        "slug": "Slug",
+        "tags": "タグ",
+        "languageCode": "言語コード",
+        "name": "名前",
+        "definition": "定義"
+      },
+      "definitionPlaceholder": "定義（最大 100 文字）",
+      "submit": "送信",
+      "error": {
+        "invalidInput": "入力値が無効です",
+        "slugRequired": "Slug は必須です。",
+        "tagRequired": "タグは空にできません。",
+        "tagInfosMin": "タグは少なくとも 1 つ必要です。",
+        "languageCodeRequired": "言語コードは必須です。",
+        "nameRequired": "言語名は空にできません。",
+        "nameTooLong": "言語名は 30 文字を超えられません。",
+        "definitionRequired": "定義は空にできません。",
+        "definitionTooLong": "定義は 200 文字を超えられません。",
+        "langInfosMin": "言語定義は少なくとも 2 つ必要です。",
+        "languageCodeDuplicate": "言語コードは一意である必要があります。",
+        "invalidPageNum": "ページ番号が無効です",
+        "getTermListFailed": "用語リストの取得に失敗しました",
+        "getTagListFailed": "タグリストの取得に失敗しました"
+      }
+    },
+    "tagForm": {
+      "titleUpdate": "タグを更新",
+      "titleAdd": "タグを追加",
+      "slugPlaceholder": "タグ slug を入力",
+      "colorPlaceholder": "タグのカラーを入力",
+      "addLanguage": "言語を追加",
+      "selectLanguage": "言語を選択",
+      "selectColor": "カラーを選択",
+      "translations": "翻訳",
+      "lang": {
+        "en": "英語",
+        "zh": "中国語（簡体）",
+        "ja": "日本語"
+      },
+      "namePlaceholder": "名前（最大 30 文字）",
+      "label": {
+        "slug": "Slug",
+        "color": "カラー",
+        "languageCode": "言語コード",
+        "name": "名前"
+      },
+      "submit": "送信",
+      "error": {
+        "slugRequired": "Slug は必須です",
+        "slugTooLong": "Slug は最大 15 文字です",
+        "colorRequired": "カラーは必須です",
+        "colorTooLong": "カラーは最大 30 文字です",
+        "languageCodeRequired": "言語コードは必須です",
+        "languageCodeTooLong": "言語コードは最大 15 文字です",
+        "nameRequired": "名前は必須です",
+        "nameTooLong": "名前は最大 15 文字です",
+        "langInfosMin": "言語エントリは少なくとも 2 つ必要です",
+        "langInfosMax": "言語エントリは最大 3 つまでです",
+        "languageCodeDuplicate": "言語コードは一意である必要があります"
+      }
+    }
+  },
+  "saved": {
+    "errors": {
+      "invalidInput": "入力値が無効です",
+      "invalidBook": "ブックが無効です",
+      "invalidTermId": "用語 ID が無効です",
+      "bookExists": "ブックは既に存在します",
+      "checkBookFailed": "保存済みブックの確認に失敗しました",
+      "upsertBookFailed": "保存済みブックの保存に失敗しました",
+      "selectEmpty": "1 つ以上選択する必要があります",
+      "addReviewFailed": "レビューの追加に失敗しました",
+      "deleteBookFailed": "ブックの削除に失敗しました",
+      "deleteReviewFailed": "レビューの削除に失敗しました",
+      "getSavedBooksFailed": "保存済みブックの取得に失敗しました",
+      "userNotFound": "ユーザーが見つかりません",
+      "moveSaveFailed": "保存済み用語の移動に失敗しました",
+      "removeSaveFailed": "保存済み用語の削除に失敗しました",
+      "sameBookMoveForbidden": "同じブックには移動できません",
+      "bookNameOverLength": "ブック名が長すぎます（最大 20 文字）",
+      "updateTermTextFailed": "術语文の更新に失敗しました",
+      "textOverLength": "テキストが長すぎます（最大 1000 文字）",
+      "ratingRequired": "評価は必須です",
+      "invalidRating": "評価数値が無効です",
+      "updateReviewFailed": "レビューの更新に失敗しました"
+    },
+    "bookOptions": {
+      "back": "戻る",
+      "list": "リスト",
+      "card": "カード",
+      "review": "レビュー",
+      "all": "すべて",
+      "clear": "クリア",
+      "doReview": "追加",
+      "deReview": "キャンセル",
+      "remove": "削除",
+      "moveTo": "移動"
+    },
+    "bookTermList": {
+      "stillEmpty": "まだ空です...",
+      "remove": "削除",
+      "doReview": "レビューを追加",
+      "deReview": "レビューをキャンセル",
+      "moveTo": "移動",
+      "modify": "編集",
+      "prev": "前へ",
+      "next": "次へ"
+    },
+    "bookTermCard": {
+      "showDef": "定義",
+      "easy": "簡単",
+      "good": "良い",
+      "hard": "難しい",
+      "again": "もう一度"
+    },
+    "termTextForm": {
+      "translation": "翻訳"
+    }
+  }
 }

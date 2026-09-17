@@ -28,8 +28,9 @@ export function HomeContainer() {
       )}
     >
       <div className="flex items-center justify-center text-4xl font-bold">
-        <TypingAnimation>Hello Word!</TypingAnimation>
+        <TypingAnimation>{t('leafDictionary')}</TypingAnimation>
       </div>
+
       <div
         className={cn('py-14', 'flex flex-wrap justify-center gap-8 lg:gap-12')}
       >

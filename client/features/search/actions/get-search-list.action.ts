@@ -41,11 +41,6 @@ export async function getSearchListActionRaw(
   if (cacheParsed.success) {
     const cachedList = cacheParsed.data;
     return { success: true, data: cachedList };
-  } else {
-    console.warn(
-      '[getSearchListAction] Non-existent redis cache or parse failed: ',
-      cacheParsed.error.message,
-    );
   }
 
   // 4. Get list from db

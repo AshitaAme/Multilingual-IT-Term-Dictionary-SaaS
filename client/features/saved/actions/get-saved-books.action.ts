@@ -22,14 +22,7 @@ export async function getSavedBooksActionRaw(
   const key = `saved:books:${userId}`;
   const cache = await redis.get(key);
   const parsedCache = savedBookSchema.safeParse(cache);
-  if (parsedCache.success) {
-    return { success: true, data: parsedCache.data };
-  } else {
-    console.warn(
-      '[getSavedBooksAction] Non-existent cache or parse failed: ',
-      parsedCache.error.message,
-    );
-  }
+  if (parsedCache.success) return { success: true, data: parsedCache.data };
 
   // 3. Get saved books
   try {

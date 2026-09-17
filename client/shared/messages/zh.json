@@ -1,8 +1,8 @@
 {
   "common": {
-    "title": "叶的词典",
+    "title": "叶的辞书",
     "description": "搜索IT术语",
-    "welcome": "欢迎来到叶的词典"
+    "welcome": "欢迎来到叶的辞书"
   },
   "auth": {
     "signIn": "登录 ๐•ᴗ•๐",
@@ -28,25 +28,207 @@
   },
   "nav": {
     "home": "首页",
-    "savedWords": "收藏的词",
+    "savedWords": "已保存词汇",
     "signInUp": "登录/注册",
-    "dashboard": "仪表盘",
+    "dashboard": "控制面板",
     "profile": "个人资料",
     "settings": "设置",
     "signOut": "退出登录",
-    "search": "搜索...",
     "theme": "主题",
     "languages": "语言"
   },
   "tag": {
-  "all": "全部",
-  "computerArchitecture": "计算机架构",
-  "frontend": "前端",
-  "backend": "后端",
-  "ai": "人工智能",
-  "data": "数据",
-  "cloudService": "云服务",
-  "git": "Git",
-  "nextjs": "Next.js"
-}
+    "leafDictionary": "叶的辞书",
+    "all": "全部",
+    "computerArchitecture": "计算机体系结构",
+    "frontend": "前端",
+    "backend": "后端",
+    "ai": "人工智能",
+    "data": "数据",
+    "cloudService": "云服务",
+    "git": "Git",
+    "nextjs": "Next.js"
+  },
+  "search": {
+    "searchList": {
+      "noMore": "没有更多内容..."
+    },
+    "searchBox": {
+      "inputPlaceholder": "搜索...",
+      "searchLabel": "搜索"
+    },
+    "tagMenu": {
+      "addTagsLabel": "添加标签"
+    },
+    "termInfo": {
+      "saveLabel": "保存",
+      "unsaveLabel": "取消保存",
+      "error": {
+        "invalidUserId": "未找到用户",
+        "invalidTermId": "未找到术语"
+      }
+    },
+    "errors": {
+      "queryTooLong": "搜索内容过长",
+      "somethingWentWrong": "出了点问题"
+    }
+  },
+  "dashboard": {
+    "termListDrawer": {
+      "updateTerm": "更新术语",
+      "prev": "上一页",
+      "next": "下一页",
+      "cancel": "取消"
+    },
+    "tagListDrawer": {
+      "updateTag": "更新标签",
+      "prev": "上一页",
+      "next": "下一页",
+      "cancel": "取消"
+    },
+    "searchTag": {
+      "generate": "生成",
+      "search": "搜索标签...",
+      "attach": "关联",
+      "cancel": "取消",
+      "loading": "加载中...",
+      "noResults": "无结果"
+    },
+    "termForm": {
+      "published": "已发布",
+      "draft": "草稿",
+      "titleAdd": "添加术语",
+      "titleUpdate": "更新术语",
+      "slugPlaceholder": "输入 slug...",
+      "addTag": "添加标签",
+      "translations": "翻译",
+      "addTranslation": "添加翻译",
+      "selectLanguage": "选择语言",
+      "lang": {
+        "en": "英语",
+        "zh": "简体中文",
+        "ja": "日语"
+      },
+      "namePlaceholder": "名称（最多 30 个字符）",
+      "label": {
+        "status": "状态",
+        "slug": "Slug",
+        "tags": "标签",
+        "languageCode": "语言代码",
+        "name": "名称",
+        "definition": "定义"
+      },
+      "definitionPlaceholder": "定义（最多 100 个字符）",
+      "submit": "提交",
+      "error": {
+        "invalidInput": "输入无效",
+        "slugRequired": "Slug 不能为空。",
+        "tagRequired": "标签不能为空。",
+        "tagInfosMin": "至少需要一个标签。",
+        "languageCodeRequired": "语言代码不能为空。",
+        "nameRequired": "语言名称不能为空。",
+        "nameTooLong": "语言名称不能超过 30 个字符。",
+        "definitionRequired": "定义不能为空。",
+        "definitionTooLong": "定义不能超过 200 个字符。",
+        "langInfosMin": "至少需要两种语言定义。",
+        "languageCodeDuplicate": "语言代码必须唯一。",
+        "invalidPageNum": "页码无效",
+        "getTermListFailed": "获取术语列表失败",
+        "getTagListFailed": "获取标签列表失败"
+      }
+    },
+    "tagForm": {
+      "titleUpdate": "更新标签",
+      "titleAdd": "添加标签",
+      "slugPlaceholder": "输入标签 slug",
+      "colorPlaceholder": "输入标签颜色",
+      "addLanguage": "添加语言",
+      "selectLanguage": "选择语言",
+      "selectColor": "选择颜色",
+      "translations": "翻译",
+      "lang": {
+        "en": "英语",
+        "zh": "简体中文",
+        "ja": "日语"
+      },
+      "namePlaceholder": "名称（最多 30 个字符）",
+      "label": {
+        "slug": "Slug",
+        "color": "颜色",
+        "languageCode": "语言代码",
+        "name": "名称"
+      },
+      "submit": "提交",
+      "error": {
+        "slugRequired": "Slug 不能为空",
+        "slugTooLong": "Slug 最多 15 个字符",
+        "colorRequired": "颜色不能为空",
+        "colorTooLong": "颜色最多 30 个字符",
+        "languageCodeRequired": "语言代码不能为空",
+        "languageCodeTooLong": "语言代码最多 15 个字符",
+        "nameRequired": "名称不能为空",
+        "nameTooLong": "名称最多 15 个字符",
+        "langInfosMin": "至少需要 2 个语言条目",
+        "langInfosMax": "最多允许 3 个语言条目",
+        "languageCodeDuplicate": "语言代码必须唯一"
+      }
+    }
+  },
+  "saved": {
+    "errors": {
+      "invalidInput": "输入无效",
+      "invalidBook": "词库无效",
+      "invalidTermId": "术语 ID 无效",
+      "bookExists": "词库已存在",
+      "checkBookFailed": "检查已保存词库失败",
+      "upsertBookFailed": "保存词库失败",
+      "selectEmpty": "必须选择至少 1 项",
+      "addReviewFailed": "添加复习失败",
+      "deleteBookFailed": "删除词库失败",
+      "deleteReviewFailed": "删除复习失败",
+      "getSavedBooksFailed": "获取已保存词库失败",
+      "userNotFound": "未找到用户",
+      "moveSaveFailed": "移动已保存术语失败",
+      "removeSaveFailed": "移除已保存术语失败",
+      "sameBookMoveForbidden": "不能移动到同一个词库",
+      "bookNameOverLength": "词库名称过长（最多 20 个字符）",
+      "updateTermTextFailed": "更新术语文本失败",
+      "textOverLength": "文本过长（最多 1000 个字符）",
+      "ratingRequired": "必须评分",
+      "invalidRating": "评分无效",
+      "updateReviewFailed": "更新复习失败"
+    },
+    "bookOptions": {
+      "back": "返回",
+      "list": "列表",
+      "card": "卡片",
+      "review": "复习",
+      "all": "全部",
+      "clear": "清除",
+      "doReview": "添加",
+      "deReview": "取消",
+      "remove": "移除",
+      "moveTo": "移动"
+    },
+    "bookTermList": {
+      "stillEmpty": "仍为空...",
+      "remove": "移除",
+      "doReview": "添加复习",
+      "deReview": "取消复习",
+      "moveTo": "移动",
+      "modify": "修改",
+      "prev": "上一页",
+      "next": "下一页"
+    },
+    "bookTermCard": {
+      "showDef": "展开释义",
+      "easy": "简单",
+      "good": "良好",
+      "hard": "困难",
+      "again": "再来一次"
+    },
+    "termTextForm": {
+      "translation": "翻译"
+    }
+  }
 }
