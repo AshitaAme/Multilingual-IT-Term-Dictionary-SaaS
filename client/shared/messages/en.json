@@ -51,6 +51,19 @@
   },
 
   "search": {
+    "searchOptions": {
+      "book": "Book",
+      "default": "Default",
+      "layout": "Layout",
+      "Scroll": "Scroll layout",
+      "Page": "Page layout",
+      "select": "Select",
+      "Single": "Select single",
+      "Multiple": "Select multiple",
+      "all": "All",
+      "selectAll": "Select all",
+      "save": "Save"
+    },
     "searchList": {
       "noMore": "No more..."
     },
@@ -223,6 +236,7 @@
       "next": "Next"
     },
     "bookTermCard": {
+      "congratulations": "Congratulations!",
       "showDef": "Definition",
       "easy": "Easy",
       "good": "Good",

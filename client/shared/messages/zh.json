@@ -50,6 +50,19 @@
     "nextjs": "Next.js"
   },
   "search": {
+    "searchOptions": {
+      "book": "辞本",
+      "default": "默认",
+      "layout": "布局",
+      "Scroll": "滚动布局",
+      "Page": "分页布局",
+      "select": "选择",
+      "Single": "单选",
+      "Multiple": "多选",
+      "all": "全部",
+      "selectAll": "全选",
+      "save": "保存"
+    },
     "searchList": {
       "noMore": "没有更多内容..."
     },
@@ -177,21 +190,21 @@
   "saved": {
     "errors": {
       "invalidInput": "输入无效",
-      "invalidBook": "词库无效",
+      "invalidBook": "辞本无效",
       "invalidTermId": "术语 ID 无效",
-      "bookExists": "词库已存在",
-      "checkBookFailed": "检查已保存词库失败",
-      "upsertBookFailed": "保存词库失败",
+      "bookExists": "辞本已存在",
+      "checkBookFailed": "检查已保存辞本失败",
+      "upsertBookFailed": "保存辞本失败",
       "selectEmpty": "必须选择至少 1 项",
       "addReviewFailed": "添加复习失败",
-      "deleteBookFailed": "删除词库失败",
+      "deleteBookFailed": "删除辞本失败",
       "deleteReviewFailed": "删除复习失败",
-      "getSavedBooksFailed": "获取已保存词库失败",
+      "getSavedBooksFailed": "获取已保存辞本失败",
       "userNotFound": "未找到用户",
       "moveSaveFailed": "移动已保存术语失败",
       "removeSaveFailed": "移除已保存术语失败",
-      "sameBookMoveForbidden": "不能移动到同一个词库",
-      "bookNameOverLength": "词库名称过长（最多 20 个字符）",
+      "sameBookMoveForbidden": "不能移动到同一个辞本",
+      "bookNameOverLength": "辞本名称过长（最多 20 个字符）",
       "updateTermTextFailed": "更新术语文本失败",
       "textOverLength": "文本过长（最多 1000 个字符）",
       "ratingRequired": "必须评分",
@@ -221,6 +234,7 @@
       "next": "下一页"
     },
     "bookTermCard": {
+      "congratulations": "复习完毕!",
       "showDef": "展开释义",
       "easy": "简单",
       "good": "良好",

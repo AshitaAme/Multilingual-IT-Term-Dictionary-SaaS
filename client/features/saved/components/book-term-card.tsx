@@ -12,6 +12,8 @@ import { updateReviewAction } from '../actions/update-review.action';
 import { toast } from 'sonner';
 import { useImmer } from 'use-immer';
 import { useTranslations } from 'next-intl';
+import { TermTextSchema } from '../schemas/term-text-form.schema';
+import { DropdownMenuSeparator } from '@/shared/components/ui/dropdown-menu';
 
 export function BookTermCard({
   bookTermList,
@@ -21,27 +23,49 @@ export function BookTermCard({
   mode: 'Card' | 'Review';
 }>) {
   const t = useTranslations('saved.bookTermCard');
+
   const now = new Date();
   const cardMode = mode === 'Card';
+
+  // Initial list of terms to be reviewed
   const initialWaitReview = bookTermList.filter(
     (t) => t.reviewCard && t.reviewCard.nextReviewAt.getTime() < now.getTime(),
   );
+
+  // Total terms for showing due to mode
   const total = cardMode ? bookTermList.length : initialWaitReview.length;
+
+  // Index of initial shown term
   const initialShownTermIdx = () =>
     cardMode ? 0 : Math.floor(Math.random() * initialWaitReview.length);
 
   const [waitReview, updateWaitReview] = useImmer(initialWaitReview); // Terms to be reviewed
   const [shownTermIdx, setShownTermIdx] = useState(initialShownTermIdx); // Index of current shown term
   const [reviewed, setReviewed] = useState(0);
+
   const reviewEnd = useMemo(
     () => !cardMode && reviewed === total,
     [cardMode, reviewed, total],
   );
 
-  const shownTerm = useMemo(
-    () => (cardMode ? bookTermList[shownTermIdx] : waitReview[shownTermIdx]),
-    [bookTermList, cardMode, shownTermIdx, waitReview],
-  );
+  const shownTerm = useMemo(() => {
+    if (reviewEnd) return null;
+    if (cardMode) {
+      return bookTermList[shownTermIdx];
+    } else {
+      return waitReview[shownTermIdx];
+    }
+  }, [bookTermList, cardMode, reviewEnd, shownTermIdx, waitReview]);
+
+  const termTranslations = useMemo(() => {
+    if (reviewEnd || !shownTerm) return [];
+    const obj = JSON.parse(shownTerm.text);
+    const parsed = TermTextSchema.safeParse(obj);
+    console.log('[term text]: ', parsed);
+    if (parsed.success) return parsed.data;
+    else return [];
+  }, [reviewEnd, shownTerm]);
+
   const [showDef, setShowDef] = useState(false);
   const setModifiedTerm = useTermTextStore((state) => state.setTerm);
 
@@ -80,7 +104,7 @@ export function BookTermCard({
 
   const cardInfo = reviewEnd ? (
     <div className="h-80 flex flex-col items-center justify-center text-2xl font-semibold pb-6">
-      Congratulations
+      {t('congratulations')}
     </div>
   ) : (
     <>
@@ -90,7 +114,7 @@ export function BookTermCard({
         </span>
         <div className="flex items-baseline gap-1">
           {/* Modify term */}
-          <span className="text-2xl">{shownTerm.name}</span>
+          <span className="text-2xl">{shownTerm!.name}</span>
           <Button
             size="icon"
             variant="ghost"
@@ -118,8 +142,22 @@ export function BookTermCard({
           </Button>
         )}
         {showDef && (
-          <span className="max-h-full overflow-auto px-4">
-            {shownTerm.text}
+          <span className="max-h-full overflow-auto px-4 flex flex-col">
+            {termTranslations.map((translation, index) => {
+              return (
+                <div key={translation.lang} className="flex flex-col gap-2">
+                  {index !== 0 && (
+                    <DropdownMenuSeparator className="mt-4 mb-4" />
+                  )}
+                  <div className="flex gap-2">
+                    <span className="font-bold">{translation.lang}</span>
+                    <span className="pb-1 font-light font-">|</span>
+                    <span>{translation.name}</span>
+                  </div>
+                  <span className="pl-4">{translation.def}</span>
+                </div>
+              );
+            })}
           </span>
         )}
       </CardContent>

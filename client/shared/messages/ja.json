@@ -51,6 +51,19 @@
     "nextjs": "Next.js"
   },
   "search": {
+    "searchOptions": {
+      "book": "ブック",
+      "default": "デフォルト",
+      "layout": "レイアウト",
+      "Scroll": "スクロールレイアウト",
+      "Page": "ページレイアウト",
+      "select": "選択",
+      "Single": "単一選択",
+      "Multiple": "複数選択",
+      "all": "すべて",
+      "selectAll": "すべて選択",
+      "save": "保存"
+    },
     "searchList": {
       "noMore": "もうありません..."
     },
@@ -222,6 +235,7 @@
       "next": "次へ"
     },
     "bookTermCard": {
+      "congratulations": "おめでとう!",
       "showDef": "定義",
       "easy": "簡単",
       "good": "良い",

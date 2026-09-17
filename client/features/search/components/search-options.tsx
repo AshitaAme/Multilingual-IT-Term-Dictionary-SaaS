@@ -33,9 +33,10 @@ import { useSearchOptionStore } from '../stores/search.store';
 import { TooltipWrapper } from '@/shared/components/ui/tooltipWrapper';
 import { LoadingCircle } from '@/shared/components/ui/loading-circle';
 import { cn } from '@/shared/utils/utils';
-import { Separator } from 'radix-ui';
+import { useTranslations } from 'next-intl';
 
 export function SearchOptions() {
+  const t = useTranslations('search.searchOptions');
   const session = useSession();
   const userId = session.data?.user.id;
 
@@ -117,7 +118,7 @@ export function SearchOptions() {
               {/* Default */}
               {savedBooks.length === 0 && (
                 <DropdownMenuItem disabled={true}>
-                  <span>Default</span>
+                  <span>{t('default')}</span>
                   <Check
                     color="#22c55e"
                     style={{ color: '#22c55e', stroke: '#22c55e' }}
@@ -156,6 +157,7 @@ export function SearchOptions() {
               ))}
             </DropdownMenuGroup>
             <DropdownMenuSeparator className="mx-2 mt-1" />
+
             <DropdownMenuGroup>
               {/* Add book */}
               <DropdownMenuItem
@@ -204,21 +206,18 @@ export function SearchOptions() {
       )}
 
       {/* Layout */}
-      <TooltipWrapper label={layout + ' layout'} side="bottom">
+      <TooltipWrapper label={t(layout)} side="bottom">
         <Button
           variant="ghost"
           onClick={() => setLayout(layout === 'Scroll' ? 'Page' : 'Scroll')}
         >
           {layout === 'Scroll' ? <Menu /> : <Columns2 />}
-          <span>Layout</span>
+          <span>{t('layout')}</span>
         </Button>
       </TooltipWrapper>
 
       {/* Select */}
-      <TooltipWrapper
-        label={'Select ' + selectMode.toLocaleLowerCase()}
-        side="bottom"
-      >
+      <TooltipWrapper label={t(selectMode)} side="bottom">
         <Button
           variant="ghost"
           onClick={() =>
@@ -230,12 +229,12 @@ export function SearchOptions() {
           ) : (
             <SquareDashedText />
           )}
-          <span>Select</span>
+          <span>{t('select')}</span>
         </Button>
       </TooltipWrapper>
 
       {/* Select all */}
-      <TooltipWrapper label="Select All" side="bottom">
+      <TooltipWrapper label={t('selectAll')} side="bottom">
         <Button
           variant="ghost"
           onClick={() => {
@@ -244,19 +243,19 @@ export function SearchOptions() {
           }}
         >
           <WalletCards />
-          <span>All</span>
+          <span>{t('all')}</span>
         </Button>
       </TooltipWrapper>
 
       {/* Save */}
-      <TooltipWrapper label="Save" side="bottom">
+      <TooltipWrapper label={t('save')} side="bottom">
         <Button
           disabled={selectMode === 'Single' || doSave}
           variant="ghost"
           onClick={() => setDoSave(true)}
         >
           {doSave ? <LoadingCircle /> : <Bookmark />}
-          <span>Save</span>
+          <span>{t('save')}</span>
         </Button>
       </TooltipWrapper>
     </div>
